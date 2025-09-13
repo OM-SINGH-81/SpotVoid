@@ -2,11 +2,11 @@ import { CrimeData, PatrolHotspot } from './types';
 
 export const policeStations = [
   { value: 'all', label: 'All Stations' },
-  { value: 'Central', label: 'Central Station' },
-  { value: 'Southern', label: 'Southern Station' },
-  { value: 'Bayview', label: 'Bayview Station' },
-  { value: 'Mission', label: 'Mission Station' },
-  { value: 'Northern', label: 'Northern Station' },
+  { value: 'Connaught Place', label: 'Connaught Place' },
+  { value: 'Karol Bagh', label: 'Karol Bagh' },
+  { value: 'Chandni Chowk', label: 'Chandni Chowk' },
+  { value: 'Vasant Kunj', label: 'Vasant Kunj' },
+  { value: 'Hauz Khas', label: 'Hauz Khas' },
 ];
 
 export const crimeTypes = [
@@ -15,16 +15,16 @@ export const crimeTypes = [
   { value: 'Harassment', label: 'Harassment' },
 ];
 
-const SF_BOUNDS = {
-  north: 37.81,
-  south: 37.70,
-  west: -122.52,
-  east: -122.36,
+const DELHI_BOUNDS = {
+  north: 28.88,
+  south: 28.40,
+  west: 76.84,
+  east: 77.24,
 };
 
 const getRandomCoordinate = () => {
-  const lat = Math.random() * (SF_BOUNDS.north - SF_BOUNDS.south) + SF_BOUNDS.south;
-  const lng = Math.random() * (SF_BOUNDS.east - SF_BOUNDS.west) + SF_BOUNDS.west;
+  const lat = Math.random() * (DELHI_BOUNDS.north - DELHI_BOUNDS.south) + DELHI_BOUNDS.south;
+  const lng = Math.random() * (DELHI_BOUNDS.east - DELHI_BOUNDS.west) + DELHI_BOUNDS.west;
   return { lat, lng };
 };
 

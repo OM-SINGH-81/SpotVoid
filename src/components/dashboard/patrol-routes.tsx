@@ -15,8 +15,8 @@ export default function PatrolRoutes({ hotspots }: PatrolRoutesProps) {
   return (
     <div className="w-full h-full rounded-lg overflow-hidden border">
       <Map
-        defaultCenter={{ lat: 37.7749, lng: -122.4194 }}
-        defaultZoom={12}
+        defaultCenter={{ lat: 28.6139, lng: 77.2090 }}
+        defaultZoom={11}
         mapId="PATROL_ROUTE_MAP"
         gestureHandling={'greedy'}
         disableDefaultUI={true}
