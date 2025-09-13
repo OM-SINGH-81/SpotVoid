@@ -1,0 +1,115 @@
+"use client"
+
+import * as React from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import * as z from "zod"
+import { Bot, Send, Loader2 } from "lucide-react"
+
+import { askQuestion } from "@/ai/flows/ai-chat-assistant"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { useToast } from "@/hooks/use-toast"
+
+const FormSchema = z.object({
+  question: z.string().min(1, "Please enter a question."),
+})
+
+export default function ChatAssistant() {
+  const [answer, setAnswer] = React.useState<string | null>(null)
+  const [isLoading, setIsLoading] = React.useState(false)
+  const { toast } = useToast()
+
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      question: "",
+    },
+  })
+
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    setIsLoading(true)
+    setAnswer(null)
+    try {
+      const result = await askQuestion({ question: data.question })
+      setAnswer(result.answer)
+    } catch (error) {
+      console.error("AI chat error:", error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to get an answer from the AI assistant.",
+      })
+    } finally {
+      setIsLoading(false)
+      form.reset()
+    }
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className="flex-1 p-4 bg-muted/50 rounded-lg">
+        <ScrollArea className="h-48">
+          <div className="space-y-4">
+            {isLoading && (
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-primary rounded-full text-primary-foreground">
+                  <Bot size={20} />
+                </div>
+                <div className="bg-card p-3 rounded-lg flex items-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Thinking...
+                </div>
+              </div>
+            )}
+            {answer && (
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-primary rounded-full text-primary-foreground">
+                  <Bot size={20} />
+                </div>
+                <div className="bg-card p-3 rounded-lg text-sm">
+                  {answer}
+                </div>
+              </div>
+            )}
+            {!isLoading && !answer && (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                    <p>Ask a question like, "Show theft hotspots in August."</p>
+                </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+      <div className="mt-4">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex items-start gap-2">
+            <FormField
+              control={form.control}
+              name="question"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormControl>
+                    <Input placeholder="Ask the AI assistant..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" size="icon" disabled={isLoading}>
+              <Send className="h-4 w-4" />
+              <span className="sr-only">Send</span>
+            </Button>
+          </form>
+        </Form>
+      </div>
+    </div>
+  )
+}
