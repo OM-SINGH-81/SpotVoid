@@ -11,7 +11,6 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { getCrimeData } from '@/ai/tools/crime-data-tool';
-import { Position } from '@/lib/types';
 
 const GeneratePatrolRouteInputSchema = z.object({
     dateRange: z.object({
@@ -33,6 +32,8 @@ const GeneratePatrolRouteOutputSchema = z.object({
         }),
         order: z.number(),
     })).describe('An array of patrol hotspots, ordered for an optimal route.'),
+    totalDistance: z.string().describe('The total estimated distance of the patrol route in kilometers (e.g., "15.2 km").'),
+    estimatedTime: z.string().describe('The total estimated time to complete the patrol in minutes (e.g., "45 min").'),
 });
 export type GeneratePatrolRouteOutput = z.infer<typeof GeneratePatrolRouteOutputSchema>;
 
@@ -48,7 +49,7 @@ const prompt = ai.definePrompt({
     tools: [getCrimeData],
     prompt: `You are an AI assistant that generates optimized patrol routes for police based on crime data.
     
-    Your task is to identify 5-7 crime hotspots using the available crime data and then create a patrol route that covers these hotspots in the most efficient order.
+    Your task is to identify 5-7 crime hotspots using the available crime data and then create a patrol route that covers these hotspots in the most efficient order (solving the Traveling Salesperson Problem).
     
     Use the getCrimeData tool to fetch relevant crime incidents based on the user's filters:
     - Date Range: {{{dateRange.startDate}}} to {{{dateRange.endDate}}}
@@ -57,9 +58,11 @@ const prompt = ai.definePrompt({
     
     Analyze the retrieved crime data to identify geographical clusters of incidents. These clusters will be your hotspots.
     
-    Then, determine the most logical and efficient sequence to visit these hotspots, starting from a reasonable point. The output should be an ordered list of these hotspots.
+    Then, determine the shortest possible path to visit all hotspots, starting and ending at a logical point (e.g., the associated police station area). The output should be an ordered list of these hotspots.
     
     Each hotspot in your response must have a unique ID, a descriptive name (e.g., "Hotspot 1"), its geographic coordinates (lat, lng), and its order in the patrol sequence (starting from 1).
+    
+    Finally, calculate the total estimated distance of the route in kilometers and the estimated time to complete it in minutes.
     
     Generate a valid JSON object that matches the specified output schema.`,
 });

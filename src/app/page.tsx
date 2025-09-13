@@ -97,7 +97,7 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle>Optimized Patrol Routes</CardTitle>
                 </CardHeader>
-                <CardContent className="h-[400px]">
+                <CardContent className="h-[480px] p-0">
                   <PatrolRoutes filters={filtersForAI} />
                 </CardContent>
               </Card>
