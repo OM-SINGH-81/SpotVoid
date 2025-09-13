@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { getCrimeData } from '@/ai/tools/crime-data-tool';
 
 const AskQuestionInputSchema = z.object({
   question: z.string().describe('The question to ask about crime data.'),
@@ -29,6 +30,7 @@ const prompt = ai.definePrompt({
   name: 'askQuestionPrompt',
   input: {schema: AskQuestionInputSchema},
   output: {schema: AskQuestionOutputSchema},
+  tools: [getCrimeData],
   prompt: `You are a helpful assistant that answers questions about crime data. Use the available tools to answer the question as accurately as possible.
 
 Question: {{{question}}}`,
