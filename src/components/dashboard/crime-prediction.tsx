@@ -23,23 +23,7 @@ export default function CrimePrediction({ filters }: CrimePredictionProps) {
       setError(null)
       try {
         const result = await predictCrime(filters)
-        // Simulate a more realistic AI prediction
-        const mockedResult = {
-          dailyPredictions: filters.dateRange.startDate && filters.dateRange.endDate ?
-            Array.from({ length: 30 }, (_, i) => {
-              const date = new Date(filters.dateRange.startDate);
-              date.setDate(date.getDate() + i);
-              return {
-                date: date.toISOString().split('T')[0],
-                crimeCount: Math.floor(Math.random() * 20) + 5
-              }
-            }).filter(p => new Date(p.date) <= new Date(filters.dateRange.endDate)) : [],
-          crimeTypeBreakdown: filters.crimeTypes.map(ct => ({
-            crimeType: ct,
-            count: Math.floor(Math.random() * 50) + 10,
-          }))
-        };
-        setPrediction(mockedResult);
+        setPrediction(result);
       } catch (e) {
         console.error("Crime prediction error:", e)
         setError("Failed to generate crime prediction. The AI model may be offline.")

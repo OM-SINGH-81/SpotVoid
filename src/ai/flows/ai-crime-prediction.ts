@@ -45,27 +45,19 @@ const prompt = ai.definePrompt({
   name: 'predictCrimePrompt',
   input: {schema: PredictCrimeInputSchema},
   output: {schema: PredictCrimeOutputSchema},
-  prompt: `You are an AI assistant that predicts crime rates for different locations.
+  prompt: `You are an AI assistant that predicts crime rates for different locations. Your predictions should be based on historical trends but should be clearly presented as future estimates.
 
-  Given the following information, predict the crime rates:
+  Given the following information, predict the crime rates for the next 30 days from the end date.
 
   Date Range: {{{dateRange.startDate}}} - {{{dateRange.endDate}}}
   Police Station: {{{policeStation}}}
   Crime Types: {{#each crimeTypes}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
 
-  Provide the prediction as a JSON object with the following structure:
-  {
-    dailyPredictions: [
-      { date: string, crimeCount: number },
-      // ... more daily predictions
-    ],
-    crimeTypeBreakdown: [
-      { crimeType: string, count: number },
-      // ... more crime type breakdowns
-    ]
-  }
-
-  Ensure that the dates in dailyPredictions are in ISO 8601 format (YYYY-MM-DD).`,
+  Generate a list of daily crime count predictions for the 30 days following the provided end date. For each day, provide a date in ISO 8601 format (YYYY-MM-DD) and a predicted crimeCount.
+  
+  Also, provide a breakdown of the total predicted crimes by crime type for the entire 30-day prediction period.
+  
+  Your entire output must be a valid JSON object matching the requested output schema. Ensure all fields are populated with realistic, non-random data.`,
 });
 
 const predictCrimeFlow = ai.defineFlow(
