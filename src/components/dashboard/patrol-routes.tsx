@@ -1,19 +1,73 @@
 "use client"
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+import { Loader2, TriangleAlert } from 'lucide-react';
+
 import { Polyline } from '@/components/polyline';
-import type { PatrolHotspot, Position } from '@/lib/types';
+import type { PatrolHotspot } from '@/lib/types';
+import { generatePatrolRoute, GeneratePatrolRouteInput, GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 type PatrolRoutesProps = {
-  hotspots: PatrolHotspot[];
+  filters: GeneratePatrolRouteInput;
 };
 
-export default function PatrolRoutes({ hotspots }: PatrolRoutesProps) {
-  const routePath = hotspots.map(h => h.position);
+export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
+  const [route, setRoute] = useState<GeneratePatrolRouteOutput | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getRoute = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const result = await generatePatrolRoute(filters);
+        setRoute(result);
+      } catch (e) {
+        console.error("Patrol route generation error:", e);
+        setError("Failed to generate patrol route. The AI model may be offline.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (filters.dateRange.startDate && filters.dateRange.endDate && filters.crimeTypes && filters.crimeTypes.length > 0) {
+      getRoute();
+    } else {
+        setIsLoading(false);
+        setRoute(null);
+    }
+  }, [filters]);
+
+  const routePath = route?.hotspots.map(h => h.position) || [];
 
   return (
-    <div className="w-full h-full rounded-lg overflow-hidden border">
+    <div className="w-full h-full rounded-lg overflow-hidden border relative">
+      {isLoading && (
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-muted-foreground">Generating optimized route...</p>
+          </div>
+        </div>
+      )}
+      {!isLoading && error && (
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-4">
+            <Alert variant="destructive">
+                <TriangleAlert className="h-4 w-4" />
+                <AlertTitle>Route Generation Error</AlertTitle>
+                <AlertDescription>{error}</AlertDescription>
+            </Alert>
+        </div>
+      )}
+      {!isLoading && !error && (!route || route.hotspots.length === 0) && (
+        <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
+            <p className="text-muted-foreground">Select filters to generate a patrol route.</p>
+        </div>
+      )}
       <Map
         defaultCenter={{ lat: 28.6139, lng: 77.2090 }}
         defaultZoom={11}
@@ -21,7 +75,7 @@ export default function PatrolRoutes({ hotspots }: PatrolRoutesProps) {
         gestureHandling={'greedy'}
         disableDefaultUI={true}
       >
-        {hotspots.map(hotspot => (
+        {route?.hotspots.map(hotspot => (
           <AdvancedMarker key={hotspot.id} position={hotspot.position}>
             <Pin background={'hsl(var(--accent))'} borderColor={'hsl(var(--accent))'} glyphColor={'hsl(var(--accent-foreground))'}>
               {hotspot.order}

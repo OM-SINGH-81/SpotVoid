@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { DateRange } from 'react-day-picker';
 import { addDays } from 'date-fns';
 
-import { crimeData, policeStations, crimeTypes as allCrimeTypes, patrolHotspots } from '@/lib/mock-data';
+import { crimeData, policeStations, crimeTypes as allCrimeTypes } from '@/lib/mock-data';
 import type { CrimeData } from '@/lib/types';
 import MapProvider from '@/components/map-provider';
 import Header from '@/components/header';
@@ -33,6 +33,15 @@ export default function DashboardPage() {
       return isDateInRange && isStationMatch && isCrimeTypeMatch;
     });
   }, [dateRange, selectedStation, selectedCrimeTypes]);
+
+  const filtersForAI = useMemo(() => ({
+    dateRange: {
+      startDate: dateRange?.from?.toISOString(),
+      endDate: dateRange?.to?.toISOString(),
+    },
+    policeStation: selectedStation,
+    crimeTypes: selectedCrimeTypes
+  }), [dateRange, selectedStation, selectedCrimeTypes]);
 
   return (
     <MapProvider>
@@ -79,14 +88,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <CrimePrediction 
-                    filters={{
-                      dateRange: {
-                        startDate: dateRange?.from?.toISOString() ?? '',
-                        endDate: dateRange?.to?.toISOString() ?? '',
-                      },
-                      policeStation: selectedStation,
-                      crimeTypes: selectedCrimeTypes
-                    }}
+                    filters={filtersForAI}
                   />
                 </CardContent>
               </Card>
@@ -96,7 +98,7 @@ export default function DashboardPage() {
                   <CardTitle>Optimized Patrol Routes</CardTitle>
                 </CardHeader>
                 <CardContent className="h-[400px]">
-                  <PatrolRoutes hotspots={patrolHotspots} />
+                  <PatrolRoutes filters={filtersForAI} />
                 </CardContent>
               </Card>
             </div>
