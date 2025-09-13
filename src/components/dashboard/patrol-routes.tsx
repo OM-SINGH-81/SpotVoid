@@ -1,7 +1,8 @@
 "use client"
 
 import React from 'react';
-import { Map, AdvancedMarker, Pin, Polyline } from '@vis.gl/react-google-maps';
+import { Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+import { Polyline } from '@/components/polyline';
 import type { PatrolHotspot, Position } from '@/lib/types';
 
 type PatrolRoutesProps = {
