@@ -51,10 +51,7 @@ const prompt = ai.definePrompt({
     
     Your task is to identify 5-7 crime hotspots using the available crime data and then create a patrol route that covers these hotspots in the most efficient order (solving the Traveling Salesperson Problem).
     
-    Use the getCrimeData tool to fetch relevant crime incidents based on the user's filters:
-    - Date Range: {{{dateRange.startDate}}} to {{{dateRange.endDate}}}
-    - Police Station: {{{policeStation}}}
-    - Crime Types: {{#each crimeTypes}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
+    Use the getCrimeData tool to fetch relevant crime incidents based on the user's input filters.
     
     Analyze the retrieved crime data to identify geographical clusters of incidents. These clusters will be your hotspots.
     
