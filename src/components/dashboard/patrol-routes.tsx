@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
-import { Loader2, TriangleAlert, Route, Clock, Ruler } from 'lucide-react';
+import { Loader2, TriangleAlert, Route, Clock, Ruler, Info } from 'lucide-react';
 
 import { Polyline } from '@/components/polyline';
 import type { PatrolHotspot } from '@/lib/types';
@@ -47,6 +47,8 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
 
   const hoveredHotspot = route?.hotspots.find(h => h.id === hoveredHotspotId);
 
+  const showInsufficientDataMessage = !isLoading && !error && route && route.hotspots.length > 0 && routePath.length < 2;
+
   return (
     <div className="w-full h-full flex flex-col">
         {route && !isLoading && !error && route.hotspots.length > 0 && (
@@ -88,6 +90,15 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
                     <p className="text-muted-foreground">Select filters to generate a patrol route.</p>
                 </div>
             )}
+             {showInsufficientDataMessage && (
+                <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10 p-4">
+                    <Alert>
+                        <Info className="h-4 w-4" />
+                        <AlertTitle>Not Enough Data</AlertTitle>
+                        <AlertDescription>The AI could not find enough hotspots to generate a multi-point route. The map shows the single identified hotspot.</AlertDescription>
+                    </Alert>
+                </div>
+            )}
             <Map
                 defaultCenter={{ lat: 28.6139, lng: 77.2090 }}
                 defaultZoom={11}
@@ -105,7 +116,7 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
                   </div>
                 ))}
                 {hoveredHotspot && (
-                  <InfoWindow position={hoveredHotspot.position} pixelOffset={[0, -40]}>
+                  <InfoWindow position={hoveredHotspot.position} pixelOffset={[0, -40]} onCloseClick={() => setHoveredHotspotId(null)}>
                      <Card className="border-none shadow-none max-w-xs">
                         <CardHeader className="p-2">
                             <CardTitle className="text-base">{hoveredHotspot.name}</CardTitle>
