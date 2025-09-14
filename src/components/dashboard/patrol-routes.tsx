@@ -150,7 +150,10 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
                                 onMouseEnter={() => setHoveredHotspotId(hotspot.id)} 
                                 onMouseLeave={() => setHoveredHotspotId(null)}
                             >
-                                {hotspot.name}
+                                <div className="font-medium">{hotspot.name}</div>
+                                <div className="text-xs text-muted-foreground">
+                                    Lat: {hotspot.position.lat.toFixed(4)}, Lng: {hotspot.position.lng.toFixed(4)}
+                                </div>
                             </li>
                         ))}
                     </ol>
