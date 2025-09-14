@@ -78,6 +78,7 @@ export default function Filters({
               selected={dateRange}
               onSelect={setDateRange}
               numberOfMonths={2}
+              disabled={{ after: new Date() }}
             />
           </PopoverContent>
         </Popover>
