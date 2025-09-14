@@ -158,7 +158,7 @@ const predictCrimeFlow = ai.defineFlow(
     }
 
     return {
-      dailyData: historical.map(h => ({ date: h.date, historicalCount: h.count })),
+      dailyData: historical.map(h => ({ date: h.date, historicalCount: h.count, predictedCount: null })),
       crimeTypeBreakdown: []
     };
   }
