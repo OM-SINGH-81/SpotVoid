@@ -59,7 +59,7 @@ const prompt = ai.definePrompt({
     3.  The output must be an ordered list of these hotspots. Each hotspot in your response must have:
         - A unique ID (e.g., "hs-1").
         - A descriptive name that includes its order number and a general location, like "1. Karol Bagh Market" or "2. Near Hauz Khas Village".
-        - Its geographic coordinates (lat, lng).
+        - Its geographic coordinates (lat, lng) as a 'position' object.
         - Its order in the patrol sequence (starting from 1).
     4.  Finally, calculate the total estimated distance of the route in kilometers and the estimated time to complete it in minutes.
     
