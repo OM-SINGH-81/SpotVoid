@@ -23,7 +23,7 @@ type CrimePredictionProps = {
 const chartConfig = {
   historicalCount: {
     label: "Historical",
-    color: "hsl(var(--secondary-foreground))",
+    color: "hsl(var(--secondary-foreground) / 0.7)",
   },
   predictedCount: {
     label: "Predicted",
@@ -82,6 +82,35 @@ export default function CrimePrediction({ filters }: CrimePredictionProps) {
     }
 
   }, [predictionFilters])
+
+  const combinedBreakdown = useMemo(() => {
+    if (!prediction) return [];
+    
+    const combined = new Map<string, { crimeType: string, historicalCount: number, predictedCount: number }>();
+    
+    const allCrimeTypeNames = new Set([
+        ...(prediction.historicalCrimeTypeBreakdown?.map(item => item.crimeType) || []),
+        ...(prediction.predictedCrimeTypeBreakdown?.map(item => item.crimeType) || [])
+    ]);
+
+    allCrimeTypeNames.forEach(ct => {
+        combined.set(ct, { crimeType: ct, historicalCount: 0, predictedCount: 0 });
+    });
+
+    prediction.historicalCrimeTypeBreakdown?.forEach(item => {
+        if(combined.has(item.crimeType)) {
+            combined.get(item.crimeType)!.historicalCount = item.count;
+        }
+    });
+
+    prediction.predictedCrimeTypeBreakdown?.forEach(item => {
+        if(combined.has(item.crimeType)) {
+            combined.get(item.crimeType)!.predictedCount = item.count;
+        }
+    });
+
+    return Array.from(combined.values());
+  }, [prediction]);
 
   return (
     <div className="space-y-6">
@@ -146,7 +175,7 @@ export default function CrimePrediction({ filters }: CrimePredictionProps) {
         </Alert>
       )}
 
-      {!isLoading && !error && (!prediction || (prediction.dailyData.length === 0 && prediction.crimeTypeBreakdown.length === 0)) && (
+      {!isLoading && !error && (!prediction || (prediction.dailyData.length === 0 && combinedBreakdown.length === 0)) && (
         <div className="text-center text-muted-foreground py-10">Select filters to see predictions.</div>
       )}
       
@@ -160,7 +189,7 @@ export default function CrimePrediction({ filters }: CrimePredictionProps) {
                   <LineChart data={prediction.dailyData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
                     <XAxis dataKey="date" tickFormatter={(val) => new Date(val).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} fontSize={12} />
-                    <YAxis fontSize={12} />
+                    <YAxis fontSize={12} allowDecimals={false} />
                     <Tooltip content={<ChartTooltipContent />} />
                     <Legend />
                     <Line type="monotone" dataKey="historicalCount" name="Historical" stroke={chartConfig.historicalCount.color} strokeWidth={2} dot={false} />
@@ -171,16 +200,18 @@ export default function CrimePrediction({ filters }: CrimePredictionProps) {
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-medium mb-4">Future Crime Type Breakdown</h3>
+            <h3 className="text-lg font-medium mb-4">Crime Type Breakdown</h3>
             <div className="h-60 w-full">
-              <ChartContainer config={{}} className="h-full w-full">
+              <ChartContainer config={chartConfig} className="h-full w-full">
                 <ResponsiveContainer>
-                  <BarChart data={prediction.crimeTypeBreakdown} layout="vertical" margin={{ top: 5, right: 20, left: 40, bottom: 5 }}>
+                  <BarChart data={combinedBreakdown} layout="vertical" margin={{ top: 5, right: 20, left: 40, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                     <YAxis dataKey="crimeType" type="category" fontSize={12} width={80} />
-                    <XAxis type="number" fontSize={12} />
+                    <XAxis type="number" fontSize={12} allowDecimals={false} />
                     <Tooltip content={<ChartTooltipContent />} cursor={{fill: 'hsl(var(--muted))'}} />
-                    <Bar dataKey="count" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} />
+                    <Legend />
+                    <Bar dataKey="historicalCount" name="Historical" fill={chartConfig.historicalCount.color} radius={[4, 0, 0, 4]} />
+                    <Bar dataKey="predictedCount" name="Predicted" fill={chartConfig.predictedCount.color} radius={[0, 4, 4, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </ChartContainer>
