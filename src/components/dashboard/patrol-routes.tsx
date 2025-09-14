@@ -1,22 +1,24 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { Map, AdvancedMarker, Pin } from '@vis.gl/react-google-maps';
+import { Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
 import { Loader2, TriangleAlert, Route, Clock, Ruler } from 'lucide-react';
 
 import { Polyline } from '@/components/polyline';
 import type { PatrolHotspot } from '@/lib/types';
 import { generatePatrolRoute, GeneratePatrolRouteInput, GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 type PatrolRoutesProps = {
-  filters: GeneratePatrolRouteInput;
+  filters: Omit<GeneratePatrolRouteInput, 'dateRange'>;
 };
 
 export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
   const [route, setRoute] = useState<GeneratePatrolRouteOutput | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hoveredHotspotId, setHoveredHotspotId] = useState<string | null>(null);
 
   useEffect(() => {
     const getRoute = async () => {
@@ -33,7 +35,7 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
       }
     };
 
-    if (filters.dateRange.startDate && filters.dateRange.endDate && filters.crimeTypes && filters.crimeTypes.length > 0) {
+    if (filters.crimeTypes && filters.crimeTypes.length > 0) {
       getRoute();
     } else {
         setIsLoading(false);
@@ -42,6 +44,8 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
   }, [filters]);
 
   const routePath = route?.hotspots.sort((a,b) => a.order - b.order).map(h => h.position) || [];
+
+  const hoveredHotspot = route?.hotspots.find(h => h.id === hoveredHotspotId);
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -92,12 +96,23 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
                 disableDefaultUI={true}
             >
                 {route?.hotspots.map(hotspot => (
-                <AdvancedMarker key={hotspot.id} position={hotspot.position}>
-                    <Pin background={'hsl(var(--accent))'} borderColor={'hsl(var(--accent))'} glyphColor={'hsl(var(--accent-foreground))'}>
-                    {hotspot.order}
-                    </Pin>
-                </AdvancedMarker>
+                  <div key={hotspot.id} onMouseEnter={() => setHoveredHotspotId(hotspot.id)} onMouseLeave={() => setHoveredHotspotId(null)}>
+                    <AdvancedMarker position={hotspot.position}>
+                        <Pin background={'hsl(var(--accent))'} borderColor={'hsl(var(--accent))'} glyphColor={'hsl(var(--accent-foreground))'}>
+                        {hotspot.order}
+                        </Pin>
+                    </AdvancedMarker>
+                  </div>
                 ))}
+                {hoveredHotspot && (
+                  <InfoWindow position={hoveredHotspot.position} pixelOffset={[0, -40]}>
+                     <Card className="border-none shadow-none max-w-xs">
+                        <CardHeader className="p-2">
+                            <CardTitle className="text-base">{hoveredHotspot.name}</CardTitle>
+                        </CardHeader>
+                     </Card>
+                  </InfoWindow>
+                )}
                 {routePath.length > 1 && (
                 <Polyline
                     path={routePath}
