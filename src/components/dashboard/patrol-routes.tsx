@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
-import { Loader2, TriangleAlert, Route, Clock, Ruler, Info } from 'lucide-react';
+import { Loader2, TriangleAlert, Route, Clock, Ruler, Info, ListOrdered } from 'lucide-react';
 
 import { Polyline } from '@/components/polyline';
 import type { PatrolHotspot } from '@/lib/types';
 import { generatePatrolRoute, GeneratePatrolRouteInput, GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ScrollArea } from '../ui/scroll-area';
 
 type PatrolRoutesProps = {
   filters: Omit<GeneratePatrolRouteInput, 'dateRange'>;
@@ -43,31 +44,16 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
     }
   }, [filters]);
 
-  const routePath = route?.hotspots.sort((a,b) => a.order - b.order).map(h => h.position) || [];
+  const sortedHotspots = route?.hotspots.sort((a,b) => a.order - b.order) || [];
+  const routePath = sortedHotspots.map(h => h.position);
 
   const hoveredHotspot = route?.hotspots.find(h => h.id === hoveredHotspotId);
 
   const showInsufficientDataMessage = !isLoading && !error && route && route.hotspots.length > 0 && routePath.length < 2;
 
   return (
-    <div className="w-full h-full flex flex-col">
-        {route && !isLoading && !error && route.hotspots.length > 0 && (
-            <div className="flex items-center justify-center gap-6 p-4 border-b text-sm">
-                <div className="flex items-center gap-2 text-muted-foreground">
-                    <Route className="w-5 h-5 text-primary" />
-                    <strong>Route Info:</strong>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Ruler className="w-4 h-4 text-muted-foreground" />
-                    <span>{route.totalDistance}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-muted-foreground" />
-                    <span>{route.estimatedTime}</span>
-                </div>
-            </div>
-        )}
-        <div className="w-full h-full rounded-b-lg overflow-hidden relative flex-1">
+    <div className="w-full h-full flex flex-col lg:flex-row">
+        <div className="w-full lg:w-2/3 h-1/2 lg:h-full rounded-b-lg lg:rounded-bl-lg lg:rounded-r-none overflow-hidden relative">
             {isLoading && (
                 <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-10">
                 <div className="flex flex-col items-center gap-2">
@@ -106,7 +92,7 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
                 gestureHandling={'greedy'}
                 disableDefaultUI={true}
             >
-                {route?.hotspots.map(hotspot => (
+                {sortedHotspots.map(hotspot => (
                   <div key={hotspot.id} onMouseEnter={() => setHoveredHotspotId(hotspot.id)} onMouseLeave={() => setHoveredHotspotId(null)}>
                     <AdvancedMarker position={hotspot.position}>
                         <Pin background={'hsl(var(--accent))'} borderColor={'hsl(var(--accent))'} glyphColor={'hsl(var(--accent-foreground))'}>
@@ -134,6 +120,42 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
                 />
                 )}
             </Map>
+        </div>
+        <div className="w-full lg:w-1/3 flex flex-col border-t lg:border-t-0 lg:border-l">
+            <div className="flex items-center justify-center gap-4 p-4 border-b text-sm">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                    <Route className="w-5 h-5 text-primary" />
+                    <strong>Route Info:</strong>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Ruler className="w-4 h-4 text-muted-foreground" />
+                    <span>{route?.totalDistance || '0 km'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                    <Clock className="w-4 h-4 text-muted-foreground" />
+                    <span>{route?.estimatedTime || '0 min'}</span>
+                </div>
+            </div>
+            <ScrollArea className="flex-1">
+                <div className="p-4 space-y-4">
+                    <h4 className="font-medium flex items-center gap-2 text-muted-foreground">
+                        <ListOrdered className="w-5 h-5 text-primary" />
+                        <span>Patrol Order</span>
+                    </h4>
+                    <ol className="space-y-2">
+                        {sortedHotspots.map((hotspot) => (
+                            <li 
+                                key={hotspot.id} 
+                                className={`p-2 rounded-md transition-colors text-sm ${hoveredHotspotId === hotspot.id ? 'bg-muted' : ''}`}
+                                onMouseEnter={() => setHoveredHotspotId(hotspot.id)} 
+                                onMouseLeave={() => setHoveredHotspotId(null)}
+                            >
+                                {hotspot.name}
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            </ScrollArea>
         </div>
     </div>
   );
