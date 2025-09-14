@@ -23,6 +23,7 @@ const GeneratePatrolRouteOutputSchema = z.object({
     hotspots: z.array(z.object({
         id: z.string(),
         name: z.string().describe('A descriptive name for the hotspot, including its order and a general location name (e.g., "1. Connaught Place Area").'),
+        description: z.string().describe('A detailed description of the hotspot\'s location, including nearby landmarks or areas.'),
         position: z.object({
             lat: z.number(),
             lng: z.number(),
@@ -55,13 +56,14 @@ const prompt = ai.definePrompt({
     Your task is to use this data to create an optimized patrol route that covers 5-7 of the most critical hotspots.
     
     1.  Analyze the provided predicted hotspots to identify the 5-7 most critical ones.
-    2.  Create an efficient patrol route that connects these hotspots (solving the Traveling Salesperson Problem).
-    3.  The output must be an ordered list of these hotspots. Each hotspot in your response must have:
+    2.  Create an efficient patrol route that connects these hotspots.
+    3.  The output must be an ordered list of these hotspots. For each hotspot, provide:
         - A unique ID (e.g., "hs-1").
-        - A descriptive name that includes its order number and a general location, like "1. Karol Bagh Market" or "2. Near Hauz Khas Village".
-        - Its geographic coordinates (lat, lng) as a 'position' object.
-        - Its order in the patrol sequence (starting from 1).
-    4.  Finally, calculate the total estimated distance of the route in kilometers and the estimated time to complete it in minutes.
+        - A 'name' that includes its order number and a general location (e.g., "1. Karol Bagh Market").
+        - A detailed 'description' of the location, mentioning nearby landmarks or areas for context.
+        - Its geographic 'position' (lat, lng).
+        - Its 'order' in the patrol sequence (starting from 1).
+    4.  Finally, calculate the total estimated 'totalDistance' of the route in kilometers and the 'estimatedTime' to complete it in minutes.
     
     Generate a valid JSON object that matches the specified output schema.`,
 });
@@ -86,21 +88,11 @@ const generatePatrolRouteFlow = ai.defineFlow(
             crimeTypes: input.crimeTypes || ['Theft', 'Accident', 'Harassment'],
         };
         
-        // This is a conceptual step. We are re-using the existing prediction flow.
-        // A more advanced implementation would have a dedicated flow to predict hotspot locations.
-        // For now, we'll simulate this by using historical data as a proxy for predicted hotspot locations.
         const predictedData = await predictCrime(predictionInput);
         
-        // Let's create a simplified representation of hotspots for the prompt.
-        // In a real scenario, this would come from a more complex prediction model.
-        // Here we'll just use the breakdown as a proxy for hotspot importance.
         const predictedHotspots = JSON.stringify({
             predictedCrimeTypeBreakdown: predictedData.predictedCrimeTypeBreakdown,
-            // The model needs locations, which our current prediction model doesn't provide.
-            // We'll pass some recent crime locations as a substitute for "predicted locations".
             recentCrimeLocations: predictedData.dailyData.slice(-10).flatMap(d => {
-                // This part is a simulation as we don't have real predicted locations.
-                // In a real app, this would be a sophisticated location prediction.
                 const count = d.predictedCount || d.historicalCount || 0;
                 return Array.from({length: Math.min(count, 3)}, () => ({
                      lat: 28.6139 + (Math.random() - 0.5) * 0.2,
@@ -113,7 +105,6 @@ const generatePatrolRouteFlow = ai.defineFlow(
         const { output } = await prompt({ predictedHotspots });
 
         if (!output || !output.hotspots) {
-            // Return a default empty state or throw an error
             return {
                 hotspots: [],
                 totalDistance: "0 km",
