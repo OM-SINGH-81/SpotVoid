@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { crimeData } from '@/lib/mock-data';
-import { eachDayOfInterval, format, parseISO } from 'date-fns';
+import { eachDayOfInterval, format, parseISO, isBefore, startOfToday } from 'date-fns';
 
 const PredictCrimeInputSchema = z.object({
   dateRange: z.object({
@@ -25,8 +25,8 @@ export type PredictCrimeInput = z.infer<typeof PredictCrimeInputSchema>;
 
 const DailyPredictionSchema = z.object({
   date: z.string().describe('The date of the data point (YYYY-MM-DD).'),
-  historicalCount: z.number().optional().describe('The actual number of crimes for that date. This will be null for future dates.'),
-  predictedCount: z.number().optional().describe('The predicted number of crimes for that date. This will be null for past dates.'),
+  historicalCount: z.number().nullable().describe('The actual number of crimes for that date. This will be null for future dates.'),
+  predictedCount: z.number().nullable().describe('The predicted number of crimes for that date. This will be null for past dates.'),
 });
 
 const PredictCrimeOutputSchema = z.object({
@@ -49,60 +49,30 @@ const prompt = ai.definePrompt({
   name: 'predictCrimePrompt',
   input: {schema: z.object({
     analysisPrompt: z.string(),
+    futureDates: z.array(z.string()),
     input: PredictCrimeInputSchema,
   })},
   output: {schema: PredictCrimeOutputSchema},
   prompt: `You are an AI assistant that analyzes historical crime data and predicts future crime rates.
 
   Historical Data Analysis:
+  I have analyzed the historical data for the requested filters. Here is a summary of daily crime counts:
   {{analysisPrompt}}
   
-  Based on the historical data and trends, provide a future crime prediction.
+  Based on this historical data and any underlying trends you can identify (like weekly patterns, or recent increases/decreases), provide a realistic future crime prediction for the upcoming dates.
   
   User's Request:
-  - Date Range for Prediction: {{{input.dateRange.startDate}}} to {{{input.dateRange.endDate}}}
+  - Prediction for Dates: {{#each futureDates}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
   - Police Station: {{{input.policeStation}}}
   - Crime Types: {{#each input.crimeTypes}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
   
   Instructions:
-  1.  Generate a list of daily data points ('dailyData') for the entire requested date range.
-  2.  For past dates, populate the 'historicalCount' from the provided analysis and leave 'predictedCount' as null.
-  3.  For all future dates (today and onwards), generate a realistic 'predictedCount' based on the historical trends and leave 'historicalCount' as null.
-  4.  Provide a 'crimeTypeBreakdown' of the total *predicted* crimes for the future period.
+  1.  Create a 'dailyData' array containing entries ONLY for the future dates listed above.
+  2.  For each future date, generate a realistic 'predictedCount'. The 'historicalCount' for these future dates must be null.
+  3.  Provide a 'crimeTypeBreakdown' of the total *predicted* crimes for the future period. This breakdown should be based on the user's selected crime types and seem plausible given the historical data.
   
-  Your entire output must be a valid JSON object matching the requested output schema. Ensure all fields are populated with realistic, non-random data.`,
+  Your entire output must be a valid JSON object matching the requested output schema. Do not include past dates in your output.`,
 });
-
-function getHistoricalData(input: PredictCrimeInput) {
-  const { startDate, endDate } = input.dateRange;
-  const start = parseISO(startDate);
-  const end = parseISO(endDate);
-  
-  let filteredData = crimeData.filter(crime => {
-    const crimeDate = parseISO(crime.date);
-    const isDateInRange = crimeDate >= start && crimeDate <= end;
-    const isStationMatch = input.policeStation === 'all' || crime.policeStation === input.policeStation;
-    const isCrimeTypeMatch = input.crimeTypes.includes(crime.crimeType);
-    return isDateInRange && isStationMatch && isCrimeTypeMatch;
-  });
-
-  const dailyCounts = new Map<string, number>();
-  const interval = eachDayOfInterval({ start, end });
-
-  interval.forEach(day => {
-    const formattedDate = format(day, 'yyyy-MM-dd');
-    dailyCounts.set(formattedDate, 0);
-  });
-
-  filteredData.forEach(crime => {
-    const crimeDate = format(parseISO(crime.date), 'yyyy-MM-dd');
-    if (dailyCounts.has(crimeDate)) {
-      dailyCounts.set(crimeDate, dailyCounts.get(crimeDate)! + 1);
-    }
-  });
-
-  return Array.from(dailyCounts.entries()).map(([date, count]) => ({ date, count }));
-}
 
 
 const predictCrimeFlow = ai.defineFlow(
@@ -112,54 +82,100 @@ const predictCrimeFlow = ai.defineFlow(
     outputSchema: PredictCrimeOutputSchema,
   },
   async (input) => {
-    const historical = getHistoricalData(input);
-    const today = format(new Date(), 'yyyy-MM-dd');
+    const { startDate, endDate } = input.dateRange;
+    const start = parseISO(startDate);
+    const end = parseISO(endDate);
+    const today = startOfToday();
 
-    const pastData = historical.filter(d => d.date < today);
+    // 1. Get all historical data matching the filters, regardless of date range
+    let allFilteredCrime = crimeData.filter(crime => {
+        const isStationMatch = input.policeStation === 'all' || crime.policeStation === input.policeStation;
+        const isCrimeTypeMatch = input.crimeTypes.includes(crime.crimeType);
+        return isStationMatch && isCrimeTypeMatch;
+    });
+
+    // 2. Create counts for historical dates within the requested range
+    const historicalCounts = new Map<string, number>();
+    const allDatesInRange = eachDayOfInterval({ start, end });
+
+    allDatesInRange.forEach(day => {
+        if (isBefore(day, today)) {
+            const formattedDate = format(day, 'yyyy-MM-dd');
+            historicalCounts.set(formattedDate, 0);
+        }
+    });
+
+    allFilteredCrime.forEach(crime => {
+        const crimeDate = format(parseISO(crime.date), 'yyyy-MM-dd');
+        if (historicalCounts.has(crimeDate)) {
+            historicalCounts.set(crimeDate, historicalCounts.get(crimeDate)! + 1);
+        }
+    });
+
+    const historicalDataForPrompt = Array.from(historicalCounts.entries()).map(([date, count]) => ({ date, count }));
 
     const analysisPrompt = `
-      Here is the historical crime data for the requested filters. Use this to identify trends (daily, weekly, seasonal) and inform your prediction.
       [
-        ${pastData.map(d => `{ "date": "${d.date}", "crime_count": ${d.count} }`).join(',\n')}
+        ${historicalDataForPrompt.map(d => `{ "date": "${d.date}", "crime_count": ${d.count} }`).join(',\n')}
       ]
     `;
 
-    const { output } = await prompt({ analysisPrompt, input });
-    
-    // Combine historical and predicted data
-    if (output) {
-      const combinedDailyData = historical.map(h => {
-        const prediction = output.dailyData.find(p => p.date === h.date);
-        if (h.date < today) {
-          return { date: h.date, historicalCount: h.count, predictedCount: null };
-        } else {
-          return { date: h.date, historicalCount: null, predictedCount: prediction?.predictedCount ?? 0 };
-        }
-      });
-       // Ensure the output matches the schema, especially for dates outside the historical range.
-       const allDates = new Set(historical.map(h => h.date));
-       output.dailyData.forEach(p => {
-         if (!allDates.has(p.date)) {
-           combinedDailyData.push({
-             date: p.date,
-             historicalCount: null,
-             predictedCount: p.predictedCount
-           });
-         }
-       });
+    // 3. Identify future dates that need prediction
+    const futureDates = allDatesInRange
+        .filter(day => !isBefore(day, today))
+        .map(day => format(day, 'yyyy-MM-dd'));
 
-       combinedDailyData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-
-      return {
-        dailyData: combinedDailyData,
-        crimeTypeBreakdown: output.crimeTypeBreakdown
-      };
+    if (futureDates.length === 0) {
+        // No future dates, just return historical data
+        return {
+            dailyData: historicalDataForPrompt.map(d => ({ date: d.date, historicalCount: d.count, predictedCount: null })),
+            crimeTypeBreakdown: []
+        };
     }
 
+    // 4. Call the AI for predictions on future dates
+    const { output: predictionOutput } = await prompt({ analysisPrompt, input, futureDates });
+
+    if (!predictionOutput) {
+        throw new Error("AI model did not return an output.");
+    }
+    
+    // 5. Combine historical and predicted data
+    const combinedDailyData: z.infer<typeof DailyPredictionSchema>[] = [];
+    
+    // Add historical data points
+    historicalDataForPrompt.forEach(d => {
+        combinedDailyData.push({
+            date: d.date,
+            historicalCount: d.count,
+            predictedCount: null
+        });
+    });
+
+    // Add predicted data points from the model's output
+    predictionOutput.dailyData.forEach(p => {
+        if (futureDates.includes(p.date)) {
+             combinedDailyData.push({
+                date: p.date,
+                historicalCount: null,
+                predictedCount: p.predictedCount ?? 0,
+            });
+        }
+    });
+
+    // Ensure all future dates have an entry, even if the model missed one
+    futureDates.forEach(date => {
+        if (!combinedDailyData.some(d => d.date === date)) {
+            combinedDailyData.push({ date, historicalCount: null, predictedCount: 0 });
+        }
+    });
+
+
+    combinedDailyData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
     return {
-      dailyData: historical.map(h => ({ date: h.date, historicalCount: h.count, predictedCount: null })),
-      crimeTypeBreakdown: []
+        dailyData: combinedDailyData,
+        crimeTypeBreakdown: predictionOutput.crimeTypeBreakdown
     };
   }
 );
