@@ -66,7 +66,7 @@ const prompt = ai.definePrompt({
 
   Historical Data Analysis:
   I have analyzed the historical data for the requested filters. Here is a summary of daily crime counts:
-  {{analysisPrompt}}
+  {{{analysisPrompt}}}
   
   Based on this historical data and any underlying trends you can identify (like weekly patterns, or recent increases/decreases), provide a realistic future crime prediction for the upcoming dates.
   
@@ -138,11 +138,7 @@ const predictCrimeFlow = ai.defineFlow(
     const historicalBreakdown = Array.from(historicalCrimeTypeBreakdown.entries()).map(([crimeType, count]) => ({ crimeType, count }));
 
 
-    const analysisPrompt = `
-      [
-        ${historicalDataForPrompt.map(d => `{ "date": "${d.date}", "crime_count": ${d.count} }`).join(',\n')}
-      ]
-    `;
+    const analysisPrompt = JSON.stringify(historicalDataForPrompt);
 
     // 4. Identify future dates that need prediction
     const futureDates = allDatesInRange
