@@ -5,7 +5,7 @@ import { DateRange } from 'react-day-picker';
 import { addDays } from 'date-fns';
 
 import { crimeData, policeStations, crimeTypes as allCrimeTypes } from '@/lib/mock-data';
-import type { CrimeData } from '@/lib/types';
+import { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 import MapProvider from '@/components/map-provider';
 import Header from '@/components/header';
 import Filters from '@/components/dashboard/filters';
@@ -24,6 +24,9 @@ export default function DashboardPage() {
   const [selectedStation, setSelectedStation] = useState<string>('all');
   const [selectedCrimeTypes, setSelectedCrimeTypes] = useState<string[]>(allCrimeTypes.map(ct => ct.value));
 
+  const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null);
+  const [isLoadingPrediction, setIsLoadingPrediction] = useState(true);
+
   const filteredCrimeData = useMemo(() => {
     return crimeData.filter(crime => {
       const crimeDate = new Date(crime.date);
@@ -35,13 +38,9 @@ export default function DashboardPage() {
   }, [dateRange, selectedStation, selectedCrimeTypes]);
 
   const filtersForAI = useMemo(() => ({
-    dateRange: {
-      startDate: dateRange?.from?.toISOString(),
-      endDate: dateRange?.to?.toISOString(),
-    },
     policeStation: selectedStation,
     crimeTypes: selectedCrimeTypes
-  }), [dateRange, selectedStation, selectedCrimeTypes]);
+  }), [selectedStation, selectedCrimeTypes]);
 
   return (
     <MapProvider>
@@ -88,10 +87,10 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <CrimePrediction 
-                    filters={{
-                      policeStation: filtersForAI.policeStation,
-                      crimeTypes: filtersForAI.crimeTypes
-                    }}
+                    filters={filtersForAI}
+                    onPredictionChange={setPrediction}
+                    isLoading={isLoadingPrediction}
+                    onIsLoadingChange={setIsLoadingPrediction}
                   />
                 </CardContent>
               </Card>
@@ -101,7 +100,7 @@ export default function DashboardPage() {
                   <CardTitle>Optimized Patrol Routes</CardTitle>
                 </CardHeader>
                 <CardContent className="h-[550px] p-0">
-                  <PatrolRoutes filters={filtersForAI} />
+                  <PatrolRoutes prediction={prediction} isLoadingPrediction={isLoadingPrediction} />
                 </CardContent>
               </Card>
             </div>

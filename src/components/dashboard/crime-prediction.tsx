@@ -18,6 +18,9 @@ import { Label } from "../ui/label"
 
 type CrimePredictionProps = {
   filters: Omit<PredictCrimeInput, 'dateRange'>;
+  onPredictionChange: (prediction: PredictCrimeOutput | null) => void;
+  isLoading: boolean;
+  onIsLoadingChange: (isLoading: boolean) => void;
 }
 
 const chartConfig = {
@@ -31,9 +34,8 @@ const chartConfig = {
   },
 };
 
-export default function CrimePrediction({ filters }: CrimePredictionProps) {
+export default function CrimePrediction({ filters, onPredictionChange, isLoading, onIsLoadingChange }: CrimePredictionProps) {
   const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: addDays(new Date(), -15),
@@ -58,30 +60,34 @@ export default function CrimePrediction({ filters }: CrimePredictionProps) {
     const getPrediction = async () => {
       if (!predictionFilters) {
         setPrediction(null);
-        setIsLoading(false);
+        onPredictionChange(null);
+        onIsLoadingChange(false);
         return;
       }
-      setIsLoading(true)
+      onIsLoadingChange(true)
       setError(null)
       try {
         const result = await predictCrime(predictionFilters)
         setPrediction(result);
+        onPredictionChange(result);
       } catch (e) {
         console.error("Crime prediction error:", e)
         setError("Failed to generate crime prediction. The AI model may be offline.")
+        onPredictionChange(null);
       } finally {
-        setIsLoading(false)
+        onIsLoadingChange(false)
       }
     }
     
     if (predictionFilters && filters.crimeTypes.length > 0) {
       getPrediction()
     } else {
-      setIsLoading(false);
+      onIsLoadingChange(false);
       setPrediction(null);
+      onPredictionChange(null);
     }
 
-  }, [predictionFilters])
+  }, [predictionFilters, onPredictionChange, onIsLoadingChange])
 
   const combinedBreakdown = useMemo(() => {
     if (!prediction) return [];

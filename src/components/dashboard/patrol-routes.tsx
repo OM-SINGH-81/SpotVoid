@@ -5,42 +5,47 @@ import { Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps'
 import { Loader2, TriangleAlert, Route, Clock, Ruler, Info } from 'lucide-react';
 
 import { Polyline } from '@/components/polyline';
-import { generatePatrolRoute, GeneratePatrolRouteInput, GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
+import { generatePatrolRoute, GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
+import type { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 type PatrolRoutesProps = {
-  filters: Omit<GeneratePatrolRouteInput, 'dateRange'>;
+  prediction: PredictCrimeOutput | null;
+  isLoadingPrediction: boolean;
 };
 
-export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
+export default function PatrolRoutes({ prediction, isLoadingPrediction }: PatrolRoutesProps) {
   const [route, setRoute] = useState<GeneratePatrolRouteOutput | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingRoute, setIsLoadingRoute] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hoveredHotspotId, setHoveredHotspotId] = useState<string | null>(null);
 
   useEffect(() => {
     const getRoute = async () => {
-      setIsLoading(true);
+      if (!prediction || prediction.dailyData.length === 0) {
+        setRoute(null);
+        setIsLoadingRoute(false);
+        return;
+      }
+      setIsLoadingRoute(true);
       setError(null);
       try {
-        const result = await generatePatrolRoute(filters);
+        const result = await generatePatrolRoute({ predictedData: prediction });
         setRoute(result);
       } catch (e) {
         console.error("Patrol route generation error:", e);
         setError("Failed to generate patrol route. The AI model may be offline.");
       } finally {
-        setIsLoading(false);
+        setIsLoadingRoute(false);
       }
     };
 
-    if (filters.crimeTypes && filters.crimeTypes.length > 0) {
-      getRoute();
-    } else {
-        setIsLoading(false);
-        setRoute(null);
-    }
-  }, [filters]);
+    getRoute();
+
+  }, [prediction]);
+  
+  const isLoading = isLoadingPrediction || isLoadingRoute;
 
   const sortedHotspots = route?.hotspots.sort((a,b) => a.order - b.order) || [];
   const routePath = sortedHotspots.map(h => h.position);
@@ -48,6 +53,8 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
   const hoveredHotspot = route?.hotspots.find(h => h.id === hoveredHotspotId);
 
   const showInsufficientDataMessage = !isLoading && !error && route && route.hotspots.length > 0 && routePath.length < 2;
+
+  const showNoDataMessage = !isLoading && !error && (!prediction || prediction.dailyData.length === 0);
 
   return (
     <div className="w-full h-full flex flex-col relative">
@@ -85,7 +92,7 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
                 </Alert>
             </div>
         )}
-        {!isLoading && !error && (!route || route.hotspots.length === 0) && (
+        {showNoDataMessage && (
             <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20">
                 <p className="text-muted-foreground">Select filters to generate a patrol route.</p>
             </div>

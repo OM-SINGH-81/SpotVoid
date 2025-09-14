@@ -10,12 +10,11 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { predictCrime } from './ai-crime-prediction';
-import { addDays, startOfToday } from 'date-fns';
+import type { PredictCrimeOutput } from './ai-crime-prediction';
+import { crimeData } from '@/lib/mock-data';
 
 const GeneratePatrolRouteInputSchema = z.object({
-    policeStation: z.string().optional().describe('The police station to filter by.'),
-    crimeTypes: z.array(z.string()).optional().describe('The types of crime to filter by.'),
+    predictedData: z.any().describe('The output from the crime prediction flow.'),
 });
 export type GeneratePatrolRouteInput = z.infer<typeof GeneratePatrolRouteInputSchema>;
 
@@ -75,33 +74,18 @@ const generatePatrolRouteFlow = ai.defineFlow(
         outputSchema: GeneratePatrolRouteOutputSchema,
     },
     async (input) => {
-        // Step 1: Get crime predictions for the next 7 days to identify future hotspots.
-        const today = startOfToday();
-        const futureDate = addDays(today, 7);
+        const { predictedData } = input as { predictedData: PredictCrimeOutput };
 
-        const predictionInput = {
-            dateRange: {
-                startDate: today.toISOString(),
-                endDate: futureDate.toISOString(),
-            },
-            policeStation: input.policeStation || 'all',
-            crimeTypes: input.crimeTypes || ['Theft', 'Accident', 'Harassment'],
-        };
-        
-        const predictedData = await predictCrime(predictionInput);
+        const relevantCrimeData = crimeData.filter(crime => {
+            const crimeDate = new Date(crime.date).getTime();
+            return predictedData.dailyData.some(d => new Date(d.date).getTime() === crimeDate);
+        }).map(c => ({ position: c.position, crimeType: c.crimeType }));
         
         const predictedHotspots = JSON.stringify({
             predictedCrimeTypeBreakdown: predictedData.predictedCrimeTypeBreakdown,
-            recentCrimeLocations: predictedData.dailyData.slice(-10).flatMap(d => {
-                const count = d.predictedCount || d.historicalCount || 0;
-                return Array.from({length: Math.min(count, 3)}, () => ({
-                     lat: 28.6139 + (Math.random() - 0.5) * 0.2,
-                     lng: 77.2090 + (Math.random() - 0.5) * 0.2,
-                }))
-            })
+            recentCrimeLocations: relevantCrimeData,
         });
 
-        // Step 2: Call the AI with the predicted data to generate the route.
         const { output } = await prompt({ predictedHotspots });
 
         if (!output || !output.hotspots) {
