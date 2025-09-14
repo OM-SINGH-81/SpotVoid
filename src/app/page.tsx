@@ -88,7 +88,10 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <CrimePrediction 
-                    filters={filtersForAI}
+                    filters={{
+                      policeStation: filtersForAI.policeStation,
+                      crimeTypes: filtersForAI.crimeTypes
+                    }}
                   />
                 </CardContent>
               </Card>
@@ -97,7 +100,7 @@ export default function DashboardPage() {
                 <CardHeader>
                   <CardTitle>Optimized Patrol Routes</CardTitle>
                 </CardHeader>
-                <CardContent className="h-[480px] p-0">
+                <CardContent className="h-[550px] p-0">
                   <PatrolRoutes filters={filtersForAI} />
                 </CardContent>
               </Card>
