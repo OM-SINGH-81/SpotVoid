@@ -8,7 +8,7 @@ import { Polyline } from '@/components/polyline';
 import type { PatrolHotspot } from '@/lib/types';
 import { generatePatrolRoute, GeneratePatrolRouteInput, GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 type PatrolRoutesProps = {
   filters: Omit<GeneratePatrolRouteInput, 'dateRange'>;
@@ -49,7 +49,7 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
 
   return (
     <div className="w-full h-full flex flex-col">
-        {route && !isLoading && !error && (
+        {route && !isLoading && !error && route.hotspots.length > 0 && (
             <div className="flex items-center justify-center gap-6 p-4 border-b text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <Route className="w-5 h-5 text-primary" />
@@ -109,6 +109,7 @@ export default function PatrolRoutes({ filters }: PatrolRoutesProps) {
                      <Card className="border-none shadow-none max-w-xs">
                         <CardHeader className="p-2">
                             <CardTitle className="text-base">{hoveredHotspot.name}</CardTitle>
+                             <CardDescription>Lat: {hoveredHotspot.position.lat.toFixed(4)}, Lng: {hoveredHotspot.position.lng.toFixed(4)}</CardDescription>
                         </CardHeader>
                      </Card>
                   </InfoWindow>

@@ -11,7 +11,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { predictCrime } from './ai-crime-prediction';
-import { addDays, startOfToday, endOfDay } from 'date-fns';
+import { addDays, startOfToday } from 'date-fns';
 
 const GeneratePatrolRouteInputSchema = z.object({
     policeStation: z.string().optional().describe('The police station to filter by.'),
@@ -22,7 +22,7 @@ export type GeneratePatrolRouteInput = z.infer<typeof GeneratePatrolRouteInputSc
 const GeneratePatrolRouteOutputSchema = z.object({
     hotspots: z.array(z.object({
         id: z.string(),
-        name: z.string(),
+        name: z.string().describe('A descriptive name for the hotspot, including its order and a general location name (e.g., "1. Connaught Place Area").'),
         position: z.object({
             lat: z.number(),
             lng: z.number(),
@@ -42,7 +42,7 @@ export async function generatePatrolRoute(input: GeneratePatrolRouteInput): Prom
 const prompt = ai.definePrompt({
     name: 'generatePatrolRoutePrompt',
     input: { schema: z.object({
-        predictedHotspots: z.any().describe('A JSON string of predicted crime hotspots including their locations.'),
+        predictedHotspots: z.any().describe('A JSON string of predicted crime hotspots including their locations and types.'),
     }) },
     output: { schema: GeneratePatrolRouteOutputSchema },
     prompt: `You are an AI assistant that generates optimized patrol routes for police based on predicted crime data.
@@ -56,7 +56,11 @@ const prompt = ai.definePrompt({
     
     1.  Analyze the provided predicted hotspots to identify the 5-7 most critical ones.
     2.  Create an efficient patrol route that connects these hotspots (solving the Traveling Salesperson Problem).
-    3.  The output must be an ordered list of these hotspots. Each hotspot in your response must have a unique ID, a descriptive name (e.g., "Hotspot 1"), its geographic coordinates (lat, lng), and its order in the patrol sequence (starting from 1).
+    3.  The output must be an ordered list of these hotspots. Each hotspot in your response must have:
+        - A unique ID (e.g., "hs-1").
+        - A descriptive name that includes its order number and a general location, like "1. Karol Bagh Market" or "2. Near Hauz Khas Village".
+        - Its geographic coordinates (lat, lng).
+        - Its order in the patrol sequence (starting from 1).
     4.  Finally, calculate the total estimated distance of the route in kilometers and the estimated time to complete it in minutes.
     
     Generate a valid JSON object that matches the specified output schema.`,
@@ -79,7 +83,7 @@ const generatePatrolRouteFlow = ai.defineFlow(
                 endDate: futureDate.toISOString(),
             },
             policeStation: input.policeStation || 'all',
-            crimeTypes: input.crimeTypes || [],
+            crimeTypes: input.crimeTypes || ['Theft', 'Accident', 'Harassment'],
         };
         
         // This is a conceptual step. We are re-using the existing prediction flow.
@@ -94,16 +98,29 @@ const generatePatrolRouteFlow = ai.defineFlow(
             predictedCrimeTypeBreakdown: predictedData.predictedCrimeTypeBreakdown,
             // The model needs locations, which our current prediction model doesn't provide.
             // We'll pass some recent crime locations as a substitute for "predicted locations".
-            recentCrimeLocations: predictedData.dailyData.slice(0, 20).map(d => ({
+            recentCrimeLocations: predictedData.dailyData.slice(-10).flatMap(d => {
                 // This part is a simulation as we don't have real predicted locations.
                 // In a real app, this would be a sophisticated location prediction.
-                lat: 28.6139 + (Math.random() - 0.5) * 0.1,
-                lng: 77.2090 + (Math.random() - 0.5) * 0.1,
-            }))
+                const count = d.predictedCount || d.historicalCount || 0;
+                return Array.from({length: Math.min(count, 3)}, () => ({
+                     lat: 28.6139 + (Math.random() - 0.5) * 0.2,
+                     lng: 77.2090 + (Math.random() - 0.5) * 0.2,
+                }))
+            })
         });
 
         // Step 2: Call the AI with the predicted data to generate the route.
         const { output } = await prompt({ predictedHotspots });
-        return output!;
+
+        if (!output || !output.hotspots) {
+            // Return a default empty state or throw an error
+            return {
+                hotspots: [],
+                totalDistance: "0 km",
+                estimatedTime: "0 min",
+            };
+        }
+
+        return output;
     }
 );
