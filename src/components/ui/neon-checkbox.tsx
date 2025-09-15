@@ -7,17 +7,24 @@ interface NeonCheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
   id?: string;
+  color?: string;
 }
 
 const NeonCheckbox = React.forwardRef<HTMLInputElement, NeonCheckboxProps>(
-  ({ className, checked, onCheckedChange, id, ...props }, ref) => {
+  ({ className, checked, onCheckedChange, id, color, ...props }, ref) => {
     
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
       onCheckedChange(event.target.checked);
     };
 
+    const style = color ? {
+        '--checkbox-primary': color,
+        '--checkbox-primary-dark': color,
+        '--checkbox-primary-light': color,
+    } as React.CSSProperties : {};
+
     return (
-      <label htmlFor={id} className={cn("neon-checkbox", className)}>
+      <label htmlFor={id} className={cn("neon-checkbox", className)} style={style}>
         <input 
             type="checkbox" 
             id={id} 

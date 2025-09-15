@@ -23,6 +23,13 @@ type FiltersProps = {
   setSelectedCrimeTypes: (crimeTypes: string[]) => void
 }
 
+const crimeColorMap: { [key: string]: string } = {
+  Theft: "hsl(var(--chart-1))",
+  Accident: "hsl(var(--chart-2))",
+  Harassment: "hsl(var(--chart-3))",
+};
+
+
 export default function Filters({
   dateRange,
   setDateRange,
@@ -142,6 +149,7 @@ export default function Filters({
                 id={crimeType.value}
                 checked={selectedCrimeTypes.includes(crimeType.value)}
                 onCheckedChange={(isChecked) => handleCrimeTypeChange(crimeType.value, Boolean(isChecked))}
+                color={crimeColorMap[crimeType.value]}
               />
               <Label htmlFor={crimeType.value} className="font-normal cursor-pointer">
                 {crimeType.label}
