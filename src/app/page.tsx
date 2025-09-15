@@ -1,112 +1,41 @@
 "use client"
 
-import React, { useState, useMemo } from 'react';
-import { DateRange } from 'react-day-picker';
-import { addDays } from 'date-fns';
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import Header from "@/components/header";
+import { Building } from "lucide-react";
 
-import { crimeData, policeStations, crimeTypes as allCrimeTypes } from '@/lib/mock-data';
-import { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
-import MapProvider from '@/components/map-provider';
-import Header from '@/components/header';
-import Filters from '@/components/dashboard/filters';
-import CrimeHeatmap from '@/components/dashboard/crime-heatmap';
-import CrimePrediction from '@/components/dashboard/crime-prediction';
-import PatrolRoutes from '@/components/dashboard/patrol-routes';
-import ChatAssistant from '@/components/dashboard/chat-assistant';
-
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-
-export default function DashboardPage() {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: addDays(new Date(), -30),
-    to: new Date(),
-  });
-  const [selectedStation, setSelectedStation] = useState<string>('all');
-  const [selectedCrimeTypes, setSelectedCrimeTypes] = useState<string[]>(allCrimeTypes.map(ct => ct.value));
-
-  const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null);
-  const [isLoadingPrediction, setIsLoadingPrediction] = useState(true);
-
-  const filteredCrimeData = useMemo(() => {
-    return crimeData.filter(crime => {
-      const crimeDate = new Date(crime.date);
-      const isDateInRange = dateRange?.from && dateRange?.to ? crimeDate >= dateRange.from && crimeDate <= dateRange.to : true;
-      const isStationMatch = selectedStation === 'all' || crime.policeStation === selectedStation;
-      const isCrimeTypeMatch = selectedCrimeTypes.includes(crime.crimeType);
-      return isDateInRange && isStationMatch && isCrimeTypeMatch;
-    });
-  }, [dateRange, selectedStation, selectedCrimeTypes]);
-
-  const filtersForAI = useMemo(() => ({
-    policeStation: selectedStation,
-    crimeTypes: selectedCrimeTypes
-  }), [selectedStation, selectedCrimeTypes]);
-
+export default function LandingPage() {
   return (
-    <MapProvider>
-      <div className="flex flex-col min-h-screen bg-background">
-        <Header />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="mx-auto max-w-screen-2xl space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Filters &amp; AI Assistant</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
-                    <Filters
-                      dateRange={dateRange}
-                      setDateRange={setDateRange}
-                      selectedStation={selectedStation}
-                      setSelectedStation={setSelectedStation}
-                      selectedCrimeTypes={selectedCrimeTypes}
-                      setSelectedCrimeTypes={setSelectedCrimeTypes}
-                    />
-                  </div>
-                  <div>
-                    <ChatAssistant />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="h-[500px] lg:h-[600px] flex flex-col">
-              <CardHeader>
-                <CardTitle>Interactive Crime Heatmap</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1">
-                <CrimeHeatmap data={filteredCrimeData} />
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>AI Crime Prediction</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CrimePrediction 
-                    filters={filtersForAI}
-                    onPredictionChange={setPrediction}
-                    isLoading={isLoadingPrediction}
-                    onIsLoadingChange={setIsLoadingPrediction}
-                  />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Optimized Patrol Routes</CardTitle>
-                </CardHeader>
-                <CardContent className="h-[550px] p-0">
-                  <PatrolRoutes prediction={prediction} isLoadingPrediction={isLoadingPrediction} />
-                </CardContent>
-              </Card>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1">
+        <section className="relative h-[calc(100vh-4rem)] flex items-center justify-center">
+          <Image
+            src="https://picsum.photos/seed/10/1800/1200"
+            alt="Background"
+            fill
+            className="object-cover"
+            data-ai-hint="cityscape night"
+          />
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="relative z-10 text-center text-white p-4">
+            <div className="inline-block p-4 bg-primary/80 rounded-2xl mb-6 backdrop-blur-sm">
+                <Building className="h-16 w-16 text-primary-foreground" />
             </div>
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-4">
+              Welcome to CrimeWise
+            </h1>
+            <p className="text-lg md:text-xl max-w-2xl mx-auto text-primary-foreground/80 mb-8">
+              Harnessing the power of AI to analyze crime data, predict hotspots, and optimize patrol routes for a safer community.
+            </p>
+            <Button asChild size="lg">
+              <Link href="/dashboard">Get Started</Link>
+            </Button>
           </div>
-        </main>
-      </div>
-    </MapProvider>
+        </section>
+      </main>
+    </div>
   );
 }
