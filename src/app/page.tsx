@@ -23,7 +23,7 @@ export default function LandingPage() {
           <PixelBlast
             variant="circle"
             pixelSize={6}
-            color="hsl(var(--accent))"
+            color="#B19EEF"
             patternScale={3}
             patternDensity={1.2}
             pixelSizeJitter={0.5}
