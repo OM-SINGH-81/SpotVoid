@@ -1,23 +1,38 @@
 "use client"
 
 import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/header";
 import { BrainCircuit } from "lucide-react";
+import PixelBlast from "@/components/effects/PixelBlast";
+import { useTheme } from "next-themes";
 
 export default function LandingPage() {
+  const { theme } = useTheme();
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
         <section className="relative h-[calc(100vh-4rem)] flex items-center justify-center">
-          <Image
-            src="https://picsum.photos/seed/42/1800/1200"
-            alt="Background"
-            fill
-            className="object-cover"
-            data-ai-hint="digital security"
+          <PixelBlast
+            variant="circle"
+            pixelSize={6}
+            color={theme === 'dark' ? '#3F51B5' : '#7986CB'}
+            patternScale={3}
+            patternDensity={1.2}
+            pixelSizeJitter={0.5}
+            enableRipples
+            rippleSpeed={0.4}
+            rippleThickness={0.12}
+            rippleIntensityScale={1.5}
+            liquid
+            liquidStrength={0.12}
+            liquidRadius={1.2}
+            liquidWobbleSpeed={5}
+            speed={0.6}
+            edgeFade={0.25}
+            transparent
+            className="absolute inset-0"
           />
           <div className="absolute inset-0 bg-background/70" />
           
