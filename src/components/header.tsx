@@ -1,6 +1,6 @@
 "use client"
 
-import { Building, LogOut, User, Settings } from "lucide-react"
+import { Shield, LogOut, User, Settings } from "lucide-react"
 
 import {
   Avatar,
@@ -24,8 +24,8 @@ export default function Header() {
     <header className="sticky top-0 z-40 w-full border-b bg-card">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <div className="flex items-center gap-2">
-            <div className="p-2 bg-primary rounded-lg text-primary-foreground">
-                <Building className="h-6 w-6" />
+            <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
+                <Shield className="h-6 w-6 text-white" />
             </div>
             <h1 className="text-2xl font-bold tracking-tight font-headline">CrimeWise</h1>
         </div>
