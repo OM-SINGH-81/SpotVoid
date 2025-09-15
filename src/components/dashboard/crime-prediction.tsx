@@ -66,17 +66,22 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
       }
       onIsLoadingChange(true)
       setError(null)
-      try {
-        const result = await predictCrime(predictionFilters)
-        setPrediction(result);
-        onPredictionChange(result);
-      } catch (e) {
-        console.error("Crime prediction error:", e)
-        setError("Failed to generate crime prediction. The AI model may be offline.")
-        onPredictionChange(null);
-      } finally {
-        onIsLoadingChange(false)
-      }
+      // try {
+      //   const result = await predictCrime(predictionFilters)
+      //   setPrediction(result);
+      //   onPredictionChange(result);
+      // } catch (e) {
+      //   console.error("Crime prediction error:", e)
+      //   setError("Failed to generate crime prediction. The AI model may be offline.")
+      //   onPredictionChange(null);
+      // } finally {
+      //   onIsLoadingChange(false)
+      // }
+      
+      // Temporarily disable API call
+      console.log("API call to predictCrime disabled for UI development.");
+      onIsLoadingChange(false);
+      onPredictionChange(null);
     }
     
     if (predictionFilters && filters.crimeTypes.length > 0) {
