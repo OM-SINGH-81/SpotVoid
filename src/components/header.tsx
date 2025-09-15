@@ -17,6 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "./ui/button"
+import { ThemeToggle } from "./theme-toggle"
 
 export default function Header() {
   return (
@@ -30,6 +31,7 @@ export default function Header() {
         </div>
         
         <div className="flex flex-1 items-center justify-end space-x-4">
+          <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 rounded-full">
