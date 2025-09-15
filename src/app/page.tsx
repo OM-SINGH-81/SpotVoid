@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import PixelBlast from "@/components/effects/PixelBlast";
-import { Shield, Sparkles } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { Shield } from "lucide-react";
 
 export default function LandingPage() {
   return (
@@ -12,7 +11,7 @@ export default function LandingPage() {
       <header className="fixed top-0 left-0 w-full z-50 p-4">
         <div className="container mx-auto flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-indigo-500">
                     <Shield className="h-6 w-6 text-white" />
                 </div>
                 <h1 className="text-2xl font-bold tracking-tight">CrimeWise</h1>
@@ -22,14 +21,22 @@ export default function LandingPage() {
       <main className="flex-1">
         <section className="relative h-screen flex items-center justify-center text-center overflow-hidden">
           <PixelBlast
-            variant="square"
-            pixelSize={5}
+            variant="circle"
+            pixelSize={6}
             color="hsl(var(--accent))"
             patternScale={3}
             patternDensity={1.2}
             pixelSizeJitter={0.5}
-            speed={0.2}
-            edgeFade={0.1}
+            enableRipples
+            rippleSpeed={0.4}
+            rippleThickness={0.12}
+            rippleIntensityScale={1.5}
+            liquid
+            liquidStrength={0.12}
+            liquidRadius={1.2}
+            liquidWobbleSpeed={5}
+            speed={0.6}
+            edgeFade={0.25}
             transparent
             className="absolute inset-0"
           />
