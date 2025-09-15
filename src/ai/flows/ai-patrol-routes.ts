@@ -42,7 +42,7 @@ export async function generatePatrolRoute(input: GeneratePatrolRouteInput): Prom
 const prompt = ai.definePrompt({
     name: 'generatePatrolRoutePrompt',
     input: { schema: z.object({
-        predictedHotspots: z.any().describe('A JSON string of predicted crime hotspots including their locations and types.'),
+        predictedHotspots: z.any().describe('A JSON string of predicted crime hotspots including their locations, types, and predicted counts.'),
     }) },
     output: { schema: GeneratePatrolRouteOutputSchema },
     prompt: `You are an AI assistant that generates optimized patrol routes for police based on predicted crime data.
@@ -54,7 +54,7 @@ const prompt = ai.definePrompt({
     
     Your task is to use this data to create an optimized patrol route that covers 5-7 of the most critical hotspots.
     
-    1.  Analyze the provided predicted hotspots to identify the 5-7 most critical ones.
+    1.  Analyze the provided predicted hotspots to identify the 5-7 most critical ones. Criticality is determined by the predicted crime count and type.
     2.  Create an efficient patrol route that connects these hotspots.
     3.  The output must be an ordered list of these hotspots. For each hotspot, provide:
         - A unique ID (e.g., "hs-1").
@@ -76,17 +76,25 @@ const generatePatrolRouteFlow = ai.defineFlow(
     async (input) => {
         const { predictedData } = input as { predictedData: PredictCrimeOutput };
 
-        const relevantCrimeData = crimeData.filter(crime => {
-            const crimeDate = new Date(crime.date).getTime();
-            return predictedData.dailyData.some(d => new Date(d.date).getTime() === crimeDate);
-        }).map(c => ({ position: c.position, crimeType: c.crimeType }));
-        
-        const predictedHotspots = JSON.stringify({
+        // We need to find plausible locations for the predicted crimes.
+        // We'll use historical data for this.
+        const futureDates = new Set(predictedData.dailyData.filter(d => d.predictedCount && d.predictedCount > 0).map(d => d.date));
+
+        const predictedCrimeTypes = new Set(predictedData.predictedCrimeTypeBreakdown.map(b => b.crimeType));
+
+        // Find historical crimes that match the future predicted crime types.
+        // These serve as plausible locations for future crimes.
+        const relevantCrimeLocations = crimeData
+            .filter(crime => predictedCrimeTypes.has(crime.crimeType))
+            .map(c => ({ position: c.position, crimeType: c.crimeType, policeStation: c.policeStation }));
+
+        // Pass both the predicted breakdown and plausible locations to the AI.
+        const hotspotsToAnalyze = JSON.stringify({
             predictedCrimeTypeBreakdown: predictedData.predictedCrimeTypeBreakdown,
-            recentCrimeLocations: relevantCrimeData,
+            plausibleLocations: relevantCrimeLocations,
         });
 
-        const { output } = await prompt({ predictedHotspots });
+        const { output } = await prompt({ predictedHotspots: hotspotsToAnalyze });
 
         if (!output || !output.hotspots) {
             return {
