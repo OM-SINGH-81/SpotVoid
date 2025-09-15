@@ -42,106 +42,108 @@ export default function Filters({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
-      <div>
-        <Label>Date range</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              id="date"
-              variant={"outline"}
-              className={cn(
-                "w-full justify-start text-left font-normal",
-                !dateRange && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {dateRange?.from ? (
-                dateRange.to ? (
-                  <>
-                    {format(dateRange.from, "LLL dd, y")} -{" "}
-                    {format(dateRange.to, "LLL dd, y")}
-                  </>
+    <div className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <Label>Date range</Label>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                id="date"
+                variant={"outline"}
+                className={cn(
+                  "w-full justify-start text-left font-normal mt-1",
+                  !dateRange && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {dateRange?.from ? (
+                  dateRange.to ? (
+                    <>
+                      {format(dateRange.from, "LLL dd, y")} -{" "}
+                      {format(dateRange.to, "LLL dd, y")}
+                    </>
+                  ) : (
+                    format(dateRange.from, "LLL dd, y")
+                  )
                 ) : (
-                  format(dateRange.from, "LLL dd, y")
-                )
-              ) : (
-                <span>Pick a date</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={dateRange?.from}
-              selected={dateRange}
-              onSelect={setDateRange}
-              numberOfMonths={2}
-              disabled={{ after: new Date() }}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
+                  <span>Pick a date</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                initialFocus
+                mode="range"
+                defaultMonth={dateRange?.from}
+                selected={dateRange}
+                onSelect={setDateRange}
+                numberOfMonths={2}
+                disabled={{ after: new Date() }}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
 
-      <div>
-        <Label>Police Station</Label>
-        <Popover open={stationPopoverOpen} onOpenChange={setStationPopoverOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={stationPopoverOpen}
-              className="w-full justify-between"
-            >
-              {selectedStation
-                ? policeStations.find(station => station.value === selectedStation)?.label
-                : "Select station..."}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-[200px] p-0">
-            <Command>
-              <CommandInput placeholder="Search station..." />
-              <CommandList>
-                <CommandEmpty>No station found.</CommandEmpty>
-                <CommandGroup>
-                  {policeStations.map(station => (
-                    <CommandItem
-                      key={station.value}
-                      value={station.value}
-                      onSelect={currentValue => {
-                        setSelectedStation(currentValue)
-                        setStationPopoverOpen(false)
-                      }}
-                    >
-                      <Check
-                        className={cn(
-                          "mr-2 h-4 w-4",
-                          selectedStation === station.value ? "opacity-100" : "opacity-0"
-                        )}
-                      />
-                      {station.label}
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <div>
+          <Label>Police Station</Label>
+          <Popover open={stationPopoverOpen} onOpenChange={setStationPopoverOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={stationPopoverOpen}
+                className="w-full justify-between mt-1"
+              >
+                {selectedStation
+                  ? policeStations.find(station => station.value === selectedStation)?.label
+                  : "Select station..."}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-0">
+              <Command>
+                <CommandInput placeholder="Search station..." />
+                <CommandList>
+                  <CommandEmpty>No station found.</CommandEmpty>
+                  <CommandGroup>
+                    {policeStations.map(station => (
+                      <CommandItem
+                        key={station.value}
+                        value={station.value}
+                        onSelect={currentValue => {
+                          setSelectedStation(currentValue)
+                          setStationPopoverOpen(false)
+                        }}
+                      >
+                        <Check
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedStation === station.value ? "opacity-100" : "opacity-0"
+                          )}
+                        />
+                        {station.label}
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </CommandList>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       <div>
         <Label>Crime Types</Label>
-        <div className="flex items-center space-x-6 p-2.5 rounded-md border h-10">
+        <div className="flex flex-wrap items-center gap-6 p-3 rounded-md border mt-1 h-auto min-h-10">
           {crimeTypes.map(crimeType => (
             <div key={crimeType.value} className="flex items-center space-x-2">
               <NeonCheckbox
                 id={crimeType.value}
                 checked={selectedCrimeTypes.includes(crimeType.value)}
-                onCheckedChange={(isChecked) => handleCrimeTypeChange(crimeType.value, isChecked)}
+                onCheckedChange={(isChecked) => handleCrimeTypeChange(crimeType.value, Boolean(isChecked))}
               />
-              <Label htmlFor={crimeType.value} className="font-normal">
+              <Label htmlFor={crimeType.value} className="font-normal cursor-pointer">
                 {crimeType.label}
               </Label>
             </div>

@@ -48,28 +48,31 @@ export default function DashboardPage() {
         <Header />
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           <div className="mx-auto max-w-screen-2xl space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Filters &amp; AI Assistant</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                  <div className="lg:col-span-2">
-                    <Filters
-                      dateRange={dateRange}
-                      setDateRange={setDateRange}
-                      selectedStation={selectedStation}
-                      setSelectedStation={setSelectedStation}
-                      selectedCrimeTypes={selectedCrimeTypes}
-                      setSelectedCrimeTypes={setSelectedCrimeTypes}
-                    />
-                  </div>
-                  <div>
-                    <ChatAssistant />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <Card className="xl:col-span-2">
+                <CardHeader>
+                  <CardTitle>Filters</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Filters
+                    dateRange={dateRange}
+                    setDateRange={setDateRange}
+                    selectedStation={selectedStation}
+                    setSelectedStation={setSelectedStation}
+                    selectedCrimeTypes={selectedCrimeTypes}
+                    setSelectedCrimeTypes={setSelectedCrimeTypes}
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle>AI Assistant</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ChatAssistant />
+                </CardContent>
+              </Card>
+            </div>
 
             <Card className="h-[500px] lg:h-[600px] flex flex-col">
               <CardHeader>
