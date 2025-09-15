@@ -11,8 +11,8 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { NeonCheckbox } from "@/components/ui/neon-checkbox"
 
 type FiltersProps = {
   dateRange?: DateRange
@@ -33,11 +33,11 @@ export default function Filters({
 }: FiltersProps) {
   const [stationPopoverOpen, setStationPopoverOpen] = React.useState(false)
 
-  const handleCrimeTypeChange = (crimeType: string) => {
+  const handleCrimeTypeChange = (crimeType: string, isChecked: boolean) => {
     setSelectedCrimeTypes(
-      selectedCrimeTypes.includes(crimeType)
-        ? selectedCrimeTypes.filter(ct => ct !== crimeType)
-        : [...selectedCrimeTypes, crimeType]
+      isChecked
+        ? [...selectedCrimeTypes, crimeType]
+        : selectedCrimeTypes.filter(ct => ct !== crimeType)
     )
   }
 
@@ -133,13 +133,13 @@ export default function Filters({
 
       <div>
         <Label>Crime Types</Label>
-        <div className="flex items-center space-x-4 p-2.5 rounded-md border h-10">
+        <div className="flex items-center space-x-6 p-2.5 rounded-md border h-10">
           {crimeTypes.map(crimeType => (
             <div key={crimeType.value} className="flex items-center space-x-2">
-              <Checkbox
+              <NeonCheckbox
                 id={crimeType.value}
                 checked={selectedCrimeTypes.includes(crimeType.value)}
-                onCheckedChange={() => handleCrimeTypeChange(crimeType.value)}
+                onCheckedChange={(isChecked) => handleCrimeTypeChange(crimeType.value, isChecked)}
               />
               <Label htmlFor={crimeType.value} className="font-normal">
                 {crimeType.label}
