@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect } from 'react';
 import { Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
-import { Loader2, TriangleAlert, Route, Clock, Ruler, Info } from 'lucide-react';
+import { TriangleAlert, Route, Clock, Ruler, Info } from 'lucide-react';
 
 import { Polyline } from '@/components/polyline';
 import { generatePatrolRoute, GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
 import type { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import GeneratingLoader from '../ui/generating-loader';
 
 type PatrolRoutesProps = {
   prediction: PredictCrimeOutput | null;
@@ -42,7 +43,9 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction }: Patrol
       
       // Temporarily disable API call
       console.log("API call to generatePatrolRoute disabled for UI development.");
-      setIsLoadingRoute(false);
+      setTimeout(() => {
+        setIsLoadingRoute(false);
+      }, 2000);
     };
 
     getRoute();
@@ -61,7 +64,7 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction }: Patrol
   const showNoDataMessage = !isLoading && !error && (!prediction || prediction.dailyData.length === 0);
 
   return (
-    <div className="w-full h-full flex flex-col relative">
+    <div className="w-full h-full flex flex-col relative overflow-hidden rounded-lg">
         <div className="absolute top-4 left-4 z-10 bg-card/80 backdrop-blur-sm p-3 rounded-lg border shadow-lg">
             <div className="flex items-center justify-center gap-4 text-sm">
                 <div className="flex items-center gap-2 text-muted-foreground">
@@ -80,11 +83,8 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction }: Patrol
         </div>
 
         {isLoading && (
-            <div className="absolute inset-0 bg-background/80 flex items-center justify-center z-20">
-            <div className="flex flex-col items-center gap-2">
-                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                <p className="text-muted-foreground">Generating optimized route...</p>
-            </div>
+            <div className="absolute inset-0 z-20">
+                <GeneratingLoader />
             </div>
         )}
         {!isLoading && error && (

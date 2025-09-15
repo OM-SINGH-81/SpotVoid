@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
 import { Label } from "../ui/label"
+import GeneratingLoader from "../ui/generating-loader"
 
 type CrimePredictionProps = {
   filters: Omit<PredictCrimeInput, 'dateRange'>;
@@ -80,8 +81,10 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
       
       // Temporarily disable API call
       console.log("API call to predictCrime disabled for UI development.");
-      onIsLoadingChange(false);
-      onPredictionChange(null);
+      setTimeout(() => {
+        onIsLoadingChange(false);
+        onPredictionChange(null);
+      }, 2000);
     }
     
     if (predictionFilters && filters.crimeTypes.length > 0) {
@@ -166,15 +169,8 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
       </div>
       
       {isLoading && (
-        <div className="space-y-6 pt-4">
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-1/3" />
-            <Skeleton className="h-40 w-full" />
-          </div>
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-1/3" />
-            <Skeleton className="h-40 w-full" />
-          </div>
+        <div className="relative h-96 flex items-center justify-center">
+            <GeneratingLoader />
         </div>
       )}
 
