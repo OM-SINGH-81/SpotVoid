@@ -1,46 +1,67 @@
-"use client"
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import { DateRange } from 'react-day-picker';
-import { addDays } from 'date-fns';
+import React, { useState, useMemo, useEffect } from "react";
+import { DateRange } from "react-day-picker";
+import { addDays } from "date-fns";
 
-import { crimeData, policeStations, crimeTypes as allCrimeTypes } from '@/lib/mock-data';
-import { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
-import MapProvider from '@/components/map-provider';
-import Header from '@/components/header';
-import Filters from '@/components/dashboard/filters';
-import CrimeHeatmap from '@/components/dashboard/crime-heatmap';
-import CrimePrediction from '@/components/dashboard/crime-prediction';
-import PatrolRoutes from '@/components/dashboard/patrol-routes';
-import ChatAssistant from '@/components/dashboard/chat-assistant';
+import {
+  crimeData,
+  policeStations,
+  crimeTypes as allCrimeTypes,
+} from "@/lib/mock-data";
+import { PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction";
+import MapProvider from "@/components/map-provider";
+import Header from "@/components/header";
+import Filters from "@/components/dashboard/filters";
+import CrimeHeatmap from "@/components/dashboard/crime-heatmap";
+import CrimePrediction from "@/components/dashboard/crime-prediction";
+import PatrolRoutes from "@/components/dashboard/patrol-routes";
+import ChatAssistant from "@/components/dashboard/chat-assistant";
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function DashboardPage() {
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: addDays(new Date(), -30),
-    to: new Date(),
-  });
-  const [selectedStation, setSelectedStation] = useState<string>('all');
-  const [selectedCrimeTypes, setSelectedCrimeTypes] = useState<string[]>(allCrimeTypes.map(ct => ct.value));
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  useEffect(() => {
+    setDateRange({
+      from: addDays(new Date(), -30),
+      to: new Date(),
+    });
+  }, []);
+
+  const [selectedStation, setSelectedStation] = useState<string>("all");
+  const [selectedCrimeTypes, setSelectedCrimeTypes] = useState<string[]>(
+    allCrimeTypes.map((ct) => ct.value)
+  );
 
   const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null);
   const [isLoadingPrediction, setIsLoadingPrediction] = useState(true);
 
   const filteredCrimeData = useMemo(() => {
-    return crimeData.filter(crime => {
+    if (!dateRange?.from || !dateRange?.to) return []; // Don't filter until date range is ready
+    return crimeData.filter((crime) => {
       const crimeDate = new Date(crime.date);
-      const isDateInRange = dateRange?.from && dateRange?.to ? crimeDate >= dateRange.from && crimeDate <= dateRange.to : true;
-      const isStationMatch = selectedStation === 'all' || crime.policeStation === selectedStation;
+      const isDateInRange =
+        crimeDate >= dateRange.from! && crimeDate <= dateRange.to!;
+      const isStationMatch =
+        selectedStation === "all" || crime.policeStation === selectedStation;
       const isCrimeTypeMatch = selectedCrimeTypes.includes(crime.crimeType);
       return isDateInRange && isStationMatch && isCrimeTypeMatch;
     });
   }, [dateRange, selectedStation, selectedCrimeTypes]);
 
-  const filtersForAI = useMemo(() => ({
-    policeStation: selectedStation,
-    crimeTypes: selectedCrimeTypes
-  }), [selectedStation, selectedCrimeTypes]);
+  const filtersForAI = useMemo(
+    () => ({
+      policeStation: selectedStation,
+      crimeTypes: selectedCrimeTypes,
+    }),
+    [selectedStation, selectedCrimeTypes]
+  );
 
   return (
     <MapProvider>
@@ -54,14 +75,16 @@ export default function DashboardPage() {
                   <CardTitle>Filters</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <Filters
-                    dateRange={dateRange}
-                    setDateRange={setDateRange}
-                    selectedStation={selectedStation}
-                    setSelectedStation={setSelectedStation}
-                    selectedCrimeTypes={selectedCrimeTypes}
-                    setSelectedCrimeTypes={setSelectedCrimeTypes}
-                  />
+                  {dateRange && (
+                    <Filters
+                      dateRange={dateRange}
+                      setDateRange={setDateRange}
+                      selectedStation={selectedStation}
+                      setSelectedStation={setSelectedStation}
+                      selectedCrimeTypes={selectedCrimeTypes}
+                      setSelectedCrimeTypes={setSelectedCrimeTypes}
+                    />
+                  )}
                 </CardContent>
               </Card>
               <Card>
@@ -89,7 +112,7 @@ export default function DashboardPage() {
                   <CardTitle>AI Crime Prediction</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <CrimePrediction 
+                  <CrimePrediction
                     filters={filtersForAI}
                     onPredictionChange={setPrediction}
                     isLoading={isLoadingPrediction}
@@ -103,7 +126,10 @@ export default function DashboardPage() {
                   <CardTitle>Optimized Patrol Routes</CardTitle>
                 </CardHeader>
                 <CardContent className="h-[550px] p-0">
-                  <PatrolRoutes prediction={prediction} isLoadingPrediction={isLoadingPrediction} />
+                  <PatrolRoutes
+                    prediction={prediction}
+                    isLoadingPrediction={isLoadingPrediction}
+                  />
                 </CardContent>
               </Card>
             </div>
