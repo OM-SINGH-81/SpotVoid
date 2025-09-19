@@ -55,7 +55,7 @@ export default function LandingPage() {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
-          className="md:hidden fixed top-20 left-0 w-full h-fit bg-black/80 backdrop-blur-lg z-10 flex flex-col items-center space-y-6 py-8"
+          className="md:hidden fixed top-16 left-0 w-full h-fit bg-black/80 backdrop-blur-lg z-10 flex flex-col items-center space-y-6 py-8"
         >
           <Link href="#features" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Features</Link>
           <Link href="#learn-more" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Why Choose Us</Link>
@@ -210,7 +210,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-black/80 backdrop-blur-md text-gray-400 py-6 text-center mt-12">
+      <footer className="bg-black/80 backdrop-blur-md text-gray-400 py-6 text-center mt-12 z-10">
         &copy; {new Date().getFullYear()} CrimeWise. All rights reserved.
       </footer>
     </div>
