@@ -84,7 +84,7 @@ export default function LandingPage() {
       )}
 
       {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center flex-1 text-center px-6 pt-36 pb-36 z-10">
+      <section className="relative flex flex-col items-center justify-center flex-1 text-center px-6 pt-36 pb-36">
         <motion.h1
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -120,7 +120,7 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="relative py-24 px-8 z-10">
+      <section id="features" className="relative py-24 px-8">
         <div className="max-w-6xl mx-auto grid gap-12 md:grid-cols-2 lg:grid-cols-4 text-center">
           {[
             { icon: <Shield className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Real-time Protection", desc: "Detect threats before they escalate using live data streams." },
@@ -145,7 +145,7 @@ export default function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section id="cta" className="relative py-24 px-8 flex justify-center z-10">
+      <section id="cta" className="relative py-24 px-8 flex justify-center">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
@@ -168,7 +168,7 @@ export default function LandingPage() {
       </section>
 
       {/* Learn More Section */}
-      <section id="learn-more" className="relative z-10 py-24 px-8 text-center">
+      <section id="learn-more" className="relative py-24 px-8 text-center">
         <motion.h2
           initial={{ y: 20, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
