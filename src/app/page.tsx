@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Shield, Database, Map, BarChart3 } from "lucide-react";
+import { Shield, Database, Map, BarChart3, Menu, X } from "lucide-react";
 
 // Dynamic PixelBlast to avoid SSR issues
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
@@ -19,6 +19,7 @@ const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
 
 export default function LandingPage() {
   const [showBg, setShowBg] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setShowBg(true), 300);
@@ -29,14 +30,39 @@ export default function LandingPage() {
     <div className="relative flex flex-col min-h-screen bg-black text-white overflow-x-hidden scroll-smooth">
       
       {/* Navbar */}
-      <nav className="fixed top-0 left-0 w-full z-20 bg-black/50 backdrop-blur-md py-4 px-8 flex justify-between items-center">
+      <nav className="fixed top-0 left-0 w-full z-20 bg-black/50 backdrop-blur-md py-4 px-6 md:px-8 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-red-500">CrimeWise</h1>
-        <div className="space-x-6">
+        
+        {/* Desktop Menu */}
+        <div className="hidden md:flex space-x-6 items-center">
           <Link href="#features" className="hover:text-red-500 transition-colors">Features</Link>
           <Link href="#learn-more" className="hover:text-red-500 transition-colors">Why Choose Us</Link>
           <Link href="/dashboard" className="hover:text-red-500 transition-colors">Dashboard</Link>
         </div>
+
+        {/* Mobile Menu Button */}
+        <div className="md:hidden">
+          <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            <span className="sr-only">Toggle menu</span>
+          </Button>
+        </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className="md:hidden fixed top-20 left-0 w-full h-fit bg-black/80 backdrop-blur-lg z-10 flex flex-col items-center space-y-6 py-8"
+        >
+          <Link href="#features" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Features</Link>
+          <Link href="#learn-more" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Why Choose Us</Link>
+          <Link href="/dashboard" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
+        </motion.div>
+      )}
+
 
       {/* PixelBlast Background */}
       {showBg && (
