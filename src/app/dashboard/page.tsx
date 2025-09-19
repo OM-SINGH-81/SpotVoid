@@ -17,6 +17,7 @@ import CrimeHeatmap from "@/components/dashboard/crime-heatmap";
 import CrimePrediction from "@/components/dashboard/crime-prediction";
 import PatrolRoutes from "@/components/dashboard/patrol-routes";
 import ChatAssistant from "@/components/dashboard/chat-assistant";
+import DashboardLoader from "@/components/dashboard-loader";
 
 import {
   Card,
@@ -62,6 +63,10 @@ export default function DashboardPage() {
     }),
     [selectedStation, selectedCrimeTypes]
   );
+  
+  if (!dateRange) {
+    return <DashboardLoader />;
+  }
 
   return (
     <MapProvider>

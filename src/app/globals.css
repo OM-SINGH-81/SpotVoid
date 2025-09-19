@@ -1,5 +1,6 @@
 @import "./neon-checkbox.css";
 @import "./generating-loader.css";
+@import "./dashboard-loader.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

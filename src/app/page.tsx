@@ -5,9 +5,9 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Shield, Brain, Map, BarChart3 } from "lucide-react";
+import { Shield, Database, Map, BarChart3 } from "lucide-react";
 
-// ✅ Dynamic import of PixelBlast (avoids SSR issues)
+// Dynamic PixelBlast to avoid SSR issues
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
   ssr: false,
   loading: () => (
@@ -26,8 +26,19 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="relative flex flex-col min-h-screen">
-      {/* ✅ PixelBlast Background with fade animation */}
+    <div className="relative flex flex-col min-h-screen bg-black text-white overflow-x-hidden scroll-smooth">
+      
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 w-full z-20 bg-black/50 backdrop-blur-md py-4 px-8 flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-red-500">CrimeWise</h1>
+        <div className="space-x-6">
+          <Link href="#features" className="hover:text-red-500 transition-colors">Features</Link>
+          <Link href="#learn-more" className="hover:text-red-500 transition-colors">Why Choose Us</Link>
+          <Link href="/dashboard" className="hover:text-red-500 transition-colors">Dashboard</Link>
+        </div>
+      </nav>
+
+      {/* PixelBlast Background */}
       {showBg && (
         <motion.div
           initial={{ opacity: 0 }}
@@ -35,17 +46,24 @@ export default function LandingPage() {
           transition={{ duration: 1.2 }}
           className="absolute inset-0 z-0"
         >
-          <PixelBlast variant="square" pixelSize={8} color="#EE0000" />
+          <PixelBlast
+            variant="square"
+            pixelSize={8}
+            color="#FF0000" // Bright Red
+            speed={0.5}
+            patternDensity={1.5}
+            patternScale={1.5}
+          />
         </motion.div>
       )}
 
-      {/* ✅ Hero Section */}
-      <section className="relative flex flex-col items-center justify-center flex-1 text-center px-6 pt-24">
+      {/* Hero Section */}
+      <section className="relative flex flex-col items-center justify-center flex-1 text-center px-6 pt-36 pb-36 z-10">
         <motion.h1
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 1 }}
-          className="text-5xl font-extrabold text-white drop-shadow-lg"
+          className="text-5xl font-extrabold drop-shadow-lg"
         >
           Predict & Prevent Crime Before It Happens
         </motion.h1>
@@ -56,8 +74,7 @@ export default function LandingPage() {
           transition={{ duration: 1.2 }}
           className="mt-6 max-w-2xl text-lg text-gray-200"
         >
-          AI-powered predictive policing to keep cities safer, smarter, and one
-          step ahead of crime.
+          Powered by secure API integrations and real-time data, CrimeWise helps agencies stay one step ahead of crime.
         </motion.p>
 
         <motion.div
@@ -69,39 +86,21 @@ export default function LandingPage() {
           <Button
             asChild
             size="lg"
-            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white shadow-lg transition-transform hover:scale-105"
+            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white transition-transform hover:scale-105"
           >
             <Link href="/dashboard">Get Started</Link>
           </Button>
         </motion.div>
       </section>
 
-      {/* ✅ Features Section */}
-      <section className="relative py-24 px-8 bg-black/40 z-10">
+      {/* Features Section */}
+      <section id="features" className="relative py-24 px-8 z-10">
         <div className="max-w-6xl mx-auto grid gap-12 md:grid-cols-2 lg:grid-cols-4 text-center">
           {[
-            {
-              icon: <Shield className="w-10 h-10 mx-auto mb-4 text-red-500" />,
-              title: "Real-time Protection",
-              desc: "Detect threats before they escalate with AI-driven insights.",
-            },
-            {
-              icon: <Brain className="w-10 h-10 mx-auto mb-4 text-red-500" />,
-              title: "AI Predictions",
-              desc: "Leverage machine learning to predict high-risk zones.",
-            },
-            {
-              icon: <Map className="w-10 h-10 mx-auto mb-4 text-red-500" />,
-              title: "Smart Mapping",
-              desc: "Visualize hotspots with geospatial crime analytics.",
-            },
-            {
-              icon: (
-                <BarChart3 className="w-10 h-10 mx-auto mb-4 text-red-500" />
-              ),
-              title: "Data Insights",
-              desc: "Make informed policing decisions with real-time reports.",
-            },
+            { icon: <Shield className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Real-time Protection", desc: "Detect threats before they escalate using live data streams." },
+            { icon: <Database className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Data-Driven Predictions", desc: "Use integrated APIs to highlight high-risk zones instantly." },
+            { icon: <Map className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Smart Mapping", desc: "Visualize hotspots with interactive geospatial analytics." },
+            { icon: <BarChart3 className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Actionable Insights", desc: "Get clear, real-time reports for better decision making." },
           ].map((f, i) => (
             <motion.div
               key={i}
@@ -109,43 +108,85 @@ export default function LandingPage() {
               whileInView={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.8, delay: i * 0.2 }}
               viewport={{ once: true }}
-              className="p-6 rounded-xl bg-white/5 backdrop-blur border border-white/10 shadow-md"
+              className="p-6 rounded-xl bg-black/20 border border-white/10 backdrop-blur-sm"
             >
               {f.icon}
-              <h3 className="text-xl font-semibold text-white mb-3">
-                {f.title}
-              </h3>
+              <h3 className="text-xl font-semibold mb-3">{f.title}</h3>
               <p className="text-gray-300">{f.desc}</p>
             </motion.div>
           ))}
         </div>
       </section>
 
-      {/* ✅ CTA Section */}
-      <section className="relative py-24 px-8 flex justify-center">
+      {/* CTA Section */}
+      <section id="cta" className="relative py-24 px-8 flex justify-center z-10">
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           whileInView={{ y: 0, opacity: 1 }}
           transition={{ duration: 1 }}
           viewport={{ once: true }}
-          className="max-w-4xl text-center bg-black/20 rounded-2xl shadow-lg p-12 backdrop-blur"
+          className="max-w-4xl text-center bg-black/20 rounded-2xl p-12 backdrop-blur-sm"
         >
-          <h2 className="text-4xl font-bold text-white mb-6">
-            Ready to make cities safer?
-          </h2>
+          <h2 className="text-4xl font-bold mb-6">Ready to make cities safer?</h2>
           <p className="text-lg text-gray-300 mb-10">
-            Join law enforcement agencies already using CrimeWise to predict
-            crime before it happens.
+            Join law enforcement agencies already using <b>CrimeWise</b> to prevent crime and optimize city security.
           </p>
           <Button
             asChild
             size="lg"
-            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white shadow-lg transition-transform hover:scale-105"
+            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white transition-transform hover:scale-105"
           >
-            <Link href="/contact">Request Demo</Link>
+            <Link href="#learn-more">Learn More</Link>
           </Button>
         </motion.div>
       </section>
+
+      {/* Learn More Section */}
+      <section id="learn-more" className="relative z-10 py-24 px-8 text-center">
+        <motion.h2
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="text-4xl font-bold mb-6"
+        >
+          Why Choose CrimeWise?
+        </motion.h2>
+        <motion.p
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1 }}
+          viewport={{ once: true }}
+          className="max-w-3xl mx-auto text-lg text-gray-300 mb-12"
+        >
+          CrimeWise integrates directly with secure APIs to provide predictive insights, optimized patrol routes, and reliable crime trend analysis — without heavy infrastructure or complex overhead.
+        </motion.p>
+
+        <div className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
+          {[
+            { title: "Seamless API Integration", desc: "Plug into existing police systems and data sources effortlessly." },
+            { title: "Lightweight & Fast", desc: "Optimized for speed and accuracy without complex overhead." },
+            { title: "Proven Reliability", desc: "Trusted by agencies for consistent and actionable insights." },
+          ].map((item, i) => (
+            <motion.div
+              key={i}
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: i * 0.2 }}
+              viewport={{ once: true }}
+              className="p-6 rounded-xl bg-black/20 border border-white/10 backdrop-blur-sm"
+            >
+              <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
+              <p className="text-gray-300">{item.desc}</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-black/80 backdrop-blur-md text-gray-400 py-6 text-center mt-12">
+        &copy; {new Date().getFullYear()} CrimeWise. All rights reserved.
+      </footer>
     </div>
   );
 }
