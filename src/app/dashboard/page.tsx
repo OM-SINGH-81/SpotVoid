@@ -29,10 +29,14 @@ import {
 export default function DashboardPage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   useEffect(() => {
-    setDateRange({
-      from: addDays(new Date(), -30),
-      to: new Date(),
-    });
+    // Simulate a small delay to ensure the loader is visible
+    const timer = setTimeout(() => {
+      setDateRange({
+        from: addDays(new Date(), -30),
+        to: new Date(),
+      });
+    }, 150); // A short delay like 150ms is enough
+    return () => clearTimeout(timer);
   }, []);
 
   const [selectedStation, setSelectedStation] = useState<string>("all");
@@ -63,84 +67,89 @@ export default function DashboardPage() {
     }),
     [selectedStation, selectedCrimeTypes]
   );
-  
-  if (!dateRange) {
-    return <DashboardLoader />;
-  }
 
   return (
-    <MapProvider>
-      <div className="flex flex-col min-h-screen bg-background">
-        <Header />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          <div className="mx-auto max-w-screen-2xl space-y-6">
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-              <Card className="xl:col-span-2">
+    <>
+      {!dateRange && <DashboardLoader />}
+      <MapProvider>
+        <div className="flex flex-col min-h-screen bg-background">
+          <Header />
+          <main className="flex-1 p-4 sm:p-6 lg:p-8">
+            <div className="mx-auto max-w-screen-2xl space-y-6">
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                <Card className="xl:col-span-2">
+                  <CardHeader>
+                    <CardTitle>Filters</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {dateRange ? (
+                      <Filters
+                        dateRange={dateRange}
+                        setDateRange={setDateRange}
+                        selectedStation={selectedStation}
+                        setSelectedStation={setSelectedStation}
+                        selectedCrimeTypes={selectedCrimeTypes}
+                        setSelectedCrimeTypes={setSelectedCrimeTypes}
+                      />
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+                        <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+                        <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>AI Assistant</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ChatAssistant />
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card className="h-[500px] lg:h-[600px] flex flex-col">
                 <CardHeader>
-                  <CardTitle>Filters</CardTitle>
+                  <CardTitle>Interactive Crime Heatmap</CardTitle>
                 </CardHeader>
-                <CardContent>
-                  {dateRange && (
-                    <Filters
-                      dateRange={dateRange}
-                      setDateRange={setDateRange}
-                      selectedStation={selectedStation}
-                      setSelectedStation={setSelectedStation}
-                      selectedCrimeTypes={selectedCrimeTypes}
-                      setSelectedCrimeTypes={setSelectedCrimeTypes}
+                <CardContent className="flex-1">
+                  <CrimeHeatmap data={filteredCrimeData} />
+                </CardContent>
+              </Card>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>AI Crime Prediction</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CrimePrediction
+                      filters={filtersForAI}
+                      onPredictionChange={setPrediction}
+                      isLoading={isLoadingPrediction}
+                      onIsLoadingChange={setIsLoadingPrediction}
                     />
-                  )}
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>AI Assistant</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ChatAssistant />
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Optimized Patrol Routes</CardTitle>
+                  </CardHeader>
+                  <CardContent className="h-[550px] p-0">
+                    <PatrolRoutes
+                      prediction={prediction}
+                      isLoadingPrediction={isLoadingPrediction}
+                    />
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-
-            <Card className="h-[500px] lg:h-[600px] flex flex-col">
-              <CardHeader>
-                <CardTitle>Interactive Crime Heatmap</CardTitle>
-              </CardHeader>
-              <CardContent className="flex-1">
-                <CrimeHeatmap data={filteredCrimeData} />
-              </CardContent>
-            </Card>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>AI Crime Prediction</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CrimePrediction
-                    filters={filtersForAI}
-                    onPredictionChange={setPrediction}
-                    isLoading={isLoadingPrediction}
-                    onIsLoadingChange={setIsLoadingPrediction}
-                  />
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle>Optimized Patrol Routes</CardTitle>
-                </CardHeader>
-                <CardContent className="h-[550px] p-0">
-                  <PatrolRoutes
-                    prediction={prediction}
-                    isLoadingPrediction={isLoadingPrediction}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </main>
-      </div>
-    </MapProvider>
+          </main>
+        </div>
+      </MapProvider>
+    </>
   );
 }
