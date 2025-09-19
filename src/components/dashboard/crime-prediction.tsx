@@ -38,10 +38,14 @@ const chartConfig = {
 export default function CrimePrediction({ filters, onPredictionChange, isLoading, onIsLoadingChange }: CrimePredictionProps) {
   const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: addDays(new Date(), -15),
-    to: addDays(new Date(), 15),
-  });
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+
+  useEffect(() => {
+    setDateRange({
+      from: addDays(new Date(), -15),
+      to: addDays(new Date(), 15),
+    });
+  }, []);
 
   const predictionFilters = useMemo((): PredictCrimeInput | null => {
     if (dateRange?.from && dateRange?.to) {
