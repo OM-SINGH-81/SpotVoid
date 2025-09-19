@@ -1,149 +1,150 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
-
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import PixelBlast from "@/components/effects/PixelBlast";
+import { Shield, Brain, Map, BarChart3 } from "lucide-react";
 
-import { Shield } from "lucide-react";
-
+// ✅ Dynamic import of PixelBlast (avoids SSR issues)
+const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
+  ssr: false,
+  loading: () => (
+    <div className="absolute inset-0 flex items-center justify-center bg-black text-white">
+      Loading background...
+    </div>
+  ),
+});
 
 export default function LandingPage() {
   const [showBg, setShowBg] = useState(false);
 
-  // Delay PixelBlast load for better performance
   useEffect(() => {
-    const timer = setTimeout(() => setShowBg(true), 600);
-    return () => clearTimeout(timer);
+    const t = setTimeout(() => setShowBg(true), 300);
+    return () => clearTimeout(t);
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden">
-      {/* Background */}
-      <div className="absolute inset-0 -z-20 bg-background" />
-      
-      {/* Hero Section */}
-      <section className="relative flex items-center justify-center min-h-screen px-8">
-        <div className="relative z-10 max-w-3xl mx-auto text-center px-8 py-12 
-                        rounded-2xl shadow-xl overflow-hidden
-                        before:absolute before:inset-0 before:-z-10 before:bg-background/80 before:backdrop-blur-md">
-          
-          {showBg && (
-            <div className="absolute inset-0 -z-20">
-                <PixelBlast
-                  variant="circle"
-                  pixelSize={6}
-                  color="#B19EEF"
-                  patternScale={3}
-                  patternDensity={1.2}
-                  pixelSizeJitter={0.5}
-                  enableRipples
-                  rippleSpeed={0.4}
-                  rippleThickness={0.12}
-                  rippleIntensityScale={1.5}
-                  liquid
-                  liquidStrength={0.12}
-                  liquidRadius={1.2}
-                  liquidWobbleSpeed={5}
-                  speed={0.6}
-                  edgeFade={0.25}
-                  transparent
-                />
-            </div>
-          )}
+    <div className="relative flex flex-col min-h-screen">
+      {/* ✅ PixelBlast Background with fade animation */}
+      {showBg && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2 }}
+          className="absolute inset-0 z-0"
+        >
+          <PixelBlast variant="square" pixelSize={8} color="#EE0000" />
+        </motion.div>
+      )}
 
-          {/* Logo/Header */}
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500 shadow-lg">
-              <Shield className="h-6 w-6 text-white" />
-            </div>
-            <h1 className="text-3xl font-bold tracking-tight">CrimeWise</h1>
-          </div>
+      {/* ✅ Hero Section */}
+      <section className="relative flex flex-col items-center justify-center flex-1 text-center px-6 pt-24">
+        <motion.h1
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1 }}
+          className="text-5xl font-extrabold text-white drop-shadow-lg"
+        >
+          Predict & Prevent Crime Before It Happens
+        </motion.h1>
 
-          {/* Hero Text */}
-          <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            The Future of Crime Prediction
-          </h1>
-          <p className="max-w-2xl mx-auto text-lg md:text-xl text-foreground/80 mb-10">
-            Our AI model predicts crime hotspots and generates optimized patrol routes,
-            empowering law enforcement to stay one step ahead.
-          </p>
+        <motion.p
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1.2 }}
+          className="mt-6 max-w-2xl text-lg text-gray-200"
+        >
+          AI-powered predictive policing to keep cities safer, smarter, and one
+          step ahead of crime.
+        </motion.p>
 
-          {/* Buttons */}
-          <div className="flex items-center justify-center gap-6">
-            <Button
-              asChild
-              size="lg"
-              className="bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-105"
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1.4 }}
+          className="mt-10"
+        >
+          <Button
+            asChild
+            size="lg"
+            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white shadow-lg transition-transform hover:scale-105"
+          >
+            <Link href="/dashboard">Get Started</Link>
+          </Button>
+        </motion.div>
+      </section>
+
+      {/* ✅ Features Section */}
+      <section className="relative py-24 px-8 bg-black/40 z-10">
+        <div className="max-w-6xl mx-auto grid gap-12 md:grid-cols-2 lg:grid-cols-4 text-center">
+          {[
+            {
+              icon: <Shield className="w-10 h-10 mx-auto mb-4 text-red-500" />,
+              title: "Real-time Protection",
+              desc: "Detect threats before they escalate with AI-driven insights.",
+            },
+            {
+              icon: <Brain className="w-10 h-10 mx-auto mb-4 text-red-500" />,
+              title: "AI Predictions",
+              desc: "Leverage machine learning to predict high-risk zones.",
+            },
+            {
+              icon: <Map className="w-10 h-10 mx-auto mb-4 text-red-500" />,
+              title: "Smart Mapping",
+              desc: "Visualize hotspots with geospatial crime analytics.",
+            },
+            {
+              icon: (
+                <BarChart3 className="w-10 h-10 mx-auto mb-4 text-red-500" />
+              ),
+              title: "Data Insights",
+              desc: "Make informed policing decisions with real-time reports.",
+            },
+          ].map((f, i) => (
+            <motion.div
+              key={i}
+              initial={{ y: 20, opacity: 0 }}
+              whileInView={{ y: 0, opacity: 1 }}
+              transition={{ duration: 0.8, delay: i * 0.2 }}
+              viewport={{ once: true }}
+              className="p-6 rounded-xl bg-white/5 backdrop-blur border border-white/10 shadow-md"
             >
-              <Link href="/dashboard">Get Started</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="secondary"
-              className="transition-transform hover:scale-105"
-            >
-              <Link href="#">Learn More</Link>
-            </Button>
-          </div>
+              {f.icon}
+              <h3 className="text-xl font-semibold text-white mb-3">
+                {f.title}
+              </h3>
+              <p className="text-gray-300">{f.desc}</p>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      {/* How It Works Section */}
-      <section className="relative py-20 px-8">
-        <div className="max-w-5xl mx-auto text-center">
-          <h2 className="text-4xl font-bold mb-6">How It Works</h2>
-          <p className="text-foreground/70 max-w-3xl mx-auto mb-12">
-            CrimeWise leverages advanced AI and historical crime data to identify high-risk zones 
-            and generate intelligent patrol strategies.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 bg-card rounded-xl shadow-md border">
-              <Shield className="h-10 w-10 mx-auto text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">AI Analysis</h3>
-              <p className="text-foreground/70">
-                Our AI processes thousands of data points to identify patterns in crime activity.
-              </p>
-            </div>
-            <div className="p-6 bg-card rounded-xl shadow-md border">
-              <Shield className="h-10 w-10 mx-auto text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Hotspot Mapping</h3>
-              <p className="text-foreground/70">
-                High-risk zones are displayed on real-time maps with intuitive visuals.
-              </p>
-            </div>
-            <div className="p-6 bg-card rounded-xl shadow-md border">
-              <Shield className="h-10 w-10 mx-auto text-primary mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Predictive Insights</h3>
-              <p className="text-foreground/70">
-                Seasonal and time-based forecasts help in proactive resource allocation.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
+      {/* ✅ CTA Section */}
       <section className="relative py-24 px-8 flex justify-center">
-        <div className="max-w-4xl text-center">
-          <h2 className="text-4xl font-bold mb-6">
+        <motion.div
+          initial={{ y: 20, opacity: 0 }}
+          whileInView={{ y: 0, opacity: 1 }}
+          transition={{ duration: 1 }}
+          viewport={{ once: true }}
+          className="max-w-4xl text-center bg-black/20 rounded-2xl shadow-lg p-12 backdrop-blur"
+        >
+          <h2 className="text-4xl font-bold text-white mb-6">
             Ready to make cities safer?
           </h2>
-          <p className="text-lg text-foreground/70 mb-10">
-            Join law enforcement agencies already using CrimeWise to predict crime 
-            before it happens.
+          <p className="text-lg text-gray-300 mb-10">
+            Join law enforcement agencies already using CrimeWise to predict
+            crime before it happens.
           </p>
           <Button
             asChild
             size="lg"
-            className="bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg transition-transform hover:scale-105"
+            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white shadow-lg transition-transform hover:scale-105"
           >
-            <Link href="/dashboard">Get Started Now</Link>
+            <Link href="/contact">Request Demo</Link>
           </Button>
-        </div>
+        </motion.div>
       </section>
     </div>
   );
