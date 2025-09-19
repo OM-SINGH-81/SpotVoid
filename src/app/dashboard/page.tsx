@@ -115,7 +115,11 @@ export default function DashboardPage() {
                   <CardTitle>Interactive Crime Heatmap</CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1">
-                  <CrimeHeatmap data={filteredCrimeData} />
+                  {dateRange ? (
+                    <CrimeHeatmap data={filteredCrimeData} />
+                  ) : (
+                    <div className="w-full h-full bg-muted rounded-md animate-pulse" />
+                  )}
                 </CardContent>
               </Card>
 
