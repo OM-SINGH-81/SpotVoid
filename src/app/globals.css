@@ -42,7 +42,7 @@
     --border: 220 15% 85%;
     --input: 220 15% 88%;
     --ring: 220 90% 55%;
-    --chart-1: 54 96% 80%; /* Pale Yellow for Theft */
+    --chart-1: 259 87% 70%; /* Violet for Theft */
     --chart-2: 221 83% 30%; /* Dark Blue for Accident */
     --chart-3: 0 84% 60%;   /* Red for Harassment */
     --chart-4: 40 90% 55%;
@@ -69,7 +69,7 @@
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
     --ring: 259 87% 78%;
-    --chart-1: 54 96% 70%; /* Pale Yellow for Theft */
+    --chart-1: 259 87% 78%; /* Violet for Theft */
     --chart-2: 221 83% 40%; /* Dark Blue for Accident */
     --chart-3: 0 84% 70%;   /* Red for Harassment */
     --chart-4: 40 90% 60%;
