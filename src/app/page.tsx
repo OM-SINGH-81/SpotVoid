@@ -66,22 +66,26 @@ export default function LandingPage() {
 
       {/* PixelBlast Background */}
       {showBg && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2 }}
-          className="absolute inset-0 z-0"
-        >
-          <PixelBlast
-            variant="square"
-            pixelSize={8}
-            color="#FF0000" // Bright Red
-            speed={0.5}
-            patternDensity={1.5}
-            patternScale={1.5}
-          />
-        </motion.div>
-      )}
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 1.2 }}
+    className="fixed z-0 pointer-events-none 
+               w-[105vw] h-[105vh] -top-[2vh] -left-[2vw]"
+  >
+    <PixelBlast
+      variant="square"
+      pixelSize={8}
+      color="#FF0000"
+      speed={0.5}
+      patternDensity={1.5}
+      patternScale={1.5}
+      className="w-full h-full"
+    />
+  </motion.div>
+)}
+
+
 
       {/* Hero Section */}
       <section className="relative flex flex-col items-center justify-center flex-1 text-center px-6 pt-36 pb-36">
