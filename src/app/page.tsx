@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Shield, Database, Map, BarChart3, Menu, X } from "lucide-react";
+import { MapPin, Database, Map, BarChart3, Menu, X } from "lucide-react";
 
 // Dynamic PixelBlast to avoid SSR issues
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
@@ -127,7 +127,7 @@ export default function LandingPage() {
       <section id="features" className="relative py-24 px-8">
         <div className="max-w-6xl mx-auto grid gap-12 md:grid-cols-2 lg:grid-cols-4 text-center">
           {[
-            { icon: <Shield className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Real-time Protection", desc: "Detect threats before they escalate using live data streams." },
+            { icon: <MapPin className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Real-time Protection", desc: "Detect threats before they escalate using live data streams." },
             { icon: <Database className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Data-Driven Predictions", desc: "Use integrated APIs to highlight high-risk zones instantly." },
             { icon: <Map className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Smart Mapping", desc: "Visualize hotspots with interactive geospatial analytics." },
             { icon: <BarChart3 className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Actionable Insights", desc: "Get clear, real-time reports for better decision making." },
