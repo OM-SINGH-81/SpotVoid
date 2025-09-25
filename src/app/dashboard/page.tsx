@@ -108,7 +108,7 @@ export default function DashboardPage() {
               {/* Filters + AI Assistant */}
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
                 {/* Filters */}
-                <Card className="xl:col-span-2 bg-card/80 backdrop-blur-sm">
+                <Card className="xl:col-span-2 bg-card/50 backdrop-blur-sm">
                 <CardContent>
                   {dateRange ? (
                     <>
@@ -122,7 +122,7 @@ export default function DashboardPage() {
                       />
                       {/* Crime Quote Section */}
                       
-                      <div className="mt-8 p-6 bg-accent/80 rounded-xl text-center text-lg italic text-accent-foreground hover:bg-accent/90 transition-colors shadow-sm">
+                      <div className="mt-8 p-6 rounded-xl text-center text-lg italic text-accent-foreground shadow-sm">
                         "Technology and vigilance together help us predict and prevent crime, ensuring the safety and justice of our communities."
                       </div>
                     </>
@@ -137,7 +137,7 @@ export default function DashboardPage() {
                 </Card>
 
                 {/* AI Assistant */}
-                <Card className="bg-card/80 backdrop-blur-sm">
+                <Card className="bg-card/50 backdrop-blur-sm">
                   <CardHeader>
                     <CardTitle>AI Assistant</CardTitle>
                   </CardHeader>
@@ -169,7 +169,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Heatmap */}
-              <Card className="h-[500px] lg:h-[600px] flex flex-col bg-card/80 backdrop-blur-sm">
+              <Card className="h-[500px] lg:h-[600px] flex flex-col bg-card/50 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>Interactive Crime Heatmap</CardTitle>
                 </CardHeader>
@@ -183,7 +183,7 @@ export default function DashboardPage() {
               </Card>
 
               {/* AI Crime Prediction */}
-              <Card className="bg-card/80 backdrop-blur-sm">
+              <Card className="bg-card/50 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>AI Crime Prediction</CardTitle>
                 </CardHeader>
@@ -198,7 +198,7 @@ export default function DashboardPage() {
               </Card>
 
               {/* Patrol Routes - Full width like Heatmap */}
-              <Card className="h-[500px] lg:h-[600px] flex flex-col bg-card/80 backdrop-blur-sm">
+              <Card className="h-[500px] lg:h-[600px] flex flex-col bg-card/50 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>Optimized Patrol Routes</CardTitle>
                 </CardHeader>
