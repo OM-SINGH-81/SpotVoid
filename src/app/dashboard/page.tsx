@@ -28,14 +28,14 @@ import {
 
 export default function DashboardPage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+
   useEffect(() => {
-    // Simulate a small delay to ensure the loader is visible
     const timer = setTimeout(() => {
       setDateRange({
         from: addDays(new Date(), -30),
         to: new Date(),
       });
-    }, 150); // A short delay like 150ms is enough
+    }, 150);
     return () => clearTimeout(timer);
   }, []);
 
@@ -47,8 +47,10 @@ export default function DashboardPage() {
   const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null);
   const [isLoadingPrediction, setIsLoadingPrediction] = useState(true);
 
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
+
   const filteredCrimeData = useMemo(() => {
-    if (!dateRange?.from || !dateRange?.to) return []; // Don't filter until date range is ready
+    if (!dateRange?.from || !dateRange?.to) return [];
     return crimeData.filter((crime) => {
       const crimeDate = new Date(crime.date);
       const isDateInRange =
@@ -75,41 +77,74 @@ export default function DashboardPage() {
         <div className="flex flex-col min-h-screen bg-background">
           <Header />
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
-            <div className="mx-auto max-w-screen-2xl space-y-8">
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <div className="mx-auto max-w-screen-2xl space-y-12">
+              {/* Filters + AI Assistant */}
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+                {/* Filters */}
                 <Card className="xl:col-span-2">
-                  <CardHeader>
-                    <CardTitle>Filters</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {dateRange ? (
-                      <Filters
-                        dateRange={dateRange}
-                        setDateRange={setDateRange}
-                        selectedStation={selectedStation}
-                        setSelectedStation={setSelectedStation}
-                        selectedCrimeTypes={selectedCrimeTypes}
-                        setSelectedCrimeTypes={setSelectedCrimeTypes}
-                      />
-                    ) : (
-                      <div className="space-y-4">
-                        <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
-                        <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
-                        <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
-                      </div>
-                    )}
-                  </CardContent>
+                <CardContent>
+  {dateRange ? (
+    <>
+      <Filters
+        dateRange={dateRange}
+        setDateRange={setDateRange}
+        selectedStation={selectedStation}
+        setSelectedStation={setSelectedStation}
+        selectedCrimeTypes={selectedCrimeTypes}
+        setSelectedCrimeTypes={setSelectedCrimeTypes}
+      />
+      {/* Crime Quote Section */}
+      
+      <div className="mt-8 p-6 bg-red-500 rounded-xl text-center text-lg italic text-white hover:bg-red-800 transition-colors shadow-sm">
+  "Technology and vigilance together help us predict and prevent crime, ensuring the safety and justice of our communities."
+</div>
+
+
+    </>
+  ) : (
+    <div className="space-y-6">
+      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+    </div>
+  )}
+</CardContent>
+
                 </Card>
+
+                {/* AI Assistant */}
                 <Card>
                   <CardHeader>
                     <CardTitle>AI Assistant</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ChatAssistant />
+                    <div className="flex flex-col items-center">
+                      {!isAssistantOpen ? (
+                        <button
+                          onClick={() => setIsAssistantOpen(true)}
+                          className="w-24 h-24 text-4xl flex items-center justify-center rounded-full 
+                                     bg-red-500 text-white hover:bg-blue-500 active:bg-blue-700 
+                                     transition-colors shadow-lg"
+                        >
+                          🤖
+                        </button>
+                      ) : (
+                        <div className="w-full">
+                          <button
+                            onClick={() => setIsAssistantOpen(false)}
+                            className="mb-2 px-3 py-1 text-sm rounded-md bg-muted hover:bg-muted/70 transition"
+                          >
+                            Close
+                          </button>
+                          <ChatAssistant />
+                        </div>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
 
+              {/* Heatmap */}
               <Card className="h-[500px] lg:h-[600px] flex flex-col">
                 <CardHeader>
                   <CardTitle>Interactive Crime Heatmap</CardTitle>
@@ -123,33 +158,33 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>AI Crime Prediction</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <CrimePrediction
-                      filters={filtersForAI}
-                      onPredictionChange={setPrediction}
-                      isLoading={isLoadingPrediction}
-                      onIsLoadingChange={setIsLoadingPrediction}
-                    />
-                  </CardContent>
-                </Card>
+              {/* AI Crime Prediction */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>AI Crime Prediction</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CrimePrediction
+                    filters={filtersForAI}
+                    onPredictionChange={setPrediction}
+                    isLoading={isLoadingPrediction}
+                    onIsLoadingChange={setIsLoadingPrediction}
+                  />
+                </CardContent>
+              </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Optimized Patrol Routes</CardTitle>
-                  </CardHeader>
-                  <CardContent className="h-[550px] p-0">
-                    <PatrolRoutes
-                      prediction={prediction}
-                      isLoadingPrediction={isLoadingPrediction}
-                    />
-                  </CardContent>
-                </Card>
-              </div>
+              {/* Patrol Routes - Full width like Heatmap */}
+              <Card className="h-[500px] lg:h-[600px] flex flex-col">
+                <CardHeader>
+                  <CardTitle>Optimized Patrol Routes</CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 p-0">
+                  <PatrolRoutes
+                    prediction={prediction}
+                    isLoadingPrediction={isLoadingPrediction}
+                  />
+                </CardContent>
+              </Card>
             </div>
           </main>
         </div>
