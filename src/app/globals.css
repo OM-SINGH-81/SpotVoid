@@ -29,19 +29,19 @@
     --card-foreground: 225 15% 15%;
     --popover: 0 0% 100%;
     --popover-foreground: 225 15% 15%;
-    --primary: 220 90% 55%;
+    --primary: 0 100% 50%;
     --primary-foreground: 0 0% 98%;
     --secondary: 220 15% 90%;
     --secondary-foreground: 225 15% 25%;
     --muted: 220 15% 90%;
     --muted-foreground: 225 10% 45%;
-    --accent: 0 100% 50%;
+    --accent: 220 90% 55%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
     --border: 220 15% 85%;
     --input: 220 15% 88%;
-    --ring: 220 90% 55%;
+    --ring: 0 100% 50%;
     --chart-1: 259 87% 60%; /* Dark Purple for Theft */
     --chart-2: 210 80% 50%; /* Dark Blue for Accident */
     --chart-3: 0 84.2% 60.2%;   /* Red for Harassment */
@@ -57,19 +57,19 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 220 90% 65%;
-    --primary-foreground: 240 5.9% 10%;
+    --primary: 0 100% 50%;
+    --primary-foreground: 0 0% 98%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 0 100% 50%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 220 90% 65%;
+    --accent-foreground: 240 5.9% 10%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 259 87% 78%;
+    --ring: 0 87% 78%;
     --chart-1: 259 87% 70%; /* Dark Purple for Theft */
     --chart-2: 210 80% 60%; /* Dark Blue for Accident */
     --chart-3: 0 72.2% 50.6%;   /* Red for Harassment */
