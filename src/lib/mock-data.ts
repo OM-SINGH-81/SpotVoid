@@ -41,8 +41,10 @@ const getRandomCoordinate = () => {
 const getRandomElement = <T>(arr: T[]): T => arr[Math.floor(seededRandom() * arr.length)];
 
 export const crimeData: CrimeData[] = Array.from({ length: 200 }, (_, i) => {
-  const date = new Date(2024, 5, 1); // Start from a fixed date
+  const date = new Date(); 
   date.setDate(date.getDate() - Math.floor(seededRandom() * 90)); // a date in the last 90 days
+  date.setHours(Math.floor(seededRandom() * 24)); // Random hour
+  date.setMinutes(Math.floor(seededRandom() * 60)); // Random minute
   const randomCrimeType = getRandomElement(crimeTypes);
   const randomStation = getRandomElement(policeStations.filter(p => p.value !== 'all'));
   

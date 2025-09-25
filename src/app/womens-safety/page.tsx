@@ -86,7 +86,7 @@ export default function WomensSafetyPage() {
 
                 {/* Right Column: Analytics & Tools */}
                 <div className="space-y-8">
-                  <Card className="bg-card/50 backdrop-blur-sm">
+                  <Card className="bg-card/50 backdrop-blur-sm h-[420px]">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2"><BarChart2 /> Trends & Analytics</CardTitle>
                     </CardHeader>
