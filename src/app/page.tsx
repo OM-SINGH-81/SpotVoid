@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { MapPin, Database, Map, BarChart3, Menu, X } from "lucide-react";
+import { MapPin, Database, Map, BarChart3, Menu, X, Shield } from "lucide-react";
 
 // Dynamic PixelBlast to avoid SSR issues
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
@@ -31,12 +31,17 @@ export default function LandingPage() {
       
       {/* Navbar */}
       <nav className="fixed top-0 left-0 w-full z-20 bg-black/50 backdrop-blur-md py-4 px-6 md:px-8 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-red-500">CrimeWise</h1>
+        <div className="flex items-center gap-2">
+            <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
+                <MapPin className="h-6 w-6 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold">CrimeWise</h1>
+        </div>
         
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-6 items-center">
           <Link href="#features" className="hover:text-red-500 transition-colors">Features</Link>
-          <Link href="#learn-more" className="hover:text-red-500 transition-colors">Why Choose Us</Link>
+          <Link href="/womens-safety" className="hover:text-red-500 transition-colors">Women's Safety</Link>
           <Link href="/dashboard" className="hover:text-red-500 transition-colors">Dashboard</Link>
         </div>
 
@@ -58,7 +63,7 @@ export default function LandingPage() {
           className="md:hidden fixed top-16 left-0 w-full h-fit bg-black/80 backdrop-blur-lg z-10 flex flex-col items-center space-y-6 py-8"
         >
           <Link href="#features" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Features</Link>
-          <Link href="#learn-more" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Why Choose Us</Link>
+          <Link href="/womens-safety" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Women's Safety</Link>
           <Link href="/dashboard" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
         </motion.div>
       )}

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 import {
   crimeData,
@@ -27,6 +28,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
   ssr: false,

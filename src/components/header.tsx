@@ -1,6 +1,7 @@
 "use client"
 
-import { MapPin, LogOut, User, Settings } from "lucide-react"
+import { MapPin, LogOut, User, Settings, Shield, Female } from "lucide-react"
+import Link from "next/link"
 
 import {
   Avatar,
@@ -24,13 +25,21 @@ export default function Header() {
     <header className="sticky top-0 z-40 w-full border-b bg-card/80 backdrop-blur-sm">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
-                <MapPin className="h-6 w-6 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold tracking-tight font-headline">CrimeWise</h1>
+            <Link href="/" className="flex items-center gap-2">
+              <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
+                  <MapPin className="h-6 w-6 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight font-headline">CrimeWise</h1>
+            </Link>
         </div>
         
         <div className="flex flex-1 items-center justify-end space-x-4">
+          <Button asChild variant="outline">
+            <Link href="/womens-safety">
+              <Female className="mr-2 h-4 w-4" />
+              Women's Safety
+            </Link>
+          </Button>
           <ThemeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
