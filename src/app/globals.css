@@ -35,7 +35,7 @@
     --secondary-foreground: 225 15% 25%;
     --muted: 220 15% 90%;
     --muted-foreground: 225 10% 45%;
-    --accent: 0 84% 60%;
+    --accent: 0 100% 50%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -43,7 +43,7 @@
     --input: 220 15% 88%;
     --ring: 220 90% 55%;
     --chart-1: 259 87% 60%; /* Dark Purple for Theft */
-    --chart-2: 210 40% 96.1%; /* Dark Blue for Accident */
+    --chart-2: 210 80% 50%; /* Dark Blue for Accident */
     --chart-3: 0 84.2% 60.2%;   /* Red for Harassment */
     --chart-4: 40 90% 55%;
     --chart-5: 340 90% 65%;
@@ -63,7 +63,7 @@
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
-    --accent: 0 84% 60%;
+    --accent: 0 100% 50%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
@@ -71,7 +71,7 @@
     --input: 240 3.7% 15.9%;
     --ring: 259 87% 78%;
     --chart-1: 259 87% 70%; /* Dark Purple for Theft */
-    --chart-2: 210 40% 96.1%; /* Dark Blue for Accident */
+    --chart-2: 210 80% 60%; /* Dark Blue for Accident */
     --chart-3: 0 72.2% 50.6%;   /* Red for Harassment */
     --chart-4: 40 90% 60%;
     --chart-5: 340 90% 70%;
@@ -86,5 +86,9 @@
   body {
     @apply bg-background text-foreground;
     border-radius: var(--radius);
+  }
+
+  .dark body {
+    background-color: #000;
   }
 }

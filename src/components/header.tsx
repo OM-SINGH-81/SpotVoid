@@ -21,7 +21,7 @@ import { ThemeToggle } from "./theme-toggle"
 
 export default function Header() {
   return (
-    <header className="sticky top-0 z-40 w-full border-b bg-card">
+    <header className="sticky top-0 z-40 w-full border-b bg-card/80 backdrop-blur-sm">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
         <div className="flex items-center gap-2">
             <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">

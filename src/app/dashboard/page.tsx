@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
+import { motion } from "framer-motion";
 
 import {
   crimeData,
@@ -26,8 +28,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
+  ssr: false,
+  loading: () => null,
+});
+
 export default function DashboardPage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
+  const [showBg, setShowBg] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -35,6 +43,7 @@ export default function DashboardPage() {
         from: addDays(new Date(), -30),
         to: new Date(),
       });
+      setShowBg(true);
     }, 150);
     return () => clearTimeout(timer);
   }, []);
@@ -73,47 +82,62 @@ export default function DashboardPage() {
   return (
     <>
       {!dateRange && <DashboardLoader />}
+      {showBg && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2 }}
+          className="fixed inset-0 z-[-1] pointer-events-none"
+        >
+          <PixelBlast
+            variant="square"
+            pixelSize={6}
+            color="#FF0000"
+            speed={0.3}
+            patternDensity={1.2}
+            patternScale={1.8}
+            className="w-full h-full"
+          />
+        </motion.div>
+      )}
       <MapProvider>
-        <div className="flex flex-col min-h-screen bg-background">
+        <div className="flex flex-col min-h-screen bg-transparent">
           <Header />
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
             <div className="mx-auto max-w-screen-2xl space-y-12">
               {/* Filters + AI Assistant */}
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
                 {/* Filters */}
-                <Card className="xl:col-span-2">
+                <Card className="xl:col-span-2 bg-card/80 backdrop-blur-sm">
                 <CardContent>
-  {dateRange ? (
-    <>
-      <Filters
-        dateRange={dateRange}
-        setDateRange={setDateRange}
-        selectedStation={selectedStation}
-        setSelectedStation={setSelectedStation}
-        selectedCrimeTypes={selectedCrimeTypes}
-        setSelectedCrimeTypes={setSelectedCrimeTypes}
-      />
-      {/* Crime Quote Section */}
-      
-      <div className="mt-8 p-6 bg-red-500 rounded-xl text-center text-lg italic text-white hover:bg-red-800 transition-colors shadow-sm">
-  "Technology and vigilance together help us predict and prevent crime, ensuring the safety and justice of our communities."
-</div>
-
-
-    </>
-  ) : (
-    <div className="space-y-6">
-      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
-      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
-      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
-    </div>
-  )}
-</CardContent>
-
+                  {dateRange ? (
+                    <>
+                      <Filters
+                        dateRange={dateRange}
+                        setDateRange={setDateRange}
+                        selectedStation={selectedStation}
+                        setSelectedStation={setSelectedStation}
+                        selectedCrimeTypes={selectedCrimeTypes}
+                        setSelectedCrimeTypes={setSelectedCrimeTypes}
+                      />
+                      {/* Crime Quote Section */}
+                      
+                      <div className="mt-8 p-6 bg-accent/80 rounded-xl text-center text-lg italic text-accent-foreground hover:bg-accent/90 transition-colors shadow-sm">
+                        "Technology and vigilance together help us predict and prevent crime, ensuring the safety and justice of our communities."
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+                      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+                      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+                    </div>
+                  )}
+                </CardContent>
                 </Card>
 
                 {/* AI Assistant */}
-                <Card>
+                <Card className="bg-card/80 backdrop-blur-sm">
                   <CardHeader>
                     <CardTitle>AI Assistant</CardTitle>
                   </CardHeader>
@@ -123,7 +147,7 @@ export default function DashboardPage() {
                         <button
                           onClick={() => setIsAssistantOpen(true)}
                           className="w-24 h-24 text-4xl flex items-center justify-center rounded-full 
-                                     bg-red-500 text-white hover:bg-blue-500 active:bg-blue-700 
+                                     bg-accent text-accent-foreground hover:bg-blue-500 active:bg-blue-700 
                                      transition-colors shadow-lg"
                         >
                           🤖
@@ -145,7 +169,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Heatmap */}
-              <Card className="h-[500px] lg:h-[600px] flex flex-col">
+              <Card className="h-[500px] lg:h-[600px] flex flex-col bg-card/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>Interactive Crime Heatmap</CardTitle>
                 </CardHeader>
@@ -159,7 +183,7 @@ export default function DashboardPage() {
               </Card>
 
               {/* AI Crime Prediction */}
-              <Card>
+              <Card className="bg-card/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>AI Crime Prediction</CardTitle>
                 </CardHeader>
@@ -174,7 +198,7 @@ export default function DashboardPage() {
               </Card>
 
               {/* Patrol Routes - Full width like Heatmap */}
-              <Card className="h-[500px] lg:h-[600px] flex flex-col">
+              <Card className="h-[500px] lg:h-[600px] flex flex-col bg-card/80 backdrop-blur-sm">
                 <CardHeader>
                   <CardTitle>Optimized Patrol Routes</CardTitle>
                 </CardHeader>
