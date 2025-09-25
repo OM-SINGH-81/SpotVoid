@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from "react";
@@ -12,6 +13,10 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { ShieldAlert, Map, BarChart2, Siren, Route, MessageSquareWarning, Building } from "lucide-react";
+import WomensSafetyHeatmap from "@/components/womens-safety/womens-safety-heatmap";
+import WomensSafetyTrends from "@/components/womens-safety/womens-safety-trends";
+import SafeRoute from "@/components/womens-safety/safe-route";
+import PlaceholderCard from "@/components/womens-safety/placeholder-card";
 
 
 export default function WomensSafetyPage() {
@@ -41,9 +46,7 @@ export default function WomensSafetyPage() {
                     <CardDescription>Hotspots of harassment, assault, and stalking.</CardDescription>
                   </CardHeader>
                   <CardContent className="flex-1">
-                    <div className="w-full h-full bg-muted rounded-md animate-pulse flex items-center justify-center text-muted-foreground">
-                        <p>Heatmap coming soon...</p>
-                    </div>
+                    <WomensSafetyHeatmap />
                   </CardContent>
                 </Card>
               </div>
@@ -55,9 +58,7 @@ export default function WomensSafetyPage() {
                     <CardTitle className="flex items-center gap-2"><BarChart2 /> Trends & Analytics</CardTitle>
                   </CardHeader>
                   <CardContent>
-                     <div className="w-full h-48 bg-muted rounded-md animate-pulse flex items-center justify-center text-muted-foreground">
-                        <p>Charts coming soon...</p>
-                    </div>
+                     <WomensSafetyTrends />
                   </CardContent>
                 </Card>
                 <Card>
@@ -65,7 +66,7 @@ export default function WomensSafetyPage() {
                     <CardTitle className="flex items-center gap-2"><Siren /> Predictive Alerts</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground text-center p-4">Alerts will appear here...</p>
+                    <PlaceholderCard message="Predictive alerts coming soon..." />
                   </CardContent>
                 </Card>
                  <Card>
@@ -73,9 +74,7 @@ export default function WomensSafetyPage() {
                     <CardTitle className="flex items-center gap-2"><Route /> Safe Route Recommendation</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="w-full h-32 bg-muted rounded-md animate-pulse flex items-center justify-center text-muted-foreground">
-                        <p>Safe Route feature coming soon...</p>
-                    </div>
+                    <SafeRoute />
                   </CardContent>
                 </Card>
               </div>
@@ -89,9 +88,7 @@ export default function WomensSafetyPage() {
                         <CardDescription>Crowd-sourced safety information.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                         <div className="w-full h-40 bg-muted rounded-md animate-pulse flex items-center justify-center text-muted-foreground">
-                            <p>Feedback system coming soon...</p>
-                        </div>
+                        <PlaceholderCard message="Feedback system coming soon..." />
                     </CardContent>
                 </Card>
                 <Card>
@@ -100,9 +97,7 @@ export default function WomensSafetyPage() {
                         <CardDescription>Quick insights for intervention planning.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className="w-full h-40 bg-muted rounded-md animate-pulse flex items-center justify-center text-muted-foreground">
-                            <p>Action panel coming soon...</p>
-                        </div>
+                        <PlaceholderCard message="Action panel coming soon..." />
                     </CardContent>
                 </Card>
             </div>
