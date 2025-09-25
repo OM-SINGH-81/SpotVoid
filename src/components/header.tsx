@@ -1,6 +1,6 @@
 "use client"
 
-import { MapPin, LogOut, User, Settings, Shield, Female } from "lucide-react"
+import { MapPin, LogOut, User, Settings, Shield } from "lucide-react"
 import Link from "next/link"
 
 import {
@@ -36,7 +36,7 @@ export default function Header() {
         <div className="flex flex-1 items-center justify-end space-x-4">
           <Button asChild variant="outline">
             <Link href="/womens-safety">
-              <Female className="mr-2 h-4 w-4" />
+              <Shield className="mr-2 h-4 w-4" />
               Women's Safety
             </Link>
           </Button>

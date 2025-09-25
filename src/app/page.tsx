@@ -41,7 +41,7 @@ export default function LandingPage() {
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-6 items-center">
           <Link href="#features" className="hover:text-red-500 transition-colors">Features</Link>
-          <Link href="/womens-safety" className="hover:text-red-500 transition-colors">Women's Safety</Link>
+          <Link href="/womens-safety" className="hover:text-red-500 transition-colors flex items-center gap-2"><Shield className="h-4 w-4" />Women's Safety</Link>
           <Link href="/dashboard" className="hover:text-red-500 transition-colors">Dashboard</Link>
         </div>
 
@@ -63,7 +63,7 @@ export default function LandingPage() {
           className="md:hidden fixed top-16 left-0 w-full h-fit bg-black/80 backdrop-blur-lg z-10 flex flex-col items-center space-y-6 py-8"
         >
           <Link href="#features" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Features</Link>
-          <Link href="/womens-safety" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Women's Safety</Link>
+          <Link href="/womens-safety" className="text-lg hover:text-red-500 transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}><Shield className="h-5 w-5" />Women's Safety</Link>
           <Link href="/dashboard" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
         </motion.div>
       )}
