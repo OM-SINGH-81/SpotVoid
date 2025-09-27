@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -27,7 +28,7 @@ export type GenerateWomensSafetyAlertsOutput = z.infer<typeof GenerateWomensSafe
 
 
 export async function generateWomensSafetyAlerts(): Promise<GenerateWomensSafetyAlertsOutput> {
-    return generateWomensSafetyAlertsFlow();
+    return generateWomensSafetyAlertsFlow(null);
 }
 
 const prompt = ai.definePrompt({
