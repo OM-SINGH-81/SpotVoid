@@ -28,28 +28,15 @@ export default function PredictiveAlerts() {
         const fetchAlerts = async () => {
             setIsLoading(true);
             setError(null);
-            // try {
-            //     const result = await generateWomensSafetyAlerts();
-            //     setData(result);
-            // } catch (e) {
-            //     console.error("Failed to fetch alerts:", e);
-            //     setError("Could not load alerts from the AI model.");
-            // } finally {
-            //     setIsLoading(false);
-            // }
-
-            // Temporarily disable API call for UI dev
-            console.log("API call to generateWomensSafetyAlerts disabled for UI development.");
-            setTimeout(() => {
-                setData({
-                    alerts: [
-                        { id: '1', title: 'High Risk: Karol Bagh Market', reason: 'Cluster of 3 harassment cases reported in the last 48 hours.', severity: 'High', location: 'Karol Bagh' },
-                        { id: '2', title: 'Medium Risk: Connaught Place', reason: 'Increase in theft incidents in the evening.', severity: 'Medium', location: 'Connaught Place' },
-                    ]
-                });
+            try {
+                const result = await generateWomensSafetyAlerts();
+                setData(result);
+            } catch (e) {
+                console.error("Failed to fetch alerts:", e);
+                setError("Could not load alerts from the AI model.");
+            } finally {
                 setIsLoading(false);
-            }, 1500);
-
+            }
         };
         fetchAlerts();
     }, []);
