@@ -115,31 +115,31 @@ export default function WomensSafetyPage() {
                 </CardContent>
               </Card>
 
-              {/* Tools Grid (2x2 layout) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <Card className="bg-card/50 backdrop-blur-sm">
+                            {/* Tools Grid (2x2 layout) with equal height cards */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Route /> Safe Route Recommendation
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-1">
                     <SafeRoute />
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/50 backdrop-blur-sm">
+                <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Siren /> Predictive Alerts
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-1">
                     <PlaceholderCard message="Predictive alerts coming soon..." />
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/50 backdrop-blur-sm">
+                <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <MessageSquareWarning /> Community Feedback
@@ -148,12 +148,12 @@ export default function WomensSafetyPage() {
                       Crowd-sourced safety information.
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-1">
                     <PlaceholderCard message="Feedback system coming soon..." />
                   </CardContent>
                 </Card>
 
-                <Card className="bg-card/50 backdrop-blur-sm">
+                <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <Building /> Action Panel for Authorities
@@ -162,7 +162,7 @@ export default function WomensSafetyPage() {
                       Quick insights for intervention planning.
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
+                  <CardContent className="flex-1">
                     <PlaceholderCard message="Action panel coming soon..." />
                   </CardContent>
                 </Card>
