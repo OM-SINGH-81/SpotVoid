@@ -109,7 +109,7 @@ export default function WomensSafetyPage() {
                     <PlaceholderCard message="Predictive alerts coming soon..." />
                     </CardContent>
                 </Card>
-                    <Card className="bg-card/50 backdrop-blur-sm">
+                <Card className="bg-card/50 backdrop-blur-sm">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2"><MessageSquareWarning /> Community Feedback</CardTitle>
                         <CardDescription>Crowd-sourced safety information.</CardDescription>
