@@ -76,10 +76,16 @@ const generatePatrolRouteFlow = ai.defineFlow(
     async (input) => {
         const { predictedData } = input as { predictedData: PredictCrimeOutput };
 
+        if (!predictedData || !predictedData.predictedCrimeTypeBreakdown || predictedData.predictedCrimeTypeBreakdown.length === 0) {
+            return {
+                hotspots: [],
+                totalDistance: '0 km',
+                estimatedTime: '0 min',
+            };
+        }
+
         // We need to find plausible locations for the predicted crimes.
         // We'll use historical data for this.
-        const futureDates = new Set(predictedData.dailyData.filter(d => d.predictedCount && d.predictedCount > 0).map(d => d.date));
-
         const predictedCrimeTypes = new Set(predictedData.predictedCrimeTypeBreakdown.map(b => b.crimeType));
 
         // Find historical crimes that match the future predicted crime types.

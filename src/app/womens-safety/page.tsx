@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Map, BarChart2, Siren, Route, MessageSquareWarning, Building } from "lucide-react";
 import PlaceholderCard from "@/components/womens-safety/placeholder-card";
+import type { PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction";
 
 
 // ✅ Dynamic imports (disable SSR to avoid getRootNode errors)
@@ -36,6 +37,11 @@ const PredictiveAlerts = dynamic(
   { ssr: false, loading: () => <PlaceholderCard message="Loading alerts..." /> }
 );
 
+const ActionPanel = dynamic(
+    () => import("@/components/womens-safety/action-panel"),
+    { ssr: false, loading: () => <PlaceholderCard message="Loading action panel..." /> }
+);
+
 
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
   ssr: false,
@@ -44,6 +50,7 @@ const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
 
 export default function WomensSafetyPage() {
   const [showBg, setShowBg] = useState(false);
+  const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -115,7 +122,7 @@ export default function WomensSafetyPage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <WomensSafetyTrends />
+                  <WomensSafetyTrends onPredictionChange={setPrediction} />
                 </CardContent>
               </Card>
 
@@ -167,7 +174,7 @@ export default function WomensSafetyPage() {
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex-1">
-                    <PlaceholderCard message="Action panel coming soon..." />
+                     <ActionPanel prediction={prediction} />
                   </CardContent>
                 </Card>
               </div>

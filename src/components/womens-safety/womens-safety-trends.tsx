@@ -1,12 +1,13 @@
 
 "use client"
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, PieChart, Pie, Cell, Legend } from "recharts";
 import { crimeData } from '@/lib/mock-data';
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CardDescription } from '../ui/card';
+import type { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 
 const barChartConfig = {
   count: {
@@ -20,7 +21,12 @@ const pieChartConfig = {
     night: { label: 'Night', color: 'hsl(var(--chart-1))' },
 }
 
-export default function WomensSafetyTrends() {
+type WomensSafetyTrendsProps = {
+    onPredictionChange: (prediction: PredictCrimeOutput | null) => void;
+};
+
+
+export default function WomensSafetyTrends({ onPredictionChange }: WomensSafetyTrendsProps) {
   const harassmentData = useMemo(() => {
     return crimeData.filter(c => c.crimeType === 'Harassment');
   }, []);
@@ -45,6 +51,18 @@ export default function WomensSafetyTrends() {
     });
     return [{ name: 'Day', value: timeCounts.day }, { name: 'Night', value: timeCounts.night }];
   }, [harassmentData]);
+
+  useEffect(() => {
+    // This is a mock prediction based on the trend data.
+    // In a real app, you might have a more complex prediction model.
+    const mockPrediction: PredictCrimeOutput = {
+        dailyData: [], // This would be populated by a prediction flow
+        predictedCrimeTypeBreakdown: [{ crimeType: 'Harassment', count: trendsByStation.reduce((acc, s) => acc + s.count, 0) / 2 }], // Example
+        historicalCrimeTypeBreakdown: trendsByStation.map(s => ({ crimeType: 'Harassment', count: s.count })),
+    };
+    onPredictionChange(mockPrediction);
+  }, [trendsByStation, onPredictionChange]);
+
 
   return (
     <Tabs defaultValue="station" className="w-full">
