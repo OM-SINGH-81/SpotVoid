@@ -115,8 +115,8 @@ export default function WomensSafetyPage() {
                 </CardContent>
               </Card>
 
-                            {/* Tools Grid (2x2 layout) with equal height cards */}
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+              {/* Tools Grid (2x2 layout) with equal height cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
                 <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
@@ -169,6 +169,10 @@ export default function WomensSafetyPage() {
               </div>
             </motion.div>
           </main>
+          {/* Footer */}
+          <footer className="bg-card/30 backdrop-blur-md text-muted-foreground py-6 text-center mt-12">
+            &copy; {new Date().getFullYear()} CrimeWise. All rights reserved.
+          </footer>
         </div>
       </MapProvider>
     </>
