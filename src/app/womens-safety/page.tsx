@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -13,24 +14,23 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Map, BarChart2, Siren, Route, MessageSquareWarning, Building } from "lucide-react";
+import PlaceholderCard from "@/components/womens-safety/placeholder-card";
+
 
 // ✅ Dynamic imports (disable SSR to avoid getRootNode errors)
 const WomensSafetyHeatmap = dynamic(
   () => import("@/components/womens-safety/womens-safety-heatmap"),
-  { ssr: false }
+  { ssr: false, loading: () => <PlaceholderCard message="Loading heatmap..." /> }
 );
 const WomensSafetyTrends = dynamic(
   () => import("@/components/womens-safety/womens-safety-trends"),
-  { ssr: false }
+  { ssr: false, loading: () => <PlaceholderCard message="Loading trends..." /> }
 );
 const SafeRoute = dynamic(
   () => import("@/components/womens-safety/safe-route"),
-  { ssr: false }
+  { ssr: false, loading: () => <PlaceholderCard message="Loading route..." /> }
 );
-const PlaceholderCard = dynamic(
-  () => import("@/components/womens-safety/placeholder-card"),
-  { ssr: false }
-);
+
 
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
   ssr: false,
