@@ -14,10 +14,24 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Map, BarChart2, Siren, Route, MessageSquareWarning, Building } from "lucide-react";
-import WomensSafetyHeatmap from "@/components/womens-safety/womens-safety-heatmap";
-import WomensSafetyTrends from "@/components/womens-safety/womens-safety-trends";
-import SafeRoute from "@/components/womens-safety/safe-route";
-import PlaceholderCard from "@/components/womens-safety/placeholder-card";
+
+// ✅ Dynamic imports (disable SSR to avoid getRootNode errors)
+const WomensSafetyHeatmap = dynamic(
+  () => import("@/components/womens-safety/womens-safety-heatmap"),
+  { ssr: false }
+);
+const WomensSafetyTrends = dynamic(
+  () => import("@/components/womens-safety/womens-safety-trends"),
+  { ssr: false }
+);
+const SafeRoute = dynamic(
+  () => import("@/components/womens-safety/safe-route"),
+  { ssr: false }
+);
+const PlaceholderCard = dynamic(
+  () => import("@/components/womens-safety/placeholder-card"),
+  { ssr: false }
+);
 
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
   ssr: false,
@@ -58,7 +72,7 @@ export default function WomensSafetyPage() {
         <div className="flex flex-col min-h-screen bg-transparent">
           <Header />
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
-            <motion.div 
+            <motion.div
               className="mx-auto max-w-screen-2xl space-y-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -66,15 +80,23 @@ export default function WomensSafetyPage() {
             >
               {/* Header */}
               <div className="text-center">
-                <h1 className="text-4xl font-bold tracking-tight text-primary">Women's Safety Dashboard</h1>
-                <p className="mt-2 text-lg text-muted-foreground">Dedicated analytics for women's safety & protection.</p>
+                <h1 className="text-4xl font-bold tracking-tight text-primary">
+                  Women's Safety Dashboard
+                </h1>
+                <p className="mt-2 text-lg text-muted-foreground">
+                  Dedicated analytics for women's safety & protection.
+                </p>
               </div>
 
               {/* Full-width Heatmap */}
               <Card className="h-[400px] md:h-[500px] lg:h-[600px] flex flex-col bg-card/50 backdrop-blur-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2"><Map /> Women-Specific Crime Heatmap</CardTitle>
-                  <CardDescription>Hotspots of harassment, assault, and stalking.</CardDescription>
+                  <CardTitle className="flex items-center gap-2">
+                    <Map /> Women-Specific Crime Heatmap
+                  </CardTitle>
+                  <CardDescription>
+                    Hotspots of harassment, assault, and stalking.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="flex-1">
                   <WomensSafetyHeatmap />
@@ -82,50 +104,67 @@ export default function WomensSafetyPage() {
               </Card>
 
               {/* Full-width Trends */}
-               <Card className="bg-card/50 backdrop-blur-sm">
-                    <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><BarChart2 /> Trends & Analytics</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                    <WomensSafetyTrends />
-                    </CardContent>
+              <Card className="bg-card/50 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <BarChart2 /> Trends & Analytics
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <WomensSafetyTrends />
+                </CardContent>
+              </Card>
+
+              {/* Tools Grid (2x2 layout) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <Card className="bg-card/50 backdrop-blur-sm">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Route /> Safe Route Recommendation
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <SafeRoute />
+                  </CardContent>
                 </Card>
 
-              {/* Tools Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 <Card className="bg-card/50 backdrop-blur-sm">
-                    <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Route /> Safe Route Recommendation</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                    <SafeRoute />
-                    </CardContent>
-                </Card>
-                <Card className="bg-card/50 backdrop-blur-sm">
-                    <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Siren /> Predictive Alerts</CardTitle>
-                    </CardHeader>
-                    <CardContent>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Siren /> Predictive Alerts
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
                     <PlaceholderCard message="Predictive alerts coming soon..." />
-                    </CardContent>
+                  </CardContent>
                 </Card>
+
                 <Card className="bg-card/50 backdrop-blur-sm">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><MessageSquareWarning /> Community Feedback</CardTitle>
-                        <CardDescription>Crowd-sourced safety information.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <PlaceholderCard message="Feedback system coming soon..." />
-                    </CardContent>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MessageSquareWarning /> Community Feedback
+                    </CardTitle>
+                    <CardDescription>
+                      Crowd-sourced safety information.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <PlaceholderCard message="Feedback system coming soon..." />
+                  </CardContent>
                 </Card>
+
                 <Card className="bg-card/50 backdrop-blur-sm">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2"><Building /> Action Panel for Authorities</CardTitle>
-                        <CardDescription>Quick insights for intervention planning.</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <PlaceholderCard message="Action panel coming soon..." />
-                    </CardContent>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Building /> Action Panel for Authorities
+                    </CardTitle>
+                    <CardDescription>
+                      Quick insights for intervention planning.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <PlaceholderCard message="Action panel coming soon..." />
+                  </CardContent>
                 </Card>
               </div>
             </motion.div>
