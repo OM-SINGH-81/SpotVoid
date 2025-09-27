@@ -12,18 +12,26 @@ To run this project on your local machine using Visual Studio Code, follow these
 
 1.  **Node.js**: Make sure you have Node.js (version 18 or later) installed. You can download it from [nodejs.org](https://nodejs.org/).
 2.  **VS Code**: Download and install Visual Studio Code from [code.visualstudio.com](https://code.visualstudio.com/).
-3.  **Git**: You'll need Git to push your code to a repository for deployment. Download it from [git-scm.com](https://git-scm.com/).
+3.  **Git**: You'll need Git to get the code onto your machine and push changes. Download it from [git-scm.com](https://git-scm.com/).
 
 ### Setup Instructions
 
-1.  **Open the Project**: Open the project folder in VS Code.
+1.  **Get the Code**:
+    *   First, make sure your project is connected to a Git repository (e.g., on GitHub, GitLab, or Bitbucket).
+    *   Clone the repository to your local machine using the following command in your terminal:
+        ```bash
+        git clone <your-repository-url>
+        ```
+    *   Replace `<your-repository-url>` with the actual URL of your Git repository.
 
-2.  **Install Dependencies**: Open the integrated terminal in VS Code (you can use `Ctrl+\`` or `Cmd+\``) and run the following command to install all the necessary packages:
+2.  **Open the Project**: Open the cloned project folder in VS Code.
+
+3.  **Install Dependencies**: Open the integrated terminal in VS Code (you can use `Ctrl+\`` or `Cmd+\``) and run the following command to install all the necessary packages:
     ```bash
     npm install
     ```
 
-3.  **Set Up Environment Variables**:
+4.  **Set Up Environment Variables**:
     *   Create a new file in the root of your project named `.env.local`.
     *   Add the following lines to this file, replacing `YOUR_API_KEY` with your actual keys:
 
@@ -59,7 +67,7 @@ You can deploy this application for free using Vercel or Netlify. Both platforms
 
 ### Prerequisites
 
-1.  **Push to a Git Repository**: Before deploying, your code must be in a Git repository (e.g., on GitHub, GitLab, or Bitbucket).
+1.  **Push to a Git Repository**: Before deploying, your code must be in a Git repository (e.g., on GitHub, GitLab, or Bitbucket). If you haven't already, you can initialize a repository and push your code:
     *   Initialize a Git repository: `git init`
     *   Commit your files: `git add . && git commit -m "Initial commit"`
     *   Create a repository on your preferred platform and push your code to it.
@@ -68,7 +76,7 @@ You can deploy this application for free using Vercel or Netlify. Both platforms
 
 1.  **Sign Up**: Go to [vercel.com](https://vercel.com) and sign up with your Git provider account.
 2.  **Import Project**: From your Vercel dashboard, click "Add New... > Project".
-3.  **Select Repository**: Choose the Git repository you just created. Vercel will automatically detect that it's a Next.js project.
+3.  **Select Repository**: Choose the Git repository for your project. Vercel will automatically detect that it's a Next.js project.
 4.  **Configure Environment Variables**: In the project settings, navigate to "Environment Variables". Add the `GEMINI_API_KEY` and `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` with their respective values.
 5.  **Deploy**: Click "Deploy". Vercel will build and deploy your application.
 
