@@ -47,19 +47,19 @@ export default function WomensSafetyTrends() {
   }, [harassmentData]);
 
   return (
-    <Tabs defaultValue="station">
+    <Tabs defaultValue="station" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="station">By Station</TabsTrigger>
             <TabsTrigger value="time">By Time of Day</TabsTrigger>
         </TabsList>
         <TabsContent value="station">
             <CardDescription className="text-center my-2">Incidents by Police Station</CardDescription>
-            <div className="h-64 w-full">
+            <div className="h-[250px] w-full">
                 <ChartContainer config={barChartConfig} className="h-full w-full">
                     <ResponsiveContainer>
-                    <BarChart data={trendsByStation} layout="vertical" margin={{ left: 10 }}>
+                    <BarChart data={trendsByStation} layout="vertical" margin={{ left: 0, right: 20 }}>
                         <CartesianGrid horizontal={false} />
-                        <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} fontSize={10} width={80} />
+                        <YAxis dataKey="name" type="category" tickLine={false} axisLine={false} fontSize={9} width={70} interval={0} />
                         <XAxis dataKey="count" type="number" hide />
                         <Tooltip cursor={{fill: 'hsl(var(--muted))'}} content={<ChartTooltipContent />} />
                         <Bar dataKey="count" name="Incidents" fill="var(--color-count)" radius={4} />
@@ -70,7 +70,7 @@ export default function WomensSafetyTrends() {
         </TabsContent>
         <TabsContent value="time">
             <CardDescription className="text-center my-2">Incidents by Time of Day</CardDescription>
-            <div className="h-64 w-full">
+            <div className="h-[250px] w-full">
                 <ChartContainer config={pieChartConfig} className="h-full w-full">
                     <ResponsiveContainer>
                         <PieChart>
@@ -81,9 +81,10 @@ export default function WomensSafetyTrends() {
                                 nameKey="name"
                                 cx="50%"
                                 cy="50%"
-                                outerRadius={80}
+                                innerRadius={40}
+                                outerRadius={70}
                                 fill="var(--color-day)"
-                                label={({ name, value }) => `${name}: ${value}`}
+                                label={({ name, value, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                             >
                                 {trendsByTime.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.name === 'Day' ? 'var(--color-day)' : 'var(--color-night)'} />
@@ -91,10 +92,10 @@ export default function WomensSafetyTrends() {
                             </Pie>
                              <Legend content={({ payload }) => {
                                 return (
-                                <ul className="flex justify-center gap-4 mt-4">
+                                <ul className="flex justify-center gap-4 mt-4 text-xs">
                                     {
                                     payload?.map((entry, index) => (
-                                        <li key={`item-${index}`} className="flex items-center gap-2 text-sm">
+                                        <li key={`item-${index}`} className="flex items-center gap-2">
                                         <span className="w-2 h-2 rounded-full" style={{backgroundColor: entry.color}}></span>
                                         {entry.value}
                                         </li>
