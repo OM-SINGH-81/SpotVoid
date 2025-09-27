@@ -13,7 +13,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Map, BarChart2, Siren, Route, MessageSquareWarning, Building } from "lucide-react";
+import { Map, BarChart2, Siren, Route, MessageSquareWarning, Building, Phone, ShieldCheck } from "lucide-react";
 import PlaceholderCard from "@/components/womens-safety/placeholder-card";
 
 
@@ -29,6 +29,11 @@ const WomensSafetyTrends = dynamic(
 const SafeRoute = dynamic(
   () => import("@/components/womens-safety/safe-route"),
   { ssr: false, loading: () => <PlaceholderCard message="Loading route..." /> }
+);
+
+const PredictiveAlerts = dynamic(
+  () => import("@/components/womens-safety/predictive-alerts"),
+  { ssr: false, loading: () => <PlaceholderCard message="Loading alerts..." /> }
 );
 
 
@@ -134,7 +139,7 @@ export default function WomensSafetyPage() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="flex-1">
-                    <PlaceholderCard message="Predictive alerts coming soon..." />
+                    <PredictiveAlerts />
                   </CardContent>
                 </Card>
 
