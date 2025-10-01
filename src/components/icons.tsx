@@ -12,7 +12,7 @@ export const TheftIcon = (props: SVGProps<SVGSVGElement>) => (
       {...props}
     >
       <path d="M10 13a5 5 0 0 0-5-5 5 5 0 0 0-5 5V21h10Z" />
-      <path d="M14 13a5 5 0 0 0 5-5 5 5 0 0 0 5 5V21H14Z" />
+      <path d="M14 13a5.5 0 0 0 5-5 5 5 0 0 0 5 5V21H14Z" />
       <path d="M4 21V10a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v11" />
       <path d="M14 21V10a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v11" />
     </svg>
@@ -54,11 +54,11 @@ export const HarassmentIcon = (props: SVGProps<SVGSVGElement>) => (
 
   export const SpotvoidLogo = (props: SVGProps<SVGSVGElement>) => (
     <svg 
-      viewBox="0 0 100 100" 
+      viewBox="0 0 150 150" 
       xmlns="http://www.w3.org/2000/svg" 
       {...props}
     >
-      <g>
+      <g transform="translate(25, 25)">
         <circle cx="50" cy="50" r="7" fill="#E74C3C"/>
         <circle cx="50" cy="50" r="15" fill="none" stroke="#E74C3C" strokeWidth="2" opacity="0.8">
           <animate attributeName="r" from="15" to="45" dur="1.5s" begin="0s" repeatCount="indefinite"/>
