@@ -1,8 +1,9 @@
 "use client"
 
-import { MapPin, LogOut, User, Settings, Shield } from "lucide-react"
+import { LogOut, User, Settings, Shield } from "lucide-react"
 import Link from "next/link"
 
+import { SpotvoidLogo } from "./icons"
 import {
   Avatar,
   AvatarFallback,
@@ -24,12 +25,10 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-card/80 backdrop-blur-sm">
       <div className="container flex h-16 items-center space-x-4 sm:justify-between sm:space-x-0">
-        <div className="flex items-center gap-2">
-            <Link href="/" className="flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
-                  <MapPin className="h-6 w-6 text-white" />
-              </div>
-              <h1 className="text-2xl font-bold tracking-tight font-headline">SPOTVOID</h1>
+        <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3">
+              <SpotvoidLogo className="h-8 w-8" />
+              <h1 className="text-2xl font-bold tracking-wider"><span className="font-light">SPOT</span>VOID</h1>
             </Link>
         </div>
         

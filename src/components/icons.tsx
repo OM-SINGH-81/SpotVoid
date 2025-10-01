@@ -51,4 +51,24 @@ export const HarassmentIcon = (props: SVGProps<SVGSVGElement>) => (
         <line x1="12" y1="14" x2="12.01" y2="14" />
     </svg>
   );
+
+  export const SpotvoidLogo = (props: SVGProps<SVGSVGElement>) => (
+    <svg 
+      viewBox="0 0 100 100" 
+      xmlns="http://www.w3.org/2000/svg" 
+      {...props}
+    >
+      <g>
+        <circle cx="50" cy="50" r="7" fill="#E74C3C"/>
+        <circle cx="50" cy="50" r="15" fill="none" stroke="#E74C3C" strokeWidth="2" opacity="0.8">
+          <animate attributeName="r" from="15" to="45" dur="1.5s" begin="0s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" from="0.8" to="0" dur="1.5s" begin="0s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="50" cy="50" r="15" fill="none" stroke="#E74C3C" strokeWidth="2" opacity="0.6">
+           <animate attributeName="r" from="15" to="45" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+           <animate attributeName="opacity" from="0.6" to="0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+        </circle>
+      </g>
+    </svg>
+  );
   

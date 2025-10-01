@@ -6,6 +6,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { MapPin, Database, Map, BarChart3, Menu, X, Shield } from "lucide-react";
+import { SpotvoidLogo } from "@/components/icons";
+
 
 // Dynamic PixelBlast to avoid SSR issues
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
@@ -31,18 +33,16 @@ export default function LandingPage() {
       
       {/* Navbar */}
       <nav className="fixed top-0 left-0 w-full z-20 bg-black/50 backdrop-blur-md py-4 px-6 md:px-8 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
-                <MapPin className="h-6 w-6 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold">SPOTVOID</h1>
+        <div className="flex items-center gap-3">
+            <SpotvoidLogo className="h-8 w-8" />
+            <h1 className="text-2xl font-bold tracking-wider"><span className="font-light">SPOT</span>VOID</h1>
         </div>
         
         {/* Desktop Menu */}
         <div className="hidden md:flex space-x-6 items-center">
-          <Link href="#features" className="hover:text-red-500 transition-colors">Features</Link>
-          <Link href="/womens-safety" className="hover:text-red-500 transition-colors flex items-center gap-2"><Shield className="h-4 w-4" />Women's Safety</Link>
-          <Link href="/dashboard" className="hover:text-red-500 transition-colors">Dashboard</Link>
+          <Link href="#features" className="hover:text-primary transition-colors">Features</Link>
+          <Link href="/womens-safety" className="hover:text-primary transition-colors flex items-center gap-2"><Shield className="h-4 w-4" />Women's Safety</Link>
+          <Link href="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
         </div>
 
         {/* Mobile Menu Button */}
@@ -62,33 +62,33 @@ export default function LandingPage() {
           exit={{ opacity: 0, y: -20 }}
           className="md:hidden fixed top-16 left-0 w-full h-fit bg-black/80 backdrop-blur-lg z-10 flex flex-col items-center space-y-6 py-8"
         >
-          <Link href="#features" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Features</Link>
-          <Link href="/womens-safety" className="text-lg hover:text-red-500 transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}><Shield className="h-5 w-5" />Women's Safety</Link>
-          <Link href="/dashboard" className="text-lg hover:text-red-500 transition-colors" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
+          <Link href="#features" className="text-lg hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>Features</Link>
+          <Link href="/womens-safety" className="text-lg hover:text-primary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}><Shield className="h-5 w-5" />Women's Safety</Link>
+          <Link href="/dashboard" className="text-lg hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
         </motion.div>
       )}
 
 
       {/* PixelBlast Background */}
       {showBg && (
-  <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    transition={{ duration: 1.2 }}
-    className="fixed z-0 pointer-events-none 
-               w-[105vw] h-[105vh] -top-[2vh] -left-[2vw]"
-  >
-    <PixelBlast
-      variant="square"
-      pixelSize={8}
-      color="#FF0000"
-      speed={0.5}
-      patternDensity={1.5}
-      patternScale={1.5}
-      className="w-full h-full"
-    />
-  </motion.div>
-)}
+        <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1.2 }}
+            className="fixed z-0 pointer-events-none 
+                    w-[105vw] h-[105vh] -top-[2vh] -left-[2vw]"
+        >
+            <PixelBlast
+            variant="square"
+            pixelSize={8}
+            color="#E74C3C"
+            speed={0.5}
+            patternDensity={1.5}
+            patternScale={1.5}
+            className="w-full h-full"
+            />
+        </motion.div>
+      )}
 
 
 
@@ -121,7 +121,7 @@ export default function LandingPage() {
           <Button
             asChild
             size="lg"
-            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white transition-transform hover:scale-105"
+            className="bg-primary hover:bg-primary/80 text-primary-foreground transition-transform hover:scale-105"
           >
             <Link href="/dashboard">Get Started</Link>
           </Button>
@@ -132,10 +132,10 @@ export default function LandingPage() {
       <section id="features" className="relative py-24 px-8">
         <div className="max-w-6xl mx-auto grid gap-12 md:grid-cols-2 lg:grid-cols-4 text-center">
           {[
-            { icon: <MapPin className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Real-time Protection", desc: "Detect threats before they escalate using live data streams." },
-            { icon: <Database className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Data-Driven Predictions", desc: "Use integrated APIs to highlight high-risk zones instantly." },
-            { icon: <Map className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Smart Mapping", desc: "Visualize hotspots with interactive geospatial analytics." },
-            { icon: <BarChart3 className="w-10 h-10 mx-auto mb-4 text-red-500" />, title: "Actionable Insights", desc: "Get clear, real-time reports for better decision making." },
+            { icon: <MapPin className="w-10 h-10 mx-auto mb-4 text-primary" />, title: "Real-time Protection", desc: "Detect threats before they escalate using live data streams." },
+            { icon: <Database className="w-10 h-10 mx-auto mb-4 text-primary" />, title: "Data-Driven Predictions", desc: "Use integrated APIs to highlight high-risk zones instantly." },
+            { icon: <Map className="w-10 h-10 mx-auto mb-4 text-primary" />, title: "Smart Mapping", desc: "Visualize hotspots with interactive geospatial analytics." },
+            { icon: <BarChart3 className="w-10 h-10 mx-auto mb-4 text-primary" />, title: "Actionable Insights", desc: "Get clear, real-time reports for better decision making." },
           ].map((f, i) => (
             <motion.div
               key={i}
@@ -169,7 +169,7 @@ export default function LandingPage() {
           <Button
             asChild
             size="lg"
-            className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-orange-500 hover:to-red-500 text-white transition-transform hover:scale-105"
+            className="bg-primary hover:bg-primary/80 text-primary-foreground transition-transform hover:scale-105"
           >
             <Link href="#learn-more">Learn More</Link>
           </Button>
