@@ -111,31 +111,36 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
                 {/* Filters */}
                 <Card className="xl:col-span-2 bg-card/50 backdrop-blur-sm">
-                <CardContent>
-                  {dateRange ? (
-                    <>
-                      <Filters
-                        dateRange={dateRange}
-                        setDateRange={setDateRange}
-                        selectedStation={selectedStation}
-                        setSelectedStation={setSelectedStation}
-                        selectedCrimeTypes={selectedCrimeTypes}
-                        setSelectedCrimeTypes={setSelectedCrimeTypes}
-                      />
-                      {/* Crime Quote Section */}
-                      
-                      <div className="mt-8 p-6 rounded-xl text-center text-lg italic text-muted-foreground shadow-sm">
-                        "Technology and vigilance together help us predict and prevent crime, ensuring the safety and justice of our communities."
+                  <CardHeader>
+                    <CardTitle>Crime Analytics & Filters</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {dateRange ? (
+                      <>
+                        <Filters
+                          dateRange={dateRange}
+                          setDateRange={setDateRange}
+                          selectedStation={selectedStation}
+                          setSelectedStation={setSelectedStation}
+                          selectedCrimeTypes={selectedCrimeTypes}
+                          setSelectedCrimeTypes={setSelectedCrimeTypes}
+                        />
+                        {/* Crime Quote Section */}
+
+                        <div className="mt-8 p-6 rounded-xl text-center text-lg italic text-muted-foreground shadow-sm">
+                          "Technology and vigilance together help us predict and
+                          prevent crime, ensuring the safety and justice of our
+                          communities."
+                        </div>
+                      </>
+                    ) : (
+                      <div className="space-y-6">
+                        <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+                        <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
+                        <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
                       </div>
-                    </>
-                  ) : (
-                    <div className="space-y-6">
-                      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
-                      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
-                      <div className="h-10 w-full bg-muted rounded-md animate-pulse" />
-                    </div>
-                  )}
-                </CardContent>
+                    )}
+                  </CardContent>
                 </Card>
 
                 {/* AI Assistant */}
