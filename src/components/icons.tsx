@@ -54,18 +54,18 @@ export const HarassmentIcon = (props: SVGProps<SVGSVGElement>) => (
 
   export const SpotvoidLogo = (props: SVGProps<SVGSVGElement>) => (
     <svg 
-      viewBox="0 0 150 150" 
+      viewBox="0 0 100 100"
       xmlns="http://www.w3.org/2000/svg" 
       {...props}
     >
-      <g transform="translate(25, 25)">
-        <circle cx="50" cy="50" r="7" fill="#E74C3C"/>
-        <circle cx="50" cy="50" r="15" fill="none" stroke="#E74C3C" strokeWidth="2" opacity="0.8">
-          <animate attributeName="r" from="15" to="45" dur="1.5s" begin="0s" repeatCount="indefinite"/>
+      <g>
+        <circle cx="50" cy="50" r="10" fill="#E74C3C"/>
+        <circle cx="50" cy="50" r="20" fill="none" stroke="#E74C3C" strokeWidth="3" opacity="0.8">
+          <animate attributeName="r" from="20" to="50" dur="1.5s" begin="0s" repeatCount="indefinite"/>
           <animate attributeName="opacity" from="0.8" to="0" dur="1.5s" begin="0s" repeatCount="indefinite"/>
         </circle>
-        <circle cx="50" cy="50" r="15" fill="none" stroke="#E74C3C" strokeWidth="2" opacity="0.6">
-           <animate attributeName="r" from="15" to="45" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
+        <circle cx="50" cy="50" r="20" fill="none" stroke="#E74C3C" strokeWidth="3" opacity="0.6">
+           <animate attributeName="r" from="20" to="50" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
            <animate attributeName="opacity" from="0.6" to="0" dur="1.5s" begin="0.5s" repeatCount="indefinite"/>
         </circle>
       </g>
