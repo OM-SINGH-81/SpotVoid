@@ -83,102 +83,104 @@ export default function WomensSafetyPage() {
         <div className="flex flex-col min-h-screen bg-transparent">
           <Header />
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
-            <motion.div
-              className="mx-auto max-w-screen-2xl space-y-8"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {/* Header */}
-              <div className="text-center">
-                <h1 className="text-4xl font-bold tracking-tight text-primary">
-                  Women's Safety Dashboard
-                </h1>
-                <p className="mt-2 text-lg text-muted-foreground">
-                  Dedicated analytics for women's safety & protection.
-                </p>
-              </div>
+            <div className="mx-auto max-w-screen-2xl">
+              <motion.div
+                className="space-y-8"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                {/* Header */}
+                <div className="text-center">
+                  <h1 className="text-4xl font-bold tracking-tight text-primary">
+                    Women's Safety Dashboard
+                  </h1>
+                  <p className="mt-2 text-lg text-muted-foreground">
+                    Dedicated analytics for women's safety & protection.
+                  </p>
+                </div>
 
-              {/* Full-width Heatmap */}
-              <Card className="h-[400px] md:h-[500px] lg:h-[600px] flex flex-col bg-card/50 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Map /> Women-Specific Crime Heatmap
-                  </CardTitle>
-                  <CardDescription>
-                    Hotspots of harassment, assault, and stalking.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <WomensSafetyHeatmap />
-                </CardContent>
-              </Card>
-
-              {/* Full-width Trends */}
-              <Card className="bg-card/50 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BarChart2 /> Trends & Analytics
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <WomensSafetyTrends onPredictionChange={setPrediction} />
-                </CardContent>
-              </Card>
-
-              {/* Tools Grid (2x2 layout) with equal height cards */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
-                <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                {/* Full-width Heatmap */}
+                <Card className="h-[400px] md:h-[500px] lg:h-[600px] flex flex-col bg-card/50 backdrop-blur-sm">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Route /> Safe Route Recommendation
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-1">
-                    <SafeRoute />
-                  </CardContent>
-                </Card>
-
-                <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Siren /> Predictive Alerts
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex-1">
-                    <PredictiveAlerts />
-                  </CardContent>
-                </Card>
-
-                <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <MessageSquareWarning /> Community Feedback
+                      <Map /> Women-Specific Crime Heatmap
                     </CardTitle>
                     <CardDescription>
-                      Crowd-sourced safety information.
+                      Hotspots of harassment, assault, and stalking.
                     </CardDescription>
                   </CardHeader>
                   <CardContent className="flex-1">
-                    <PlaceholderCard message="Feedback system coming soon..." />
+                    <WomensSafetyHeatmap />
                   </CardContent>
                 </Card>
 
-                <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                {/* Full-width Trends */}
+                <Card className="bg-card/50 backdrop-blur-sm">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <Building /> Action Panel for Authorities
+                      <BarChart2 /> Trends & Analytics
                     </CardTitle>
-                    <CardDescription>
-                      Quick insights for intervention planning.
-                    </CardDescription>
                   </CardHeader>
-                  <CardContent className="flex-1">
-                     <ActionPanel prediction={prediction} />
+                  <CardContent>
+                    <WomensSafetyTrends onPredictionChange={setPrediction} />
                   </CardContent>
                 </Card>
-              </div>
-            </motion.div>
+
+                {/* Tools Grid (2x2 layout) with equal height cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
+                  <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Route /> Safe Route Recommendation
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex-1">
+                      <SafeRoute />
+                    </CardContent>
+                  </Card>
+
+                  <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Siren /> Predictive Alerts
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex-1">
+                      <PredictiveAlerts />
+                    </CardContent>
+                  </Card>
+
+                  <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <MessageSquareWarning /> Community Feedback
+                      </CardTitle>
+                      <CardDescription>
+                        Crowd-sourced safety information.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1">
+                      <PlaceholderCard message="Feedback system coming soon..." />
+                    </CardContent>
+                  </Card>
+
+                  <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Building /> Action Panel for Authorities
+                      </CardTitle>
+                      <CardDescription>
+                        Quick insights for intervention planning.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex-1">
+                      <ActionPanel prediction={prediction} />
+                    </CardContent>
+                  </Card>
+                </div>
+              </motion.div>
+            </div>
           </main>
           {/* Footer */}
           <footer className="bg-card/30 backdrop-blur-md text-muted-foreground py-6 text-center mt-12">
