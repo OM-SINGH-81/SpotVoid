@@ -27,7 +27,7 @@ export default function CrimeHeatmap({ data }: CrimeHeatmapProps) {
       <Map
         defaultCenter={{ lat: 28.6139, lng: 77.2090 }}
         defaultZoom={11}
-        mapId="CRIMEWISE_MAP"
+        mapId="SPOTVOID_MAP"
         gestureHandling={'greedy'}
         disableDefaultUI={true}
       >

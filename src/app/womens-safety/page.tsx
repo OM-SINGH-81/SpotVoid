@@ -182,7 +182,7 @@ export default function WomensSafetyPage() {
           </main>
           {/* Footer */}
           <footer className="bg-card/30 backdrop-blur-md text-muted-foreground py-6 text-center mt-12">
-            &copy; {new Date().getFullYear()} CrimeWise. All rights reserved.
+            &copy; {new Date().getFullYear()} SPOTVOID. All rights reserved.
           </footer>
         </div>
       </MapProvider>

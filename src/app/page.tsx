@@ -35,7 +35,7 @@ export default function LandingPage() {
             <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
                 <MapPin className="h-6 w-6 text-white" />
             </div>
-            <h1 className="text-2xl font-bold">CrimeWise</h1>
+            <h1 className="text-2xl font-bold">SPOTVOID</h1>
         </div>
         
         {/* Desktop Menu */}
@@ -100,7 +100,7 @@ export default function LandingPage() {
           transition={{ duration: 1 }}
           className="text-5xl font-extrabold drop-shadow-lg"
         >
-          Predict & Prevent Crime Before It Happens
+          See the Blind Spots Before Crime Strikes
         </motion.h1>
 
         <motion.p
@@ -109,7 +109,7 @@ export default function LandingPage() {
           transition={{ duration: 1.2 }}
           className="mt-6 max-w-2xl text-lg text-gray-200"
         >
-          Powered by secure API integrations and real-time data, CrimeWise helps agencies stay one step ahead of crime.
+          Powered by secure API integrations and real-time data, SPOTVOID helps agencies stay one step ahead of crime.
         </motion.p>
 
         <motion.div
@@ -164,7 +164,7 @@ export default function LandingPage() {
         >
           <h2 className="text-4xl font-bold mb-6">Ready to make cities safer?</h2>
           <p className="text-lg text-gray-300 mb-10">
-            Join law enforcement agencies already using <b>CrimeWise</b> to prevent crime and optimize city security.
+            Join law enforcement agencies already using <b>SPOTVOID</b> to prevent crime and optimize city security.
           </p>
           <Button
             asChild
@@ -185,7 +185,7 @@ export default function LandingPage() {
           viewport={{ once: true }}
           className="text-4xl font-bold mb-6"
         >
-          Why Choose CrimeWise?
+          Why Choose SPOTVOID?
         </motion.h2>
         <motion.p
           initial={{ y: 20, opacity: 0 }}
@@ -194,7 +194,7 @@ export default function LandingPage() {
           viewport={{ once: true }}
           className="max-w-3xl mx-auto text-lg text-gray-300 mb-12"
         >
-          CrimeWise integrates directly with secure APIs to provide predictive insights, optimized patrol routes, and reliable crime trend analysis — without heavy infrastructure or complex overhead.
+          SPOTVOID integrates directly with secure APIs to provide predictive insights, optimized patrol routes, and reliable crime trend analysis — without heavy infrastructure or complex overhead.
         </motion.p>
 
         <div className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
@@ -220,7 +220,7 @@ export default function LandingPage() {
 
       {/* Footer */}
       <footer className="bg-black/80 backdrop-blur-md text-gray-400 py-6 text-center mt-12 z-10">
-        &copy; {new Date().getFullYear()} CrimeWise. All rights reserved.
+        &copy; {new Date().getFullYear()} SPOTVOID. All rights reserved.
       </footer>
     </div>
   );

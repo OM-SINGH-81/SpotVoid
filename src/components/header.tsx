@@ -29,7 +29,7 @@ export default function Header() {
               <div className="p-2 rounded-lg bg-gradient-to-r from-red-500 to-orange-500">
                   <MapPin className="h-6 w-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold tracking-tight font-headline">CrimeWise</h1>
+              <h1 className="text-2xl font-bold tracking-tight font-headline">SPOTVOID</h1>
             </Link>
         </div>
         

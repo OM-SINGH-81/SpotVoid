@@ -4,8 +4,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'CrimeWise',
-  description: 'An AI-powered crime analysis and prediction dashboard.',
+  title: 'SPOTVOID',
+  description: 'See the Blind Spots Before Crime Strikes',
 };
 
 export default function RootLayout({
