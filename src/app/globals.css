@@ -25,35 +25,26 @@
   :root {
     --background: 210 40% 98%;
     --foreground: 222.2 47.4% 11.2%;
-
     --card: 210 40% 100%;
     --card-foreground: 222.2 47.4% 11.2%;
-
     --popover: 210 40% 100%;
     --popover-foreground: 222.2 47.4% 11.2%;
-
     --primary: 355 87% 55%;
     --primary-foreground: 210 40% 98%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    
     --accent: 35 92% 55%;
     --accent-foreground: 222.2 47.4% 11.2%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
-
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
     --ring: 355 87% 55%;
-
-    --chart-1: 355 87% 55%; /* Red for Theft */
-    --chart-2: 210 80% 50%; /* Blue for Accident */
-    --chart-3: 0 84.2% 60.2%;   /* Other Red for Harassment */
+    --chart-1: 355 87% 55%;
+    --chart-2: 210 80% 50%;
+    --chart-3: 0 84.2% 60.2%;
     --chart-4: 35 92% 55%;
     --chart-5: 259 87% 60%;
     --radius: 0.75rem;
@@ -62,35 +53,26 @@
   .dark {
     --background: 222 83% 4%;
     --foreground: 210 20% 98%;
-
-    --card: 222 83% 9%;
+    --card: 0 0% 0%;
     --card-foreground: 210 20% 98%;
-
     --popover: 222 83% 4%;
     --popover-foreground: 210 20% 98%;
-    
     --primary: 355 87% 55%;
     --primary-foreground: 210 20% 98%;
-
     --secondary: 215 28% 17%;
     --secondary-foreground: 210 20% 98%;
-
     --muted: 215 28% 17%;
     --muted-foreground: 216 12% 76%;
-    
     --accent: 35 92% 55%;
     --accent-foreground: 222 83% 4%;
-
     --destructive: 0 72% 51%;
     --destructive-foreground: 210 20% 98%;
-
     --border: 215 28% 17%;
     --input: 215 28% 17%;
     --ring: 355 87% 55%;
-    
-    --chart-1: 355 87% 55%; /* Red for Theft */
-    --chart-2: 210 80% 50%; /* Blue for Accident */
-    --chart-3: 0 84.2% 60.2%;   /* Other Red for Harassment */
+    --chart-1: 355 87% 55%;
+    --chart-2: 210 80% 50%;
+    --chart-3: 0 84.2% 60.2%;
     --chart-4: 35 92% 55%;
     --chart-5: 259 87% 60%;
     --radius: 0.75rem;
@@ -107,6 +89,6 @@
   }
 
   .dark body {
-    background-color: #000;
+    background-color: hsl(var(--background));
   }
 }
