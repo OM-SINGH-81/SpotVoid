@@ -124,7 +124,7 @@ export default function DashboardPage() {
                       />
                       {/* Crime Quote Section */}
                       
-                      <div className="mt-8 p-6 rounded-xl text-center text-lg italic text-accent-foreground shadow-sm">
+                      <div className="mt-8 p-6 rounded-xl text-center text-lg italic text-muted-foreground shadow-sm">
                         "Technology and vigilance together help us predict and prevent crime, ensuring the safety and justice of our communities."
                       </div>
                     </>
