@@ -50,6 +50,7 @@ export async function predictCrime(input: PredictCrimeInput): Promise<PredictCri
 
 const prompt = ai.definePrompt({
   name: 'predictCrimePrompt',
+  model: 'gemini-1.5-flash-001',
   input: {schema: z.object({
     analysisPrompt: z.string(),
     futureDates: z.array(z.string()),
