@@ -141,13 +141,8 @@ const predictCrimeFlow = ai.defineFlow(
     
     // Create a summarized analysis prompt
     const totalHistoricalCrimes = historicalDataForPrompt.reduce((acc, curr) => acc + curr.count, 0);
-    const analysisSummary = {
-      totalIncidents: totalHistoricalCrimes,
-      period: `from ${format(historicalDateObjects[0] || start, 'yyyy-MM-dd')} to ${format(historicalDateObjects[historicalDateObjects.length - 1] || start, 'yyyy-MM-dd')}`,
-      averagePerDay: (totalHistoricalCrimes / (historicalDataForPrompt.length || 1)).toFixed(2),
-      breakdown: historicalBreakdown,
-    };
-    const analysisPrompt = JSON.stringify(analysisSummary);
+    const analysisSummary = `Total historical incidents: ${totalHistoricalCrimes}. Average per day: ${(totalHistoricalCrimes / (historicalDataForPrompt.length || 1)).toFixed(2)}. Breakdown: ${JSON.stringify(historicalBreakdown)}`;
+    const analysisPrompt = analysisSummary;
 
     // 4. Identify future dates that need prediction
     const futureDates = allDatesInRange
