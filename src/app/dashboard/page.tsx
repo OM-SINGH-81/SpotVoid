@@ -6,6 +6,7 @@ import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { TriangleAlert } from "lucide-react";
 
 import {
   crimeData,
@@ -17,7 +18,6 @@ import MapProvider from "@/components/map-provider";
 import Header from "@/components/header";
 import Filters from "@/components/dashboard/filters";
 import CrimeHeatmap from "@/components/dashboard/crime-heatmap";
-import CrimePrediction from "@/components/dashboard/crime-prediction";
 import PatrolRoutes from "@/components/dashboard/patrol-routes";
 import ChatAssistant from "@/components/dashboard/chat-assistant";
 import DashboardLoader from "@/components/dashboard-loader";
@@ -29,17 +29,39 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+
 
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
   ssr: false,
   loading: () => null,
 });
 
+const MissingKeyMessage = () => (
+    <div className="flex h-[calc(100vh-10rem)] items-center justify-center p-8">
+        <Alert variant="destructive" className="max-w-md">
+            <TriangleAlert className="h-4 w-4" />
+            <AlertTitle>Google Maps API Key Missing or Invalid</AlertTitle>
+            <AlertDescription>
+                Please add a valid Google Maps API key to the <code>.env.local</code> file to enable map features.
+                <br />
+                <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mt-2 block">
+                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="YOUR_API_KEY"
+                </code>
+            </AlertDescription>
+        </Alert>
+    </div>
+);
+
+
 export default function DashboardPage() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
   const [showBg, setShowBg] = useState(false);
+  const [apiKey, setApiKey] = useState<string | undefined>(undefined);
+
 
   useEffect(() => {
+    setApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
     const timer = setTimeout(() => {
       setDateRange({
         from: addDays(new Date(), -30),
@@ -106,6 +128,7 @@ export default function DashboardPage() {
         <div className="flex flex-col min-h-screen bg-transparent">
           <Header />
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          {!apiKey ? <MissingKeyMessage /> : (
             <div className="mx-auto max-w-screen-2xl space-y-8">
               {/* Filters + AI Assistant */}
               <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
@@ -217,6 +240,7 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
             </div>
+            )}
           </main>
         </div>
       </MapProvider>

@@ -13,7 +13,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Map, BarChart2, Siren, Route, MessageSquareWarning, Building } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Map, BarChart2, Siren, Route, MessageSquareWarning, Building, TriangleAlert } from "lucide-react";
 import PlaceholderCard from "@/components/womens-safety/placeholder-card";
 import type { PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction";
 
@@ -48,11 +49,30 @@ const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
   loading: () => null,
 });
 
+const MissingKeyMessage = () => (
+    <div className="flex h-[calc(100vh-15rem)] items-center justify-center p-8">
+        <Alert variant="destructive" className="max-w-md">
+            <TriangleAlert className="h-4 w-4" />
+            <AlertTitle>Google Maps API Key Missing or Invalid</AlertTitle>
+            <AlertDescription>
+                Please add a valid Google Maps API key to the <code>.env.local</code> file to enable map features.
+                <br />
+                <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold mt-2 block">
+                    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY="YOUR_API_KEY"
+                </code>
+            </AlertDescription>
+        </Alert>
+    </div>
+);
+
+
 export default function WomensSafetyPage() {
   const [showBg, setShowBg] = useState(false);
   const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null);
+  const [apiKey, setApiKey] = useState<string | undefined>(undefined);
 
   useEffect(() => {
+    setApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
     const timer = setTimeout(() => {
       setShowBg(true);
     }, 150);
@@ -83,6 +103,7 @@ export default function WomensSafetyPage() {
         <div className="flex flex-col min-h-screen bg-transparent">
           <Header />
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          {!apiKey ? <MissingKeyMessage /> : (
             <div className="mx-auto max-w-screen-2xl">
               <motion.div
                 className="space-y-8"
@@ -181,6 +202,7 @@ export default function WomensSafetyPage() {
                 </div>
               </motion.div>
             </div>
+          )}
           </main>
           {/* Footer */}
           <footer className="bg-card/30 backdrop-blur-md text-muted-foreground py-6 text-center mt-12">
