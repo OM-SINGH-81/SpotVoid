@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { crimeData } from '@/lib/mock-data';
-import { eachDayOfInterval, format, parseISO, isBefore, startOfToday } from 'date-fns';
+import { eachDayOfInterval, format, parseISO, isBefore, startOfToday, subDays } from 'date-fns';
 
 const PredictCrimeInputSchema = z.object({
   dateRange: z.object({
@@ -61,7 +61,7 @@ const predictCrimePrompt = ai.definePrompt({
     },
     output: {
       schema: z.object({
-        dailyData: z
+        dailyPredictions: z
           .array(
             z.object({
               date: z.string(),
@@ -69,7 +69,7 @@ const predictCrimePrompt = ai.definePrompt({
             })
           )
           .describe('Predicted crime counts for the future dates provided.'),
-        crimeTypeBreakdown: CrimeTypeBreakdownSchema.describe(
+        predictedBreakdown: CrimeTypeBreakdownSchema.describe(
           'A plausible breakdown of the total predicted crimes by type.'
         ),
       }),
@@ -79,7 +79,7 @@ const predictCrimePrompt = ai.definePrompt({
   Historical Summary:
   {{{historicalSummary}}}
   
-  Your task is to predict the daily crime counts for the following dates: {{#each futureDates}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
+  Your task is to predict the daily crime counts for the following future dates: {{#each futureDates}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
   
   Also, provide a plausible breakdown of the total predicted crimes for these future dates across the following crime types: {{#each crimeTypes}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
   
@@ -99,10 +99,10 @@ const predictCrimePrompt = ai.definePrompt({
       const end = parseISO(endDate);
       const today = startOfToday();
   
-      // 1. Filter historical crimes
+      // 1. Filter crimes for the entire range (historical and future-equivalent past period)
       const historicalCrimes = crimeData.filter((crime) => {
         const crimeDate = parseISO(crime.date);
-        const isDateInRange = crimeDate >= start && crimeDate < today; // Only historical
+        const isDateInRange = crimeDate >= start && crimeDate < today;
         const isStationMatch =
           input.policeStation === 'all' ||
           crime.policeStation === input.policeStation;
@@ -110,29 +110,28 @@ const predictCrimePrompt = ai.definePrompt({
         return isDateInRange && isStationMatch && isCrimeTypeMatch;
       });
   
-      // 2. Aggregate historical data
+      // 2. Aggregate historical data for output
       const historicalCounts = new Map<string, number>();
-      const historicalCrimeTypeBreakdown = new Map<string, number>();
-      input.crimeTypes.forEach((ct) => historicalCrimeTypeBreakdown.set(ct, 0));
+      const historicalBreakdown = new Map<string, number>();
+      input.crimeTypes.forEach((ct) => historicalBreakdown.set(ct, 0));
   
-      const historicalDateObjects = eachDayOfInterval({ start, end: today > end ? end : today });
-      historicalDateObjects.forEach(day => {
+      // Initialize all past days in the range with 0
+      const pastDays = eachDayOfInterval({ start, end: subDays(today, 1) });
+      pastDays.forEach(day => {
           const formattedDate = format(day, 'yyyy-MM-dd');
-          if (isBefore(day, today)) {
-              historicalCounts.set(formattedDate, 0);
-          }
+          historicalCounts.set(formattedDate, 0);
       });
-  
+      
       historicalCrimes.forEach((crime) => {
         const crimeDate = format(parseISO(crime.date), 'yyyy-MM-dd');
         if (historicalCounts.has(crimeDate)) {
           historicalCounts.set(crimeDate, historicalCounts.get(crimeDate)! + 1);
         }
-        if (historicalCrimeTypeBreakdown.has(crime.crimeType)) {
-            historicalCrimeTypeBreakdown.set(crime.crimeType, historicalCrimeTypeBreakdown.get(crime.crimeType)! + 1);
+        if (historicalBreakdown.has(crime.crimeType)) {
+            historicalBreakdown.set(crime.crimeType, historicalBreakdown.get(crime.crimeType)! + 1);
         }
       });
-  
+      
       const historicalDataForOutput = Array.from(historicalCounts.entries()).map(
         ([date, count]) => ({
           date,
@@ -141,12 +140,13 @@ const predictCrimePrompt = ai.definePrompt({
         })
       );
   
-      const historicalBreakdownForOutput = Array.from(historicalCrimeTypeBreakdown.entries())
+      const historicalBreakdownForOutput = Array.from(historicalBreakdown.entries())
         .map(([crimeType, count]) => ({ crimeType, count }));
   
       // 3. Create a simple summary for the AI
       const totalHistoricalCrimes = historicalDataForOutput.reduce((acc, curr) => acc + (curr.historicalCount || 0), 0);
-      const historicalSummary = `Over the last ${historicalDataForOutput.length} days, there were a total of ${totalHistoricalCrimes} incidents. The daily average was approximately ${(totalHistoricalCrimes / (historicalDataForOutput.length || 1)).toFixed(2)}. The breakdown by crime type was: ${JSON.stringify(historicalBreakdownForOutput)}.`;
+      const days = historicalDataForOutput.length || 1;
+      const historicalSummary = `For police station '${input.policeStation}' and crime types [${input.crimeTypes.join(', ')}], there were a total of ${totalHistoricalCrimes} incidents over the last ${days} days. The daily average was about ${(totalHistoricalCrimes / days).toFixed(1)} incidents.`;
   
       // 4. Identify future dates for prediction
       const futureDates = eachDayOfInterval({ start, end })
@@ -177,7 +177,7 @@ const predictCrimePrompt = ai.definePrompt({
         ...historicalDataForOutput,
       ];
 
-      predictionOutput.dailyData.forEach(p => {
+      predictionOutput.dailyPredictions.forEach(p => {
         if (futureDates.includes(p.date)) {
             combinedDailyData.push({
                 date: p.date,
@@ -187,7 +187,7 @@ const predictCrimePrompt = ai.definePrompt({
         }
       });
 
-      // Ensure all future dates have an entry
+      // Ensure all future dates have an entry, even if the model misses them
       futureDates.forEach(date => {
         if (!combinedDailyData.some(d => d.date === date && d.predictedCount !== null)) {
             combinedDailyData.push({ date, historicalCount: null, predictedCount: 0 });
@@ -198,7 +198,7 @@ const predictCrimePrompt = ai.definePrompt({
   
       return {
         dailyData: combinedDailyData,
-        predictedCrimeTypeBreakdown: predictionOutput.crimeTypeBreakdown,
+        predictedCrimeTypeBreakdown: predictionOutput.predictedBreakdown,
         historicalCrimeTypeBreakdown: historicalBreakdownForOutput,
       };
     }
