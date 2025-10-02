@@ -38,28 +38,20 @@ export default function ChatAssistant() {
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     setIsLoading(true)
     setAnswer(null)
-    // try {
-    //   const result = await askQuestion({ question: data.question })
-    //   setAnswer(result.answer)
-    // } catch (error) {
-    //   console.error("AI chat error:", error)
-    //   toast({
-    //     variant: "destructive",
-    //     title: "Error",
-    //     description: "Failed to get an answer from the AI assistant.",
-    //   })
-    // } finally {
-    //   setIsLoading(false)
-    //   form.reset()
-    // }
-    
-    // Temporarily disable API call
-    console.log("API call to askQuestion disabled for UI development. Question was:", data.question);
-    setTimeout(() => {
-        setIsLoading(false);
-        setAnswer("AI responses are currently disabled for UI development.");
-        form.reset();
-    }, 1000);
+    try {
+      const result = await askQuestion({ question: data.question })
+      setAnswer(result.answer)
+    } catch (error) {
+      console.error("AI chat error:", error)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to get an answer from the AI assistant.",
+      })
+    } finally {
+      setIsLoading(false)
+      form.reset()
+    }
   }
 
   return (

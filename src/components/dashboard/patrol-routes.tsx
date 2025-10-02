@@ -31,21 +31,15 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction }: Patrol
       }
       setIsLoadingRoute(true);
       setError(null);
-      // try {
-      //   const result = await generatePatrolRoute({ predictedData: prediction });
-      //   setRoute(result);
-      // } catch (e) {
-      //   console.error("Patrol route generation error:", e);
-      //   setError("Failed to generate patrol route. The AI model may be offline.");
-      // } finally {
-      //   setIsLoadingRoute(false);
-      // }
-      
-      // Temporarily disable API call
-      console.log("API call to generatePatrolRoute disabled for UI development.");
-      setTimeout(() => {
+      try {
+        const result = await generatePatrolRoute({ predictedData: prediction });
+        setRoute(result);
+      } catch (e) {
+        console.error("Patrol route generation error:", e);
+        setError("Failed to generate patrol route. The AI model may be offline.");
+      } finally {
         setIsLoadingRoute(false);
-      }, 2000);
+      }
     };
 
     getRoute();
