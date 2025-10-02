@@ -1,9 +1,10 @@
 "use client"
 
 import React from 'react';
-import { APIProvider, Status } from '@vis.gl/react-google-maps';
+import { APIProvider } from '@vis.gl/react-google-maps';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { TriangleAlert } from 'lucide-react';
+import DashboardLoader from './dashboard-loader';
 
 const MissingKeyMessage = () => (
     <div className="flex h-screen items-center justify-center p-8">
@@ -24,6 +25,13 @@ const MissingKeyMessage = () => (
 export default function MapProvider({ children }: { children: React.ReactNode }) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+  const handleApiLoadError = (e: any) => {
+    // This is a simple way to catch auth errors
+    // A more robust solution would inspect the error object
+    console.error("Google Maps API Load Error:", e);
+    return <MissingKeyMessage />;
+  }
+
   if (!apiKey) {
     return <MissingKeyMessage />;
   }
@@ -31,13 +39,14 @@ export default function MapProvider({ children }: { children: React.ReactNode })
   return (
     <APIProvider 
         apiKey={apiKey}
-        render={status => {
+        onLoad={() => console.log("Maps API loaded.")}
+        render={(status) => {
             switch(status) {
-                case Status.LOADING:
-                    return <div className="flex h-screen items-center justify-center"><p>Loading maps...</p></div>;
-                case Status.FAILURE:
+                case "loading":
+                    return <DashboardLoader />;
+                case "failure":
                     return <MissingKeyMessage />;
-                case Status.SUCCESS:
+                case "success":
                     return children;
             }
         }}
