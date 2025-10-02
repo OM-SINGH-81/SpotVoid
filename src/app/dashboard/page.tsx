@@ -5,7 +5,6 @@ import dynamic from "next/dynamic";
 import { DateRange } from "react-day-picker";
 import { addDays } from "date-fns";
 import { motion } from "framer-motion";
-import Link from "next/link";
 import { TriangleAlert } from "lucide-react";
 
 import {
@@ -18,6 +17,7 @@ import MapProvider from "@/components/map-provider";
 import Header from "@/components/header";
 import Filters from "@/components/dashboard/filters";
 import CrimeHeatmap from "@/components/dashboard/crime-heatmap";
+import CrimePrediction from "@/components/dashboard/crime-prediction";
 import PatrolRoutes from "@/components/dashboard/patrol-routes";
 import ChatAssistant from "@/components/dashboard/chat-assistant";
 import DashboardLoader from "@/components/dashboard-loader";
@@ -28,7 +28,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
