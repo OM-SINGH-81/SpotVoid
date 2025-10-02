@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -66,7 +67,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an AI assistant that analyzes historical crime data and predicts future crime rates.
 
   Historical Data Analysis:
-  I have analyzed the historical data for the requested filters. Here is a summary of daily crime counts:
+  I have analyzed the historical data for the requested filters. Here is a summary of the trends:
   {{{analysisPrompt}}}
   
   Based on this historical data and any underlying trends you can identify (like weekly patterns, or recent increases/decreases), provide a realistic future crime prediction for the upcoming dates.
@@ -137,9 +138,16 @@ const predictCrimeFlow = ai.defineFlow(
     });
 
     const historicalBreakdown = Array.from(historicalCrimeTypeBreakdown.entries()).map(([crimeType, count]) => ({ crimeType, count }));
-
-
-    const analysisPrompt = JSON.stringify(historicalDataForPrompt);
+    
+    // Create a summarized analysis prompt
+    const totalHistoricalCrimes = historicalDataForPrompt.reduce((acc, curr) => acc + curr.count, 0);
+    const analysisSummary = {
+      totalIncidents: totalHistoricalCrimes,
+      period: `from ${format(historicalDateObjects[0] || start, 'yyyy-MM-dd')} to ${format(historicalDateObjects[historicalDateObjects.length - 1] || start, 'yyyy-MM-dd')}`,
+      averagePerDay: (totalHistoricalCrimes / (historicalDataForPrompt.length || 1)).toFixed(2),
+      breakdown: historicalBreakdown,
+    };
+    const analysisPrompt = JSON.stringify(analysisSummary);
 
     // 4. Identify future dates that need prediction
     const futureDates = allDatesInRange
@@ -202,3 +210,5 @@ const predictCrimeFlow = ai.defineFlow(
     };
   }
 );
+
+    
