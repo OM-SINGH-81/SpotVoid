@@ -51,7 +51,7 @@ export async function predictCrime(input: PredictCrimeInput): Promise<PredictCri
 
 const predictCrimePrompt = ai.definePrompt({
     name: 'predictCrimePrompt',
-    model: 'gemini-pro',
+    model: 'gemini-1.5-flash',
     input: {
       schema: z.object({
         historicalSummary: z.string(),
