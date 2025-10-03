@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { crimeData } from '@/lib/mock-data';
-import { eachDayOfInterval, format, parseISO, isAfter, startOfToday, endOfDay } from 'date-fns';
+import { eachDayOfInterval, format, parseISO, isAfter, startOfToday } from 'date-fns';
 
 const PredictCrimeInputSchema = z.object({
   dateRange: z.object({
@@ -98,7 +98,7 @@ const predictCrimePrompt = ai.definePrompt({
     async (input) => {
       const { startDate, endDate } = input.dateRange;
       const start = parseISO(startDate);
-      const end = endOfDay(parseISO(endDate));
+      const end = parseISO(endDate);
       const today = startOfToday();
   
       const allDays = eachDayOfInterval({ start, end });
