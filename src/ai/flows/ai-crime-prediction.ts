@@ -100,7 +100,7 @@ const predictCrimePrompt = ai.definePrompt({
       const today = startOfToday();
   
       const allDays = eachDayOfInterval({ start, end });
-      const pastAndTodayDays = allDays.filter(d => !isAfter(d, today));
+      const pastAndTodayDays = allDays.filter(d => !isAfter(d, end));
       const futureDays = allDays.filter(d => isAfter(d, today));
       const futureDates = futureDays.map(day => format(day, 'yyyy-MM-dd'));
 
@@ -125,7 +125,7 @@ const predictCrimePrompt = ai.definePrompt({
       
       relevantHistoricalCrimes.forEach((crime) => {
         const crimeDate = parseISO(crime.date);
-        if (crimeDate <= today) {
+        if (crimeDate <= end) {
           const formattedDate = format(crimeDate, 'yyyy-MM-dd');
           if (historicalCounts.has(formattedDate)) {
             historicalCounts.set(formattedDate, historicalCounts.get(formattedDate)! + 1);
