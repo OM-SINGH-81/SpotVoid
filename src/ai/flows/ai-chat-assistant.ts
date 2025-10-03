@@ -32,10 +32,16 @@ const prompt = ai.definePrompt({
   input: {schema: AskQuestionInputSchema},
   output: {schema: AskQuestionOutputSchema},
   tools: [getCrimeData],
-  model: 'gemini-2.5-flash',
-  prompt: `You are a helpful assistant that answers questions about crime data. Use the available tools to answer the question as accurately as possible.
+  model: 'gemini-pro',
+  prompt: `You are a helpful assistant that answers questions about crime data. 
+  
+  Instructions:
+  1. Use the available 'getCrimeData' tool to answer the user's question as accurately as possible.
+  2. Synthesize the data returned by the tool into a clear, natural language answer.
+  3. If the tool returns no data, state that you couldn't find any information for that query.
+  4. Your final response must be a valid JSON object with the "answer" field populated.
 
-Question: {{{question}}}`,
+  Question: {{{question}}}`,
 });
 
 const askQuestionFlow = ai.defineFlow(
@@ -46,8 +52,9 @@ const askQuestionFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    if (!output) {
+      return { answer: "I'm sorry, I was unable to process that request." };
+    }
+    return output;
   }
 );
-
-    
