@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { crimeData } from '@/lib/mock-data';
-import { eachDayOfInterval, format, parseISO, isBefore, isAfter, startOfToday, subDays } from 'date-fns';
+import { eachDayOfInterval, format, parseISO, isAfter, startOfToday } from 'date-fns';
 
 const PredictCrimeInputSchema = z.object({
   dateRange: z.object({
@@ -107,7 +107,7 @@ const predictCrimePrompt = ai.definePrompt({
       // 1. Filter crimes for the historical period
       const historicalCrimes = crimeData.filter((crime) => {
         const crimeDate = parseISO(crime.date);
-        const isDateInRange = crimeDate >= start && crimeDate <= today;
+        const isDateInRange = crimeDate >= start && crimeDate <= end; // Correctly use the end of the selected range
         const isStationMatch =
           input.policeStation === 'all' ||
           crime.policeStation === input.policeStation;
@@ -127,12 +127,15 @@ const predictCrimePrompt = ai.definePrompt({
       });
       
       historicalCrimes.forEach((crime) => {
-        const crimeDate = format(parseISO(crime.date), 'yyyy-MM-dd');
-        if (historicalCounts.has(crimeDate)) {
-          historicalCounts.set(crimeDate, historicalCounts.get(crimeDate)! + 1);
-        }
-        if (historicalBreakdown.has(crime.crimeType)) {
-            historicalBreakdown.set(crime.crimeType, historicalBreakdown.get(crime.crimeType)! + 1);
+        // Only count crimes that happened in the past/today
+        if(parseISO(crime.date) <= today) {
+          const crimeDate = format(parseISO(crime.date), 'yyyy-MM-dd');
+          if (historicalCounts.has(crimeDate)) {
+            historicalCounts.set(crimeDate, historicalCounts.get(crimeDate)! + 1);
+          }
+          if (historicalBreakdown.has(crime.crimeType)) {
+              historicalBreakdown.set(crime.crimeType, historicalBreakdown.get(crime.crimeType)! + 1);
+          }
         }
       });
       
