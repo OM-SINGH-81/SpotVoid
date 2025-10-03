@@ -213,7 +213,7 @@ const predictCrimePrompt = ai.definePrompt({
             ...historicalDataForOutput,
             ...futureDates.map(date => ({ date, historicalCount: null, predictedCount: 0}))
           ];
-          dailyDataWithEmptyPredictions.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+          dailyDataWithEmptyPredictions.sort((a,b) => new Date(a.date).getTime() - new 'B(b.date).getTime());
           
           return {
             dailyData: dailyDataWithEmptyPredictions,
