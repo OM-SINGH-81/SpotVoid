@@ -3,8 +3,8 @@
  * @fileOverview A flow for listing available GenAI models.
  */
 
-import { ai } from '@/ai/genkit';
-import { listModels as listGenkitModels, type ModelReference } from 'genkit';
+import {ai} from '@/ai/genkit';
+import { listModels, type ModelReference } from 'genkit';
 import { z } from 'genkit';
 
 
@@ -19,14 +19,14 @@ const ModelListSchema = z.array(ModelInfoSchema);
 
 export type ModelList = z.infer<typeof ModelListSchema>;
 
-export const listModels = ai.defineFlow(
+export const listModelsFlow = ai.defineFlow(
   {
     name: 'listModelsFlow',
     inputSchema: z.null(),
     outputSchema: ModelListSchema,
   },
   async () => {
-    const models = listGenkitModels();
+    const models = listModels();
     
     // We need to format the models to match our Zod schema.
     const formattedModels = models.map(m => ({

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { listModels, type ModelList } from '@/ai/flows/list-models';
+import { listModelsFlow, type ModelList } from '@/ai/flows/list-models';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
@@ -17,7 +17,7 @@ export default function ListModelsPage() {
     setError(null);
     setModels(null);
     try {
-      const result = await listModels(null);
+      const result = await listModelsFlow(null);
       setModels(result);
     } catch (e: any) {
       console.error(e);
