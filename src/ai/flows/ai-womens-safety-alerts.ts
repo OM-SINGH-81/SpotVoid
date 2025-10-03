@@ -33,7 +33,7 @@ export async function generateWomensSafetyAlerts(): Promise<GenerateWomensSafety
 
 const prompt = ai.definePrompt({
     name: 'womensSafetyAlertsPrompt',
-    model: 'gemini-2.5-flash',
+    model: 'gemini-2.5-pro',
     input: { schema: z.object({
         womensSafetyCrimes: z.any().describe("A JSON string of recent crime incidents related to women's safety, including harassment, theft, and accidents."),
     }) },
@@ -82,4 +82,3 @@ const generateWomensSafetyAlertsFlow = ai.defineFlow(
 );
 
     
-
