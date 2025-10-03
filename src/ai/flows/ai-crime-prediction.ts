@@ -81,7 +81,7 @@ const predictCrimePrompt = ai.definePrompt({
   
   Your task is to predict the daily crime counts for the following future dates: {{#each futureDates}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
   
-  Also, provide a plausible breakdown of the total predicted crimes for these future dates across the following crime types: {{#each crimeTypes}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
+  Also, provide a plausible breakdown of the total predicted crimes for these future dates across the following crime types: {{#each crimeTypes}}{{{this}}}{-  {{#unless @last}}, {{/unless}}{{/each}}.
   
   Your entire response must be a valid JSON object matching the output schema. Ensure that you provide a prediction for every future date requested. The predicted counts should be reasonable based on the historical average.
   `,
@@ -213,7 +213,7 @@ const predictCrimePrompt = ai.definePrompt({
             ...historicalDataForOutput,
             ...futureDates.map(date => ({ date, historicalCount: null, predictedCount: 0}))
           ];
-          dailyDataWithEmptyPredictions.sort((a,b) => new Date(a.date).getTime() - new 'B(b.date).getTime());
+          dailyDataWithEmptyPredictions.sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime());
           
           return {
             dailyData: dailyDataWithEmptyPredictions,
