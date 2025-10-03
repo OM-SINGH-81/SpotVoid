@@ -42,7 +42,7 @@ export async function generatePatrolRoute(input: GeneratePatrolRouteInput): Prom
 
 const prompt = ai.definePrompt({
     name: 'generatePatrolRoutePrompt',
-    model: 'gemini-2.5-flash',
+    model: 'gemini-1.5-flash',
     input: { schema: z.object({
         predictedHotspots: z.any().describe('A JSON string of predicted crime hotspots including their locations, types, and predicted counts.'),
     }) },
@@ -116,3 +116,5 @@ const generatePatrolRouteFlow = ai.defineFlow(
         return output;
     }
 );
+
+    

@@ -51,7 +51,7 @@ export async function predictCrime(input: PredictCrimeInput): Promise<PredictCri
 
 const predictCrimePrompt = ai.definePrompt({
     name: 'predictCrimePrompt',
-    model: 'gemini-2.5-flash',
+    model: 'gemini-1.5-flash',
     input: {
       schema: z.object({
         historicalSummary: z.string(),
@@ -96,43 +96,45 @@ const predictCrimePrompt = ai.definePrompt({
     async (input) => {
       const { startDate, endDate } = input.dateRange;
       const start = parseISO(startDate);
-      const end = endOfDay(parseISO(endDate)); 
+      const end = endOfDay(parseISO(endDate));
       const today = startOfToday();
   
       const allDays = eachDayOfInterval({ start, end });
-      const pastAndTodayDays = allDays.filter(d => !isAfter(d, end));
+      const pastAndTodayDays = allDays.filter(d => !isAfter(d, today));
       const futureDays = allDays.filter(d => isAfter(d, today));
       const futureDates = futureDays.map(day => format(day, 'yyyy-MM-dd'));
 
-      const relevantHistoricalCrimes = crimeData.filter((crime) => {
-        const crimeDate = parseISO(crime.date);
-        const isDateInRange = crimeDate >= start && crimeDate <= end;
+      // Filter for all relevant crimes based on station and type
+      const relevantCrimes = crimeData.filter((crime) => {
         const isStationMatch =
           input.policeStation === 'all' ||
           crime.policeStation === input.policeStation;
         const isCrimeTypeMatch = input.crimeTypes.includes(crime.crimeType);
-        return isDateInRange && isStationMatch && isCrimeTypeMatch;
+        return isStationMatch && isCrimeTypeMatch;
       });
-  
+
+      // === START: CORRECTED HISTORICAL DATA AGGREGATION ===
       const historicalCounts = new Map<string, number>();
       const historicalBreakdown = new Map<string, number>();
       input.crimeTypes.forEach((ct) => historicalBreakdown.set(ct, 0));
-  
+      
       pastAndTodayDays.forEach(day => {
           const formattedDate = format(day, 'yyyy-MM-dd');
           historicalCounts.set(formattedDate, 0);
       });
       
+      const relevantHistoricalCrimes = relevantCrimes.filter(crime => {
+          const crimeDate = parseISO(crime.date);
+          return crimeDate >= start && crimeDate <= today;
+      });
+
       relevantHistoricalCrimes.forEach((crime) => {
-        const crimeDate = parseISO(crime.date);
-        if (crimeDate <= end) {
-          const formattedDate = format(crimeDate, 'yyyy-MM-dd');
-          if (historicalCounts.has(formattedDate)) {
-            historicalCounts.set(formattedDate, historicalCounts.get(formattedDate)! + 1);
-          }
-          if (historicalBreakdown.has(crime.crimeType)) {
-              historicalBreakdown.set(crime.crimeType, historicalBreakdown.get(crime.crimeType)! + 1);
-          }
+        const formattedDate = format(parseISO(crime.date), 'yyyy-MM-dd');
+        if (historicalCounts.has(formattedDate)) {
+          historicalCounts.set(formattedDate, historicalCounts.get(formattedDate)! + 1);
+        }
+        if (historicalBreakdown.has(crime.crimeType)) {
+            historicalBreakdown.set(crime.crimeType, historicalBreakdown.get(crime.crimeType)! + 1);
         }
       });
       
@@ -147,11 +149,11 @@ const predictCrimePrompt = ai.definePrompt({
       const historicalBreakdownForOutput = Array.from(historicalBreakdown.entries())
         .map(([crimeType, count]) => ({ crimeType, count }));
   
-      const totalHistoricalCrimes = Array.from(historicalCounts.values()).reduce((a, b) => a + b, 0);
+      const totalHistoricalCrimes = relevantHistoricalCrimes.length;
       const historicalDays = pastAndTodayDays.length || 1;
       const historicalSummary = `For police station '${input.policeStation}' and crime types [${input.crimeTypes.join(', ')}], there were a total of ${totalHistoricalCrimes} incidents over the last ${historicalDays} days. The daily average was about ${(totalHistoricalCrimes / historicalDays).toFixed(1)} incidents.`;
-  
-      
+      // === END: CORRECTED HISTORICAL DATA AGGREGATION ===
+
       if (futureDates.length === 0) {
         return {
           dailyData: historicalDataForOutput,
@@ -214,3 +216,5 @@ const predictCrimePrompt = ai.definePrompt({
       }
     }
   );
+
+    
