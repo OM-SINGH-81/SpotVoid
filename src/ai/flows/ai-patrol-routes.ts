@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -65,7 +66,8 @@ const prompt = ai.definePrompt({
         - Its 'order' in the patrol sequence (starting from 1).
     4.  Finally, calculate the total estimated 'totalDistance' of the route in kilometers and the 'estimatedTime' to complete it in minutes.
     
-    Generate a valid JSON object that matches the specified output schema.`,
+    Generate a valid JSON object that matches the specified output schema.
+    `,
 });
 
 const generatePatrolRouteFlow = ai.defineFlow(
@@ -114,3 +116,4 @@ const generatePatrolRouteFlow = ai.defineFlow(
         return output;
     }
 );
+

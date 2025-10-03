@@ -83,7 +83,7 @@ const predictCrimePrompt = ai.definePrompt({
   
   Also, provide a plausible breakdown of the total predicted crimes for these future dates across the following crime types: {{#each crimeTypes}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}.
   
-  Your entire response must be a valid JSON object matching the output schema.
+  Your entire response must be a valid JSON object matching the output schema. Ensure that you provide a prediction for every future date requested. The predicted counts should be reasonable based on the historical average.
   `,
   });
   
@@ -100,7 +100,7 @@ const predictCrimePrompt = ai.definePrompt({
       const today = startOfToday();
   
       const allDays = eachDayOfInterval({ start, end });
-      const pastAndTodayDays = allDays.filter(d => !isBefore(today, d));
+      const pastAndTodayDays = allDays.filter(d => !isBefore(d, today));
       const futureDays = allDays.filter(d => isBefore(today, d));
       const futureDates = futureDays.map(day => format(day, 'yyyy-MM-dd'));
 
