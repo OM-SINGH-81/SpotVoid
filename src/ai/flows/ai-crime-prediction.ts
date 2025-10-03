@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { crimeData } from '@/lib/mock-data';
-import { eachDayOfInterval, format, parseISO, isBefore, startOfToday, subDays } from 'date-fns';
+import { eachDayOfInterval, format, parseISO, isBefore, isAfter, startOfToday, subDays } from 'date-fns';
 
 const PredictCrimeInputSchema = z.object({
   dateRange: z.object({
@@ -100,14 +100,14 @@ const predictCrimePrompt = ai.definePrompt({
       const today = startOfToday();
   
       const allDays = eachDayOfInterval({ start, end });
-      const pastAndTodayDays = allDays.filter(d => !isBefore(d, today));
-      const futureDays = allDays.filter(d => isBefore(today, d));
+      const pastAndTodayDays = allDays.filter(d => !isAfter(d, today));
+      const futureDays = allDays.filter(d => isAfter(d, today));
       const futureDates = futureDays.map(day => format(day, 'yyyy-MM-dd'));
 
       // 1. Filter crimes for the historical period
       const historicalCrimes = crimeData.filter((crime) => {
         const crimeDate = parseISO(crime.date);
-        const isDateInRange = crimeDate >= start && crimeDate < today;
+        const isDateInRange = crimeDate >= start && crimeDate <= today;
         const isStationMatch =
           input.policeStation === 'all' ||
           crime.policeStation === input.policeStation;
