@@ -50,7 +50,7 @@ export async function predictCrime(input: PredictCrimeInput): Promise<PredictCri
 
 const predictCrimePrompt = ai.definePrompt({
     name: 'predictCrimePrompt',
-    model: 'gemini-1.5-flash',
+    model: 'gemini-pro',
     input: {
       schema: z.object({
         historicalData: z.string().describe('A JSON string of historical crime incidents.'),
