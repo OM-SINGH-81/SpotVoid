@@ -1,227 +1,69 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { MapPin, Database, Map, BarChart3, Menu, X, Shield } from "lucide-react";
-import { SpotvoidLogo } from "@/components/icons";
+import React, { useState } from 'react';
+import { listModels, type ModelList } from '@/ai/flows/list-models';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Loader2 } from 'lucide-react';
+import Header from '@/components/header';
 
+export default function ListModelsPage() {
+  const [models, setModels] = useState<ModelList | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-// Dynamic PixelBlast to avoid SSR issues
-const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
-  ssr: false,
-  loading: () => (
-    <div className="absolute inset-0 flex items-center justify-center bg-black text-white">
-      Loading background...
-    </div>
-  ),
-});
-
-export default function LandingPage() {
-  const [showBg, setShowBg] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  useEffect(() => {
-    const t = setTimeout(() => setShowBg(true), 300);
-    return () => clearTimeout(t);
-  }, []);
+  const handleFetchModels = async () => {
+    setIsLoading(true);
+    setError(null);
+    setModels(null);
+    try {
+      const result = await listModels(null);
+      setModels(result);
+    } catch (e: any) {
+      console.error(e);
+      setError(e.message || 'An unexpected error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-black text-white overflow-x-hidden scroll-smooth">
-      
-      {/* Navbar */}
-      <nav className="fixed top-0 left-0 w-full z-20 bg-black/50 backdrop-blur-md py-4 px-6 md:px-8 flex justify-between items-center">
-        <div className="flex items-center gap-3">
-            <SpotvoidLogo className="h-10 w-10" />
-            <h1 className="text-2xl font-bold tracking-wider"><span className="font-light">SPOT</span>VOID</h1>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <main className="flex-1 p-4 sm:p-6 lg:p-8">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Available AI Models</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                Click the button below to fetch the list of AI models available to your API key. This will help diagnose the 'Model not found' errors.
+              </p>
+              <Button onClick={handleFetchModels} disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Fetch Models
+              </Button>
+
+              {error && (
+                <div className="mt-4 p-4 bg-destructive/10 border border-destructive/50 text-destructive rounded-md">
+                  <h3 className="font-bold">Error</h3>
+                  <pre className="text-sm whitespace-pre-wrap font-code">{error}</pre>
+                </div>
+              )}
+
+              {models && (
+                <div className="mt-4">
+                  <h3 className="font-bold mb-2">Results:</h3>
+                  <pre className="p-4 bg-muted rounded-md text-sm whitespace-pre-wrap font-code">
+                    {JSON.stringify(models, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         </div>
-        
-        {/* Desktop Menu */}
-        <div className="hidden md:flex space-x-6 items-center">
-          <Link href="#features" className="hover:text-primary transition-colors">Features</Link>
-          <Link href="/womens-safety" className="hover:text-primary transition-colors flex items-center gap-2"><Shield className="h-4 w-4" />Women's Safety</Link>
-          <Link href="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <Button variant="ghost" size="icon" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            <span className="sr-only">Toggle menu</span>
-          </Button>
-        </div>
-      </nav>
-
-      {/* Mobile Menu Overlay */}
-      {isMenuOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          className="md:hidden fixed top-16 left-0 w-full h-fit bg-black/80 backdrop-blur-lg z-10 flex flex-col items-center space-y-6 py-8"
-        >
-          <Link href="#features" className="text-lg hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>Features</Link>
-          <Link href="/womens-safety" className="text-lg hover:text-primary transition-colors flex items-center gap-2" onClick={() => setIsMenuOpen(false)}><Shield className="h-5 w-5" />Women's Safety</Link>
-          <Link href="/dashboard" className="text-lg hover:text-primary transition-colors" onClick={() => setIsMenuOpen(false)}>Dashboard</Link>
-        </motion.div>
-      )}
-
-
-      {/* PixelBlast Background */}
-      {showBg && (
-        <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.2 }}
-            className="fixed z-0 pointer-events-none 
-                    w-[105vw] h-[105vh] -top-[2vh] -left-[2vw]"
-        >
-            <PixelBlast
-            variant="square"
-            pixelSize={8}
-            color="#E74C3C"
-            speed={0.5}
-            patternDensity={1.5}
-            patternScale={1.5}
-            className="w-full h-full"
-            />
-        </motion.div>
-      )}
-
-
-
-      {/* Hero Section */}
-      <section className="relative flex flex-col items-center justify-center flex-1 text-center px-6 pt-36 pb-36">
-        <motion.h1
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1 }}
-          className="text-5xl font-extrabold drop-shadow-lg"
-        >
-          See the Blind Spots Before Crime Strikes
-        </motion.h1>
-
-        <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1.2 }}
-          className="mt-6 max-w-2xl text-lg text-gray-200"
-        >
-          Powered by secure API integrations and real-time data, SPOTVOID helps agencies stay one step ahead of crime.
-        </motion.p>
-
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1.4 }}
-          className="mt-10"
-        >
-          <Button
-            asChild
-            size="lg"
-            className="bg-primary hover:bg-primary/80 text-primary-foreground transition-transform hover:scale-105"
-          >
-            <Link href="/dashboard">Get Started</Link>
-          </Button>
-        </motion.div>
-      </section>
-
-      {/* Features Section */}
-      <section id="features" className="relative py-24 px-8">
-        <div className="max-w-6xl mx-auto grid gap-12 md:grid-cols-2 lg:grid-cols-4 text-center">
-          {[
-            { icon: <MapPin className="w-10 h-10 mx-auto mb-4 text-primary" />, title: "Real-time Protection", desc: "Detect threats before they escalate using live data streams." },
-            { icon: <Database className="w-10 h-10 mx-auto mb-4 text-primary" />, title: "Data-Driven Predictions", desc: "Use integrated APIs to highlight high-risk zones instantly." },
-            { icon: <Map className="w-10 h-10 mx-auto mb-4 text-primary" />, title: "Smart Mapping", desc: "Visualize hotspots with interactive geospatial analytics." },
-            { icon: <BarChart3 className="w-10 h-10 mx-auto mb-4 text-primary" />, title: "Actionable Insights", desc: "Get clear, real-time reports for better decision making." },
-          ].map((f, i) => (
-            <motion.div
-              key={i}
-              initial={{ y: 20, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: i * 0.2 }}
-              viewport={{ once: true }}
-              className="p-6 rounded-xl bg-black/20 border border-white/10 backdrop-blur-sm"
-            >
-              {f.icon}
-              <h3 className="text-xl font-semibold mb-3">{f.title}</h3>
-              <p className="text-gray-300">{f.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section id="cta" className="relative py-24 px-8 flex justify-center">
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1 }}
-          viewport={{ once: true }}
-          className="max-w-4xl text-center bg-black/20 rounded-2xl p-12 backdrop-blur-sm"
-        >
-          <h2 className="text-4xl font-bold mb-6">Ready to make cities safer?</h2>
-          <p className="text-lg text-gray-300 mb-10">
-            Join law enforcement agencies already using <b>SPOTVOID</b> to prevent crime and optimize city security.
-          </p>
-          <Button
-            asChild
-            size="lg"
-            className="bg-primary hover:bg-primary/80 text-primary-foreground transition-transform hover:scale-105"
-          >
-            <Link href="#learn-more">Learn More</Link>
-          </Button>
-        </motion.div>
-      </section>
-
-      {/* Learn More Section */}
-      <section id="learn-more" className="relative py-24 px-8 text-center">
-        <motion.h2
-          initial={{ y: 20, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-4xl font-bold mb-6"
-        >
-          Why Choose SPOTVOID?
-        </motion.h2>
-        <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          whileInView={{ y: 0, opacity: 1 }}
-          transition={{ duration: 1 }}
-          viewport={{ once: true }}
-          className="max-w-3xl mx-auto text-lg text-gray-300 mb-12"
-        >
-          SPOTVOID integrates directly with secure APIs to provide predictive insights, optimized patrol routes, and reliable crime trend analysis — without heavy infrastructure or complex overhead.
-        </motion.p>
-
-        <div className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto">
-          {[
-            { title: "Seamless API Integration", desc: "Plug into existing police systems and data sources effortlessly." },
-            { title: "Lightweight & Fast", desc: "Optimized for speed and accuracy without complex overhead." },
-            { title: "Proven Reliability", desc: "Trusted by agencies for consistent and actionable insights." },
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ y: 20, opacity: 0 }}
-              whileInView={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.8, delay: i * 0.2 }}
-              viewport={{ once: true }}
-              className="p-6 rounded-xl bg-black/20 border border-white/10 backdrop-blur-sm"
-            >
-              <h3 className="text-xl font-semibold mb-3">{item.title}</h3>
-              <p className="text-gray-300">{item.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-black/80 backdrop-blur-md text-gray-400 py-6 text-center mt-12 z-10">
-        &copy; {new Date().getFullYear()} SPOTVOID. All rights reserved.
-      </footer>
+      </main>
     </div>
   );
 }
