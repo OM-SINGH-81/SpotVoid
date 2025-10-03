@@ -197,8 +197,7 @@ const predictCrimePrompt = ai.definePrompt({
     
         return {
           dailyData: combinedDailyData,
-          predictedCrimeTypeBrea
-kdown: predictionOutput.predictedBreakdown,
+          predictedCrimeTypeBreakdown: predictionOutput.predictedBreakdown,
           historicalCrimeTypeBreakdown: historicalBreakdownForOutput,
         };
       } catch (e) {
