@@ -6,7 +6,7 @@
 
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
-import { listModels } from 'genkit/ai';
+import { listModels } from 'genkit';
 
 
 export const simpleTestFlow = ai.defineFlow(
