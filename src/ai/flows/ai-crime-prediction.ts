@@ -12,7 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { crimeData } from '@/lib/mock-data';
-import { eachDayOfInterval, format, parseISO, isAfter, startOfToday } from 'date-fns';
+import { eachDayOfInterval, format, parseISO, isAfter, startOfToday, endOfDay } from 'date-fns';
 
 const PredictCrimeInputSchema = z.object({
   dateRange: z.object({
@@ -96,7 +96,7 @@ const predictCrimePrompt = ai.definePrompt({
     async (input) => {
       const { startDate, endDate } = input.dateRange;
       const start = parseISO(startDate);
-      const end = parseISO(endDate);
+      const end = endOfDay(parseISO(endDate)); // Use end of day to include all crimes on the end date
       const today = startOfToday();
   
       const allDays = eachDayOfInterval({ start, end });
@@ -104,10 +104,10 @@ const predictCrimePrompt = ai.definePrompt({
       const futureDays = allDays.filter(d => isAfter(d, today));
       const futureDates = futureDays.map(day => format(day, 'yyyy-MM-dd'));
 
-      // 1. Filter crimes for the historical period
-      const historicalCrimes = crimeData.filter((crime) => {
+      // 1. Filter crimes based on the full selected date range for historical analysis
+      const relevantHistoricalCrimes = crimeData.filter((crime) => {
         const crimeDate = parseISO(crime.date);
-        const isDateInRange = crimeDate >= start && crimeDate <= end; // Correctly use the end of the selected range
+        const isDateInRange = crimeDate >= start && crimeDate <= end;
         const isStationMatch =
           input.policeStation === 'all' ||
           crime.policeStation === input.policeStation;
@@ -115,7 +115,7 @@ const predictCrimePrompt = ai.definePrompt({
         return isDateInRange && isStationMatch && isCrimeTypeMatch;
       });
   
-      // 2. Aggregate historical data for output
+      // 2. Aggregate historical data
       const historicalCounts = new Map<string, number>();
       const historicalBreakdown = new Map<string, number>();
       input.crimeTypes.forEach((ct) => historicalBreakdown.set(ct, 0));
@@ -126,12 +126,13 @@ const predictCrimePrompt = ai.definePrompt({
           historicalCounts.set(formattedDate, 0);
       });
       
-      historicalCrimes.forEach((crime) => {
-        // Only count crimes that happened in the past/today
-        if(parseISO(crime.date) <= today) {
-          const crimeDate = format(parseISO(crime.date), 'yyyy-MM-dd');
-          if (historicalCounts.has(crimeDate)) {
-            historicalCounts.set(crimeDate, historicalCounts.get(crimeDate)! + 1);
+      relevantHistoricalCrimes.forEach((crime) => {
+        const crimeDate = parseISO(crime.date);
+        // Only count crimes that happened up to today within the selected range
+        if (crimeDate <= today && crimeDate <= end) {
+          const formattedDate = format(crimeDate, 'yyyy-MM-dd');
+          if (historicalCounts.has(formattedDate)) {
+            historicalCounts.set(formattedDate, historicalCounts.get(formattedDate)! + 1);
           }
           if (historicalBreakdown.has(crime.crimeType)) {
               historicalBreakdown.set(crime.crimeType, historicalBreakdown.get(crime.crimeType)! + 1);
@@ -150,10 +151,10 @@ const predictCrimePrompt = ai.definePrompt({
       const historicalBreakdownForOutput = Array.from(historicalBreakdown.entries())
         .map(([crimeType, count]) => ({ crimeType, count }));
   
-      // 3. Create a simple summary for the AI
-      const totalHistoricalCrimes = historicalDataForOutput.reduce((acc, curr) => acc + (curr.historicalCount || 0), 0);
-      const days = historicalDataForOutput.length || 1;
-      const historicalSummary = `For police station '${input.policeStation}' and crime types [${input.crimeTypes.join(', ')}], there were a total of ${totalHistoricalCrimes} incidents over the last ${days} days. The daily average was about ${(totalHistoricalCrimes / days).toFixed(1)} incidents.`;
+      // 3. Create summary for the AI based on the full historical period selected
+      const totalHistoricalCrimes = relevantHistoricalCrimes.filter(c => parseISO(c.date) <= today).length;
+      const historicalDays = pastAndTodayDays.length || 1;
+      const historicalSummary = `For police station '${input.policeStation}' and crime types [${input.crimeTypes.join(', ')}], there were a total of ${totalHistoricalCrimes} incidents over the last ${historicalDays} days. The daily average was about ${(totalHistoricalCrimes / historicalDays).toFixed(1)} incidents.`;
   
       
       if (futureDates.length === 0) {
@@ -224,3 +225,5 @@ const predictCrimePrompt = ai.definePrompt({
   );
   
   
+
+    
