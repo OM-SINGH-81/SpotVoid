@@ -51,7 +51,7 @@ export async function predictCrime(input: PredictCrimeInput): Promise<PredictCri
 
 const predictCrimePrompt = ai.definePrompt({
     name: 'predictCrimePrompt',
-    model: 'gemini-1.5-flash',
+    model: 'gemini-pro',
     input: {
       schema: z.object({
         historicalSummary: z.string(),
@@ -125,7 +125,7 @@ const predictCrimePrompt = ai.definePrompt({
       
       const relevantHistoricalCrimes = relevantCrimes.filter(crime => {
           const crimeDate = parseISO(crime.date);
-          return crimeDate >= start && crimeDate <= today;
+          return crimeDate >= start && crimeDate <= end && !isAfter(crimeDate, today);
       });
 
       relevantHistoricalCrimes.forEach((crime) => {
