@@ -4,8 +4,11 @@ import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from '@/components/theme-provider';
 
 export const metadata: Metadata = {
-  title: 'SPOTVOID',
+  title: 'CrimeWise',
   description: 'See the Blind Spots Before Crime Strikes',
+  icons: {
+    icon: '/icon.png',
+  },
 };
 
 export default function RootLayout({
