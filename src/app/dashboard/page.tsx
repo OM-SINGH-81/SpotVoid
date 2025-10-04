@@ -17,9 +17,7 @@ import { PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction";
 import MapProvider from "@/components/map-provider";
 import Header from "@/components/header";
 import Filters from "@/components/dashboard/filters";
-import CrimeHeatmap from "@/components/dashboard/crime-heatmap";
 import CrimePrediction from "@/components/dashboard/crime-prediction";
-import PatrolRoutes from "@/components/dashboard/patrol-routes";
 import ChatAssistant from "@/components/dashboard/chat-assistant";
 import DashboardLoader from "@/components/dashboard-loader";
 
@@ -30,6 +28,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+
+
+const CrimeHeatmap = dynamic(() => import("@/components/dashboard/crime-heatmap"), {
+  ssr: false,
+  loading: () => <Skeleton className="w-full h-full" />,
+});
+
+const PatrolRoutes = dynamic(() => import("@/components/dashboard/patrol-routes"), {
+    ssr: false,
+    loading: () => <Skeleton className="w-full h-full" />,
+});
 
 
 const PixelBlast = dynamic(() => import("@/components/effects/PixelBlast"), {
