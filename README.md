@@ -20,18 +20,23 @@ To run this project on your local machine using Visual Studio Code, follow these
     *   First, make sure your project is connected to a Git repository (e.g., on GitHub, GitLab, or Bitbucket).
     *   Clone the repository to your local machine using the following command in your terminal:
         ```bash
-        git clone <your-repository-url>
+        git clone https://github.com/OM-SINGH-81/SpotVoid.git
         ```
-    *   Replace `<your-repository-url>` with the actual URL of your Git repository.
+    *   This will create a `SpotVoid` folder.
 
-2.  **Open the Project**: Open the cloned project folder in VS Code.
+2.  **Open the Project**: Open the cloned `SpotVoid` folder in VS Code.
 
 3.  **Install Dependencies**: Open the integrated terminal in VS Code (you can use `Ctrl+\`` or `Cmd+\``) and run the following command to install all the necessary packages:
     ```bash
     npm install
     ```
 
-4.  **Set Up Environment Variables**:
+4.  **Fix Vulnerabilities**: After installation, it's a good practice to run npm's automatic fix for any reported security vulnerabilities:
+    ```bash
+    npm audit fix
+    ```
+
+5.  **Set Up Environment Variables**:
     *   Create a new file in the root of your project named `.env.local`.
     *   Add the following lines to this file, replacing `YOUR_API_KEY` with your actual keys:
 
