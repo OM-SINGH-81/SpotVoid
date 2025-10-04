@@ -69,10 +69,13 @@ const MissingKeyMessage = () => (
 export default function WomensSafetyPage() {
   const [showBg, setShowBg] = useState(false);
   const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null);
-  const [apiKey, setApiKey] = useState<string | undefined>(undefined);
+  const [isApiKeyValid, setIsApiKeyValid] = useState(false);
 
   useEffect(() => {
-    setApiKey(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY);
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+    if (apiKey && apiKey !== "YOUR_API_KEY" && apiKey.length > 5) {
+      setIsApiKeyValid(true);
+    }
     const timer = setTimeout(() => {
       setShowBg(true);
     }, 150);
@@ -103,7 +106,7 @@ export default function WomensSafetyPage() {
         <div className="flex flex-col min-h-screen bg-transparent">
           <Header />
           <main className="flex-1 p-4 sm:p-6 lg:p-8">
-          {!apiKey ? <MissingKeyMessage /> : (
+          {!isApiKeyValid ? <MissingKeyMessage /> : (
             <div className="mx-auto max-w-screen-2xl">
               <motion.div
                 className="space-y-8"
