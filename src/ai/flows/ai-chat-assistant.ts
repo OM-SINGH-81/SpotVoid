@@ -31,7 +31,7 @@ const prompt = ai.definePrompt({
   input: {schema: AskQuestionInputSchema},
   output: {schema: AskQuestionOutputSchema},
   tools: [getCrimeData],
-  model: 'gemini-pro',
+  model: 'gemini-1.0-pro',
   prompt: `You are a helpful assistant that answers questions about crime data. 
   
   Instructions:
