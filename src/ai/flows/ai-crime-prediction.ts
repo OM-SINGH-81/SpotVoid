@@ -8,7 +8,7 @@
  * - PredictCrimeOutput - The return type for the predictCrime function.
  */
 
-import {ai} from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import {z} from 'genkit';
 import { crimeData } from '@/lib/mock-data';
 import { eachDayOfInterval, format, parseISO, isAfter, startOfToday } from 'date-fns';
@@ -48,7 +48,7 @@ export async function predictCrime(input: PredictCrimeInput): Promise<PredictCri
   return predictCrimeFlow(input);
 }
 
-const predictCrimePrompt = ai.definePrompt({
+const predictCrimePrompt = getAi().definePrompt({
     name: 'predictCrimePrompt',
     model: 'gemini-1.0-pro',
     input: {
@@ -89,7 +89,7 @@ const predictCrimePrompt = ai.definePrompt({
   `,
   });
   
-  const predictCrimeFlow = ai.defineFlow(
+  const predictCrimeFlow = getAi().defineFlow(
     {
       name: 'predictCrimeFlow',
       inputSchema: PredictCrimeInputSchema,

@@ -5,7 +5,7 @@
  * - getCrimeData - A Genkit tool that retrieves crime data based on specified filters.
  */
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'genkit';
 import { crimeData } from '@/lib/mock-data';
 
@@ -16,7 +16,7 @@ const CrimeDataFilterSchema = z.object({
     endDate: z.string().optional().describe('The end date for the filter range (ISO 8601 format).'),
 });
 
-export const getCrimeData = ai.defineTool(
+export const getCrimeData = getAi().defineTool(
     {
         name: 'getCrimeData',
         description: 'Retrieves a list of crime incidents based on the provided filters. Use this to answer questions about crime statistics, trends, and specific incidents.',

@@ -7,7 +7,7 @@
  * - GenerateWomensSafetyAlertsOutput - The return type for the function.
  */
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'genkit';
 import { crimeData } from '@/lib/mock-data';
 import { isWithinInterval, subDays } from 'date-fns';
@@ -30,7 +30,7 @@ export async function generateWomensSafetyAlerts(): Promise<GenerateWomensSafety
     return generateWomensSafetyAlertsFlow(null);
 }
 
-const prompt = ai.definePrompt({
+const prompt = getAi().definePrompt({
     name: 'womensSafetyAlertsPrompt',
     model: 'gemini-1.0-pro',
     input: { schema: z.object({
@@ -53,7 +53,7 @@ const prompt = ai.definePrompt({
     Generate a valid JSON object that matches the specified output schema.`,
 });
 
-const generateWomensSafetyAlertsFlow = ai.defineFlow(
+const generateWomensSafetyAlertsFlow = getAi().defineFlow(
     {
         name: 'generateWomensSafetyAlertsFlow',
         inputSchema: z.null(),

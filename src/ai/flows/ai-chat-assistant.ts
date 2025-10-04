@@ -8,7 +8,7 @@
  * - AskQuestionOutput - The return type for the askQuestion function.
  */
 
-import {ai} from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import {z} from 'genkit';
 import { getCrimeData } from '@/ai/tools/crime-data-tool';
 
@@ -26,7 +26,7 @@ export async function askQuestion(input: AskQuestionInput): Promise<AskQuestionO
   return askQuestionFlow(input);
 }
 
-const prompt = ai.definePrompt({
+const prompt = getAi().definePrompt({
   name: 'askQuestionPrompt',
   input: {schema: AskQuestionInputSchema},
   output: {schema: AskQuestionOutputSchema},
@@ -43,7 +43,7 @@ const prompt = ai.definePrompt({
   Question: {{{question}}}`,
 });
 
-const askQuestionFlow = ai.defineFlow(
+const askQuestionFlow = getAi().defineFlow(
   {
     name: 'askQuestionFlow',
     inputSchema: AskQuestionInputSchema,

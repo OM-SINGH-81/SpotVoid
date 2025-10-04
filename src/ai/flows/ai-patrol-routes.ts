@@ -8,7 +8,7 @@
  * - GeneratePatrolRouteOutput - The return type for the generatePatrolRoute function.
  */
 
-import { ai } from '@/ai/genkit';
+import { getAi } from '@/ai/genkit';
 import { z } from 'genkit';
 import type { PredictCrimeOutput } from './ai-crime-prediction';
 import { crimeData } from '@/lib/mock-data';
@@ -39,7 +39,7 @@ export async function generatePatrolRoute(input: GeneratePatrolRouteInput): Prom
     return generatePatrolRouteFlow(input);
 }
 
-const prompt = ai.definePrompt({
+const prompt = getAi().definePrompt({
     name: 'generatePatrolRoutePrompt',
     model: 'gemini-1.0-pro',
     input: { schema: z.object({
@@ -69,7 +69,7 @@ const prompt = ai.definePrompt({
     `,
 });
 
-const generatePatrolRouteFlow = ai.defineFlow(
+const generatePatrolRouteFlow = getAi().defineFlow(
     {
         name: 'generatePatrolRouteFlow',
         inputSchema: GeneratePatrolRouteInputSchema,
