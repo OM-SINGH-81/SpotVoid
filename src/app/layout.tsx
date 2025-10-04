@@ -6,9 +6,6 @@ import { ThemeProvider } from '@/components/theme-provider';
 export const metadata: Metadata = {
   title: 'CrimeWise',
   description: 'See the Blind Spots Before Crime Strikes',
-  icons: {
-    icon: '/icon.png',
-  },
 };
 
 export default function RootLayout({
