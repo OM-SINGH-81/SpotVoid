@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverActions: true,
-  },
+  /* config options here */
+  serverActions: true,
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -24,7 +23,7 @@ const nextConfig = {
         pathname: '/**',
       },
       {
-        protocol: 'https://',
+        protocol: 'https',
         hostname: 'picsum.photos',
         port: '',
         pathname: '/**',
