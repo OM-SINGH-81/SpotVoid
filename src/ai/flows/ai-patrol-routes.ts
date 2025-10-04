@@ -41,7 +41,7 @@ export async function generatePatrolRoute(input: GeneratePatrolRouteInput): Prom
 
 const prompt = getAi().definePrompt({
     name: 'generatePatrolRoutePrompt',
-    model: 'gemini-pro',
+    model: 'gemini-1.5-flash-latest',
     input: { schema: z.object({
         predictedHotspots: z.any().describe('A JSON string of predicted crime hotspots including their locations, types, and predicted counts.'),
     }) },
