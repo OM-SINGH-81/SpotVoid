@@ -8,7 +8,7 @@
  * - AskQuestionOutput - The return type for the askQuestion function.
  */
 
-import { getAi } from '@/ai/genkit';
+import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { getCrimeData } from '@/ai/tools/crime-data-tool';
 
@@ -26,24 +26,17 @@ export async function askQuestion(input: AskQuestionInput): Promise<AskQuestionO
   return askQuestionFlow(input);
 }
 
-const prompt = getAi().definePrompt({
+const prompt = ai.definePrompt({
   name: 'askQuestionPrompt',
   input: {schema: AskQuestionInputSchema},
   output: {schema: AskQuestionOutputSchema},
   tools: [getCrimeData],
-  model: 'gemini-1.5-flash',
-  prompt: `You are a helpful assistant that answers questions about crime data. 
-  
-  Instructions:
-  1. Use the available 'getCrimeData' tool to answer the user's question as accurately as possible.
-  2. Synthesize the data returned by the tool into a clear, natural language answer.
-  3. If the tool returns no data, state that you couldn't find any information for that query.
-  4. Your final response must be a valid JSON object with the "answer" field populated.
+  prompt: `You are a helpful assistant that answers questions about crime data. Use the available tools to answer the question as accurately as possible.
 
-  Question: {{{question}}}`,
+Question: {{{question}}}`,
 });
 
-const askQuestionFlow = getAi().defineFlow(
+const askQuestionFlow = ai.defineFlow(
   {
     name: 'askQuestionFlow',
     inputSchema: AskQuestionInputSchema,
@@ -51,9 +44,6 @@ const askQuestionFlow = getAi().defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    if (!output) {
-      return { answer: "I'm sorry, I was unable to process that request." };
-    }
-    return output;
+    return output!;
   }
 );

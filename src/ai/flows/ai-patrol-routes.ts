@@ -8,7 +8,7 @@
  * - GeneratePatrolRouteOutput - The return type for the generatePatrolRoute function.
  */
 
-import { getAi } from '@/ai/genkit';
+import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import type { PredictCrimeOutput } from './ai-crime-prediction';
 import { crimeData } from '@/lib/mock-data';
@@ -39,9 +39,8 @@ export async function generatePatrolRoute(input: GeneratePatrolRouteInput): Prom
     return generatePatrolRouteFlow(input);
 }
 
-const prompt = getAi().definePrompt({
+const prompt = ai.definePrompt({
     name: 'generatePatrolRoutePrompt',
-    model: 'gemini-1.5-flash',
     input: { schema: z.object({
         predictedHotspots: z.any().describe('A JSON string of predicted crime hotspots including their locations, types, and predicted counts.'),
     }) },
@@ -65,11 +64,10 @@ const prompt = getAi().definePrompt({
         - Its 'order' in the patrol sequence (starting from 1).
     4.  Finally, calculate the total estimated 'totalDistance' of the route in kilometers and the 'estimatedTime' to complete it in minutes.
     
-    Generate a valid JSON object that matches the specified output schema.
-    `,
+    Generate a valid JSON object that matches the specified output schema.`,
 });
 
-const generatePatrolRouteFlow = getAi().defineFlow(
+const generatePatrolRouteFlow = ai.defineFlow(
     {
         name: 'generatePatrolRouteFlow',
         inputSchema: GeneratePatrolRouteInputSchema,
@@ -78,16 +76,10 @@ const generatePatrolRouteFlow = getAi().defineFlow(
     async (input) => {
         const { predictedData } = input as { predictedData: PredictCrimeOutput };
 
-        if (!predictedData || !predictedData.predictedCrimeTypeBreakdown || predictedData.predictedCrimeTypeBreakdown.length === 0) {
-            return {
-                hotspots: [],
-                totalDistance: '0 km',
-                estimatedTime: '0 min',
-            };
-        }
-
         // We need to find plausible locations for the predicted crimes.
         // We'll use historical data for this.
+        const futureDates = new Set(predictedData.dailyData.filter(d => d.predictedCount && d.predictedCount > 0).map(d => d.date));
+
         const predictedCrimeTypes = new Set(predictedData.predictedCrimeTypeBreakdown.map(b => b.crimeType));
 
         // Find historical crimes that match the future predicted crime types.
