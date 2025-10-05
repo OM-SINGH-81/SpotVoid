@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -11,6 +12,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { getCrimeData } from '@/ai/tools/crime-data-tool';
+import { googleAI } from '@genkit-ai/google-genai';
 
 const AskQuestionInputSchema = z.object({
   question: z.string().describe('The question to ask about crime data.'),
@@ -28,6 +30,7 @@ export async function askQuestion(input: AskQuestionInput): Promise<AskQuestionO
 
 const prompt = ai.definePrompt({
   name: 'askQuestionPrompt',
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: AskQuestionInputSchema},
   output: {schema: AskQuestionOutputSchema},
   tools: [getCrimeData],
