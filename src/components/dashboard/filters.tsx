@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -24,9 +25,9 @@ type FiltersProps = {
 }
 
 const crimeColorMap: { [key: string]: string } = {
-  Theft: "hsl(var(--chart-1))",
+  Theft: "hsl(var(--chart-5))",
   Accident: "hsl(var(--chart-2))",
-  Harassment: "hsl(var(--chart-3))",
+  Harassment: "hsl(var(--destructive))",
 };
 
 
