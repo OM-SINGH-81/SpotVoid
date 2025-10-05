@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -12,6 +13,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import type { PredictCrimeOutput } from './ai-crime-prediction';
 import { crimeData } from '@/lib/mock-data';
+import { googleAI } from '@genkit-ai/google-genai';
 
 const GeneratePatrolRouteInputSchema = z.object({
     predictedData: z.any().describe('The output from the crime prediction flow.'),
@@ -41,6 +43,7 @@ export async function generatePatrolRoute(input: GeneratePatrolRouteInput): Prom
 
 const prompt = ai.definePrompt({
     name: 'generatePatrolRoutePrompt',
+    model: googleAI.model('gemini-1.5-flash'),
     input: { schema: z.object({
         predictedHotspots: z.any().describe('A JSON string of predicted crime hotspots including their locations, types, and predicted counts.'),
     }) },
