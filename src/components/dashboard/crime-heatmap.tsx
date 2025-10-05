@@ -13,9 +13,9 @@ type CrimeHeatmapProps = {
 };
 
 const crimeIconMap = {
-  Theft: { icon: <TheftIcon className="w-5 h-5" />, color: "hsl(var(--chart-4))" },
+  Theft: { icon: <TheftIcon className="w-5 h-5" />, color: "hsl(var(--chart-5))" },
   Accident: { icon: <AccidentIcon className="w-5 h-5" />, color: "hsl(var(--chart-2))" },
-  Harassment: { icon: <HarassmentIcon className="w-5 h-5" />, color: "hsl(var(--chart-5))" },
+  Harassment: { icon: <HarassmentIcon className="w-5 h-5" />, color: "hsl(var(--destructive))" },
 };
 
 export default function CrimeHeatmap({ data }: CrimeHeatmapProps) {
