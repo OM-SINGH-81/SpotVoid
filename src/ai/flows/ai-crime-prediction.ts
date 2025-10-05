@@ -12,6 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 import { crimeData } from '@/lib/mock-data';
 import { eachDayOfInterval, format, parseISO, isBefore, startOfToday } from 'date-fns';
+import { googleAI } from '@genkit-ai/google-genai';
 
 const PredictCrimeInputSchema = z.object({
   dateRange: z.object({
@@ -50,6 +51,7 @@ export async function predictCrime(input: PredictCrimeInput): Promise<PredictCri
 
 const prompt = ai.definePrompt({
   name: 'predictCrimePrompt',
+  model: googleAI.model('gemini-1.5-flash'),
   input: {schema: z.object({
     analysisPrompt: z.string(),
     futureDates: z.array(z.string()),
