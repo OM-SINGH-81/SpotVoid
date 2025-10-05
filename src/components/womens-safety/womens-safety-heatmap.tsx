@@ -26,9 +26,9 @@ export default function WomensSafetyHeatmap() {
             position={crime.position}
           >
             <Pin
-              background={'hsl(var(--chart-1))'}
+              background={'hsl(var(--chart-5))'}
               glyphColor={"#fff"}
-              borderColor={'hsl(var(--chart-1))'}
+              borderColor={'hsl(var(--chart-5))'}
             >
                 <HarassmentIcon className="w-5 h-5" />
             </Pin>

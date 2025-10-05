@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState } from 'react';
@@ -12,9 +13,9 @@ type CrimeHeatmapProps = {
 };
 
 const crimeIconMap = {
-  Theft: { icon: <TheftIcon className="w-5 h-5" />, color: "hsl(var(--chart-1))" },
+  Theft: { icon: <TheftIcon className="w-5 h-5" />, color: "hsl(var(--chart-4))" },
   Accident: { icon: <AccidentIcon className="w-5 h-5" />, color: "hsl(var(--chart-2))" },
-  Harassment: { icon: <HarassmentIcon className="w-5 h-5" />, color: "hsl(var(--chart-3))" },
+  Harassment: { icon: <HarassmentIcon className="w-5 h-5" />, color: "hsl(var(--chart-5))" },
 };
 
 export default function CrimeHeatmap({ data }: CrimeHeatmapProps) {
