@@ -32,11 +32,11 @@ export const getCrimeData = ai.defineTool(
         let filteredData = [...crimeData];
 
         if (input.crimeType) {
-            filteredData = filteredData.filter(crime => crime.crimeType.toLowerCase() === input.crimeType?.toLowerCase());
+            filteredData = filteredData.filter(crime => crime.crimeType.toLowerCase() === input.crimeType!.toLowerCase());
         }
 
         if (input.policeStation) {
-            filteredData = filteredData.filter(crime => crime.policeStation.toLowerCase() === input.policeStation?.toLowerCase());
+            filteredData = filteredData.filter(crime => crime.policeStation.toLowerCase() === input.policeStation!.toLowerCase());
         }
 
         if (input.startDate) {
