@@ -26,11 +26,12 @@ export const crimeTypes = [
 ];
 
 const DELHI_BOUNDS = {
-  north: 28.88,
-  south: 28.40,
-  west: 76.84,
-  east: 77.24,
+  north: 28.7,
+  south: 28.5,
+  west: 77.0,
+  east: 77.3,
 };
+
 
 const getRandomCoordinate = () => {
   const lat = seededRandom() * (DELHI_BOUNDS.north - DELHI_BOUNDS.south) + DELHI_BOUNDS.south;
