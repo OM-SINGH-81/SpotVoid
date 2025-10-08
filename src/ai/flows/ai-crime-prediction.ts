@@ -52,7 +52,7 @@ export async function predictCrime(input: PredictCrimeInput): Promise<PredictCri
 
 const prompt = ai.definePrompt({
   name: 'predictCrimePrompt',
-  model: googleAI.model('gemini-1.5-flash'),
+  model: googleAI.model('gemini-2.5-flash'),
   input: {schema: z.object({
     analysisPrompt: z.string(),
     futureDates: z.array(z.string()),
