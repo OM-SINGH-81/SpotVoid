@@ -1,16 +1,17 @@
 
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
 import { TriangleAlert, Route, Clock, Ruler, Info } from 'lucide-react';
-
 import { Polyline } from '@/components/polyline';
-import { GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
+import type { GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
 import type { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import GeneratingLoader from '../ui/generating-loader';
+import { crimeData } from '@/lib/mock-data';
+import type { Position } from '@/lib/types';
 
 type PatrolRoutesProps = {
   prediction: PredictCrimeOutput | null;
@@ -18,45 +19,91 @@ type PatrolRoutesProps = {
   filters: { policeStation: string };
 };
 
+// Helper function to calculate distance between two lat/lng points
+function getDistanceFromLatLonInKm(pos1: Position, pos2: Position) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = (pos2.lat - pos1.lat) * (Math.PI/180);
+  const dLon = (pos2.lng - pos1.lng) * (Math.PI/180); 
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(pos1.lat * (Math.PI/180)) * Math.cos(pos2.lat * (Math.PI/180)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return R * c; // Distance in km
+}
+
+
 export default function PatrolRoutes({ prediction, isLoadingPrediction, filters }: PatrolRoutesProps) {
   const [route, setRoute] = useState<GeneratePatrolRouteOutput | null>(null);
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [hoveredHotspotId, setHoveredHotspotId] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const generatedRoute = useMemo(() => {
+    if (!prediction || prediction.predictedCrimeTypeBreakdown.length === 0) {
+      return null;
+    }
+    try {
+      // 1. Get top predicted crime types
+      const topCrimeTypes = prediction.predictedCrimeTypeBreakdown
+        .sort((a, b) => b.count - a.count)
+        .map(p => p.crimeType);
+  
+      // 2. Find plausible locations from mock data matching station and crime types
+      const plausibleLocations = crimeData.filter(crime => 
+        (filters.policeStation === 'all' || crime.policeStation === filters.policeStation) &&
+        topCrimeTypes.includes(crime.crimeType)
+      );
+  
+      // 3. Select up to 5-7 hotspots. Here we just take the first 5 found.
+      const selectedHotspots = plausibleLocations.slice(0, 5);
+  
+      if (selectedHotspots.length === 0) {
+        return null;
+      }
+  
+      // 4. Create an ordered route (simple sort by lat)
+      const orderedHotspots = selectedHotspots
+        .sort((a, b) => a.position.lat - b.position.lat)
+        .map((hotspot, index) => ({
+          id: `hs-${hotspot.id}`,
+          name: `${index + 1}. ${hotspot.crimeType} Hotspot`,
+          description: `Near ${hotspot.policeStation} station, reported on ${new Date(hotspot.date).toLocaleDateString()}.`,
+          position: hotspot.position,
+          order: index + 1,
+        }));
+  
+      // 5. Calculate total distance and time
+      let totalDistance = 0;
+      for (let i = 0; i < orderedHotspots.length - 1; i++) {
+        totalDistance += getDistanceFromLatLonInKm(orderedHotspots[i].position, orderedHotspots[i+1].position);
+      }
+  
+      // Average patrol speed: 20 km/h
+      const estimatedTime = (totalDistance / 20) * 60;
+  
+      return {
+        hotspots: orderedHotspots,
+        totalDistance: `${totalDistance.toFixed(1)} km`,
+        estimatedTime: `${Math.round(estimatedTime)} min`,
+      };
+    } catch (e) {
+      console.error("Error generating client-side route:", e);
+      setError("Failed to process data for patrol route.");
+      return null;
+    }
+  }, [prediction, filters.policeStation]);
+
 
   useEffect(() => {
-    const getRoute = async () => {
-      if (!prediction || prediction.dailyData.length === 0) {
-        setRoute(null);
-        setIsLoadingRoute(false);
-        return;
-      }
-      setIsLoadingRoute(true);
-      setError(null);
-      try {
-        const response = await fetch('/api/generate-route', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ predictedData: prediction, policeStation: filters.policeStation })
-        });
-        if (!response.ok) {
-            const errorBody = await response.json();
-            throw new Error(errorBody.error || "An unexpected error occurred.");
-        }
-        const result: GeneratePatrolRouteOutput = await response.json();
-        setRoute(result);
-      } catch (e: any) {
-        console.error("Patrol route generation error:", e);
-        setError(e.message || "Failed to generate patrol route.");
-      } finally {
-        setIsLoadingRoute(false);
-      }
-    };
+    setIsLoadingRoute(isLoadingPrediction);
+    if (!isLoadingPrediction) {
+      setRoute(generatedRoute);
+    }
+  }, [isLoadingPrediction, generatedRoute]);
 
-    getRoute();
 
-  }, [prediction, filters.policeStation]);
-  
   const isLoading = isLoadingPrediction || isLoadingRoute;
 
   const sortedHotspots = route?.hotspots.sort((a,b) => a.order - b.order) || [];
@@ -66,7 +113,7 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction, filters 
 
   const showInsufficientDataMessage = !isLoading && !error && route && route.hotspots.length > 0 && routePath.length < 2;
 
-  const showNoDataMessage = !isLoading && !error && (!prediction || prediction.dailyData.length === 0);
+  const showNoDataMessage = !isLoading && !error && !prediction;
 
   return (
     <div className="w-full h-full flex flex-col relative overflow-hidden rounded-lg">
@@ -111,7 +158,7 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction, filters 
                 <Alert>
                     <Info className="h-4 w-4" />
                     <AlertTitle>Not Enough Data</AlertTitle>
-                    <AlertDescription>The AI could not find enough hotspots to generate a multi-point route. The map shows the single identified hotspot.</AlertDescription>
+                    <AlertDescription>Could not find enough hotspots to generate a multi-point route. The map shows the single identified hotspot.</AlertDescription>
                 </Alert>
             </div>
         )}

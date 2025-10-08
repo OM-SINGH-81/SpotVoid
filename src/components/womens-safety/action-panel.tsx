@@ -1,9 +1,9 @@
 
 "use client"
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps';
-import { TriangleAlert, Route, Clock, Ruler, Info } from 'lucide-react';
+import { TriangleAlert, Info } from 'lucide-react';
 
 import { Polyline } from '@/components/polyline';
 import { GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
@@ -11,56 +11,99 @@ import type { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '../ui/skeleton';
+import { crimeData } from '@/lib/mock-data';
+import type { Position } from '@/lib/types';
 
 type ActionPanelProps = {
   prediction: PredictCrimeOutput | null;
 };
 
+// Helper function to calculate distance between two lat/lng points
+function getDistanceFromLatLonInKm(pos1: Position, pos2: Position) {
+  const R = 6371; // Radius of the earth in km
+  const dLat = (pos2.lat - pos1.lat) * (Math.PI/180);
+  const dLon = (pos2.lng - pos1.lng) * (Math.PI/180); 
+  const a = 
+    Math.sin(dLat/2) * Math.sin(dLat/2) +
+    Math.cos(pos1.lat * (Math.PI/180)) * Math.cos(pos2.lat * (Math.PI/180)) * 
+    Math.sin(dLon/2) * Math.sin(dLon/2)
+    ; 
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+  return R * c; // Distance in km
+}
+
 export default function ActionPanel({ prediction }: ActionPanelProps) {
   const [route, setRoute] = useState<GeneratePatrolRouteOutput | null>(null);
-  const [isLoadingRoute, setIsLoadingRoute] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [hoveredHotspotId, setHoveredHotspotId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const getRoute = async () => {
-      if (!prediction) {
-        setRoute(null);
-        setIsLoadingRoute(false);
-        return;
+  const generatedRoute = useMemo(() => {
+    if (!prediction || prediction.predictedCrimeTypeBreakdown.length === 0) {
+      return null;
+    }
+    try {
+      const topCrimeTypes = prediction.predictedCrimeTypeBreakdown
+        .sort((a, b) => b.count - a.count)
+        .map(p => p.crimeType);
+  
+      const plausibleLocations = crimeData.filter(crime => 
+        topCrimeTypes.includes(crime.crimeType)
+      );
+  
+      const selectedHotspots = plausibleLocations.slice(0, 5);
+  
+      if (selectedHotspots.length === 0) {
+        return null;
       }
-      setIsLoadingRoute(true);
-      setError(null);
-      try {
-        const response = await fetch('/api/generate-route', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ predictedData: prediction, policeStation: 'all' })
-        });
-        if (!response.ok) {
-            const errorBody = await response.json();
-            throw new Error(errorBody.error || "An unexpected error occurred.");
-        }
-        const result: GeneratePatrolRouteOutput = await response.json();
-        setRoute(result);
-      } catch (e: any) {
-        console.error("Patrol route generation error:", e);
-        setError(e.message || "Failed to generate patrol route.");
-      } finally {
-        setIsLoadingRoute(false);
+  
+      const orderedHotspots = selectedHotspots
+        .sort((a, b) => a.position.lat - b.position.lat)
+        .map((hotspot, index) => ({
+          id: `hs-${hotspot.id}`,
+          name: `${index + 1}. ${hotspot.crimeType} Hotspot`,
+          description: `Near ${hotspot.policeStation} station, reported on ${new Date(hotspot.date).toLocaleDateString()}.`,
+          position: hotspot.position,
+          order: index + 1,
+        }));
+  
+      let totalDistance = 0;
+      for (let i = 0; i < orderedHotspots.length - 1; i++) {
+        totalDistance += getDistanceFromLatLonInKm(orderedHotspots[i].position, orderedHotspots[i+1].position);
       }
-    };
-
-    getRoute();
-
+  
+      const estimatedTime = (totalDistance / 20) * 60;
+  
+      return {
+        hotspots: orderedHotspots,
+        totalDistance: `${totalDistance.toFixed(1)} km`,
+        estimatedTime: `${Math.round(estimatedTime)} min`,
+      };
+    } catch (e) {
+      console.error("Error generating client-side route:", e);
+      setError("Failed to process data for patrol route.");
+      return null;
+    }
   }, [prediction]);
+
+
+  useEffect(() => {
+    setIsLoading(true);
+    setError(null);
+    if (prediction) {
+        setRoute(generatedRoute);
+    } else {
+        setRoute(null);
+    }
+    setIsLoading(false);
+  }, [prediction, generatedRoute]);
   
   const sortedHotspots = route?.hotspots.sort((a,b) => a.order - b.order) || [];
   const routePath = sortedHotspots.map(h => h.position);
   const hoveredHotspot = route?.hotspots.find(h => h.id === hoveredHotspotId);
-  const showInsufficientDataMessage = !isLoadingRoute && !error && route && route.hotspots.length > 0 && routePath.length < 2;
+  const showInsufficientDataMessage = !isLoading && !error && route && route.hotspots.length > 0 && routePath.length < 2;
 
-  if(isLoadingRoute) {
+  if(isLoading) {
     return <Skeleton className="w-full h-full" />
   }
 
@@ -76,8 +119,8 @@ export default function ActionPanel({ prediction }: ActionPanelProps) {
 
   if (!route || route.hotspots.length === 0) {
     return (
-        <div className="text-muted-foreground text-sm text-center h-full flex items-center justify-center">
-            No route data available based on current trends.
+        <div className="text-muted-foreground text-sm text-center h-full flex items-center justify-center p-4">
+            No actionable route available based on current safety trends.
         </div>
     );
   }
@@ -129,14 +172,9 @@ export default function ActionPanel({ prediction }: ActionPanelProps) {
         </Map>
         <div className="bg-card/80 backdrop-blur-sm p-2 border-t text-xs">
             <div className="flex items-center justify-center gap-3">
-                <div className="flex items-center gap-1">
-                    <Ruler className="w-3 h-3 text-muted-foreground" />
-                    <span>{route.totalDistance}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-muted-foreground" />
-                    <span>{route.estimatedTime}</span>
-                </div>
+                <div className="font-semibold">Route:</div>
+                <div>{route.totalDistance}</div>
+                <div>{route.estimatedTime}</div>
             </div>
         </div>
     </div>
