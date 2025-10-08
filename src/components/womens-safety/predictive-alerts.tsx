@@ -2,7 +2,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
-import { generateWomensSafetyAlerts, GenerateWomensSafetyAlertsOutput } from '@/ai/flows/ai-womens-safety-alerts';
+import { GenerateWomensSafetyAlertsOutput } from '@/ai/flows/ai-womens-safety-alerts';
 import { AlertTriangle, Info, CheckCircle } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -29,11 +29,16 @@ export default function PredictiveAlerts() {
             setIsLoading(true);
             setError(null);
             try {
-                const result = await generateWomensSafetyAlerts();
+                const response = await fetch('/api/womens-safety-alerts', { method: 'POST' });
+                 if (!response.ok) {
+                    const errorBody = await response.json();
+                    throw new Error(errorBody.error || "An unexpected error occurred.");
+                }
+                const result: GenerateWomensSafetyAlertsOutput = await response.json();
                 setData(result);
-            } catch (e) {
+            } catch (e: any) {
                 console.error("Failed to fetch alerts:", e);
-                setError("Could not load alerts from the AI model.");
+                setError(e.message || "Could not load alerts from the AI model.");
             } finally {
                 setIsLoading(false);
             }

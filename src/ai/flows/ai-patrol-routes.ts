@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview An AI flow for generating optimized patrol routes based on predicted crime data.
  *

@@ -6,7 +6,7 @@ import { Map, AdvancedMarker, Pin, InfoWindow } from '@vis.gl/react-google-maps'
 import { TriangleAlert, Route, Clock, Ruler, Info } from 'lucide-react';
 
 import { Polyline } from '@/components/polyline';
-import { generatePatrolRoute, GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
+import { GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
 import type { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -20,7 +20,7 @@ export default function ActionPanel({ prediction }: ActionPanelProps) {
   const [route, setRoute] = useState<GeneratePatrolRouteOutput | null>(null);
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hoveredHotspotId, setHoveredHotspotId] = useState<string | null>(null);
+  const [hoveredHotspotId, setHoveredHotspotId]_useState<string | null>(null);
 
   useEffect(() => {
     const getRoute = async () => {
@@ -32,11 +32,20 @@ export default function ActionPanel({ prediction }: ActionPanelProps) {
       setIsLoadingRoute(true);
       setError(null);
       try {
-        const result = await generatePatrolRoute({ predictedData: prediction });
+        const response = await fetch('/api/generate-route', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ predictedData: prediction })
+        });
+        if (!response.ok) {
+            const errorBody = await response.json();
+            throw new Error(errorBody.error || "An unexpected error occurred.");
+        }
+        const result: GeneratePatrolRouteOutput = await response.json();
         setRoute(result);
-      } catch (e) {
+      } catch (e: any) {
         console.error("Patrol route generation error:", e);
-        setError("Failed to generate patrol route. The AI model may be offline.");
+        setError(e.message || "Failed to generate patrol route.");
       } finally {
         setIsLoadingRoute(false);
       }

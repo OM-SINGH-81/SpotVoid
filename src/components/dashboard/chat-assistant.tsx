@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -6,7 +7,6 @@ import { useForm } from "react-hook-form"
 import * as z from "zod"
 import { Bot, Send, Loader2 } from "lucide-react"
 
-import { askQuestion } from "@/ai/flows/ai-chat-assistant"
 import { Button } from "@/components/ui/button"
 import {
   Form,
@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useToast } from "@/hooks/use-toast"
+import type { AskQuestionOutput } from "@/ai/flows/ai-chat-assistant"
 
 const FormSchema = z.object({
   question: z.string().min(1, "Please enter a question."),
@@ -39,14 +40,23 @@ export default function ChatAssistant() {
     setIsLoading(true)
     setAnswer(null)
     try {
-      const result = await askQuestion({ question: data.question })
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: data.question })
+      });
+      if (!response.ok) {
+        const errorBody = await response.json();
+        throw new Error(errorBody.error || "An unexpected error occurred.");
+      }
+      const result: AskQuestionOutput = await response.json();
       setAnswer(result.answer)
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI chat error:", error)
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to get an answer from the AI assistant.",
+        description: error.message || "Failed to get an answer from the AI assistant.",
       })
     } finally {
       setIsLoading(false)

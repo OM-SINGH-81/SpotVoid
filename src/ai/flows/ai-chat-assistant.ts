@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview A chat assistant that answers questions about crime data.
  *

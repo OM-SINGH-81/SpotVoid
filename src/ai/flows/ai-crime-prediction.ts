@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview An AI crime prediction flow.
  *

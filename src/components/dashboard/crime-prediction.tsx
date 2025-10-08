@@ -1,3 +1,4 @@
+
 "use client"
 
 import React, { useState, useEffect, useMemo } from "react"
@@ -5,7 +6,7 @@ import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContai
 import { addDays, format } from "date-fns"
 import { DateRange } from "react-day-picker"
 
-import { predictCrime, PredictCrimeInput, PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction"
+import { PredictCrimeInput, PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction"
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -72,12 +73,21 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
       onIsLoadingChange(true)
       setError(null)
       try {
-        const result = await predictCrime(predictionFilters)
+        const response = await fetch('/api/predict-crime', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(predictionFilters)
+        });
+        if (!response.ok) {
+            const errorBody = await response.json();
+            throw new Error(errorBody.error || "An unexpected error occurred.");
+        }
+        const result: PredictCrimeOutput = await response.json();
         setPrediction(result);
         onPredictionChange(result);
-      } catch (e) {
+      } catch (e: any) {
         console.error("Crime prediction error:", e)
-        setError("Failed to generate crime prediction. The AI model may be offline.")
+        setError(e.message || "Failed to generate crime prediction.")
         onPredictionChange(null);
       } finally {
         onIsLoadingChange(false)

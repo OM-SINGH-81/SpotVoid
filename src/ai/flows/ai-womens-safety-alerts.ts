@@ -1,6 +1,4 @@
 
-'use server';
-
 /**
  * @fileOverview An AI flow for generating predictive alerts for women's safety.
  *
