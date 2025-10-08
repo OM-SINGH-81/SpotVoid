@@ -41,11 +41,13 @@ export const getCrimeData = ai.defineTool(
 
         if (input.startDate) {
             const startDate = new Date(input.startDate);
+            startDate.setHours(0, 0, 0, 0); // Set to start of the day
             filteredData = filteredData.filter(crime => new Date(crime.date) >= startDate);
         }
 
         if (input.endDate) {
             const endDate = new Date(input.endDate);
+            endDate.setHours(23, 59, 59, 999); // Set to end of the day
             filteredData = filteredData.filter(crime => new Date(crime.date) <= endDate);
         }
 
