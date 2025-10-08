@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -11,6 +12,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { crimeData } from '@/lib/mock-data';
 import { isWithinInterval, subDays } from 'date-fns';
+import { googleAI } from '@genkit-ai/google-genai';
 
 const AlertSchema = z.object({
     id: z.string().describe('A unique ID for the alert (e.g., "alert-1").'),
@@ -32,6 +34,7 @@ export async function generateWomensSafetyAlerts(): Promise<GenerateWomensSafety
 
 const prompt = ai.definePrompt({
     name: 'womensSafetyAlertsPrompt',
+    model: googleAI.model('gemini-1.5-flash'),
     input: { schema: z.object({
         womensSafetyCrimes: z.any().describe("A JSON string of recent crime incidents related to women's safety, including harassment, theft, and accidents."),
     }) },
