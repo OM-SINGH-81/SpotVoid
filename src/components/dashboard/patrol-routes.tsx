@@ -15,9 +15,10 @@ import GeneratingLoader from '../ui/generating-loader';
 type PatrolRoutesProps = {
   prediction: PredictCrimeOutput | null;
   isLoadingPrediction: boolean;
+  filters: { policeStation: string };
 };
 
-export default function PatrolRoutes({ prediction, isLoadingPrediction }: PatrolRoutesProps) {
+export default function PatrolRoutes({ prediction, isLoadingPrediction, filters }: PatrolRoutesProps) {
   const [route, setRoute] = useState<GeneratePatrolRouteOutput | null>(null);
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +37,7 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction }: Patrol
         const response = await fetch('/api/generate-route', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ predictedData: prediction })
+            body: JSON.stringify({ predictedData: prediction, policeStation: filters.policeStation })
         });
         if (!response.ok) {
             const errorBody = await response.json();
@@ -54,7 +55,7 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction }: Patrol
 
     getRoute();
 
-  }, [prediction]);
+  }, [prediction, filters.policeStation]);
   
   const isLoading = isLoadingPrediction || isLoadingRoute;
 

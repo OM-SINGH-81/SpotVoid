@@ -249,6 +249,7 @@ export default function DashboardPage() {
                   <PatrolRoutes
                     prediction={prediction}
                     isLoadingPrediction={isLoadingPrediction}
+                    filters={filtersForAI}
                   />
                 </CardContent>
               </Card>

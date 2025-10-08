@@ -15,6 +15,7 @@ import { googleAI } from '@genkit-ai/google-genai';
 
 const GeneratePatrolRouteInputSchema = z.object({
     predictedData: z.any().describe('The output from the crime prediction flow.'),
+    policeStation: z.string().describe('The police station for which the route is being generated.'),
 });
 export type GeneratePatrolRouteInput = z.infer<typeof GeneratePatrolRouteInputSchema>;
 
@@ -56,7 +57,7 @@ const prompt = ai.definePrompt({
     Your task is to use this data to create an optimized patrol route that covers 5-7 of the most critical hotspots.
     
     1.  Analyze the provided predicted hotspots to identify the 5-7 most critical ones. Criticality is determined by the predicted crime count and type.
-    2.  Create an efficient patrol route that connects these hotspots.
+    2.  Create an efficient patrol route that connects these hotspots. You MUST only use coordinates from the plausibleLocations provided in the input. Do not invent or assume any other locations.
     3.  The output must be an ordered list of these hotspots. For each hotspot, provide:
         - A unique ID (e.g., "hs-1").
         - A 'name' that includes its order number and a general location (e.g., "1. Karol Bagh Market").
@@ -75,23 +76,24 @@ const generatePatrolRouteFlow = ai.defineFlow(
         outputSchema: GeneratePatrolRouteOutputSchema,
     },
     async (input) => {
-        const { predictedData } = input as { predictedData: PredictCrimeOutput };
+        const { predictedData, policeStation } = input;
+        const typedPredictedData = predictedData as PredictCrimeOutput;
 
-        // We need to find plausible locations for the predicted crimes.
-        // We'll use historical data for this.
-        const futureDates = new Set(predictedData.dailyData.filter(d => d.predictedCount && d.predictedCount > 0).map(d => d.date));
 
-        const predictedCrimeTypes = new Set(predictedData.predictedCrimeTypeBreakdown.map(b => b.crimeType));
+        const predictedCrimeTypes = new Set(typedPredictedData.predictedCrimeTypeBreakdown.map(b => b.crimeType));
 
-        // Find historical crimes that match the future predicted crime types.
+        // Find historical crimes that match the future predicted crime types AND police station.
         // These serve as plausible locations for future crimes.
         const relevantCrimeLocations = crimeData
-            .filter(crime => predictedCrimeTypes.has(crime.crimeType))
+            .filter(crime => 
+                predictedCrimeTypes.has(crime.crimeType) &&
+                (policeStation === 'all' || crime.policeStation === policeStation)
+            )
             .map(c => ({ position: c.position, crimeType: c.crimeType, policeStation: c.policeStation }));
 
         // Pass both the predicted breakdown and plausible locations to the AI.
         const hotspotsToAnalyze = JSON.stringify({
-            predictedCrimeTypeBreakdown: predictedData.predictedCrimeTypeBreakdown,
+            predictedCrimeTypeBreakdown: typedPredictedData.predictedCrimeTypeBreakdown,
             plausibleLocations: relevantCrimeLocations,
         });
 
