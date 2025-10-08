@@ -88,14 +88,23 @@ export default function ActionPanel({ prediction }: ActionPanelProps) {
 
 
   useEffect(() => {
-    setIsLoading(true);
     setError(null);
     if (prediction) {
         setRoute(generatedRoute);
     } else {
-        setRoute(null);
+        // We might be waiting for the prediction, so don't clear the route,
+        // just let the loading state handle it.
+        // If prediction is explicitly null after loading, then we show no data.
+        if (prediction === null) {
+            setRoute(null);
+        }
     }
-    setIsLoading(false);
+    // Only set loading to false after we've processed the prediction.
+    // A null prediction means we are either waiting for it or there is none.
+    // The parent component will tell us when it's loading, but this component
+    // also needs to manage its internal state.
+    setIsLoading(prediction === undefined);
+
   }, [prediction, generatedRoute]);
   
   const sortedHotspots = route?.hotspots.sort((a,b) => a.order - b.order) || [];
