@@ -153,13 +153,13 @@ export default function WomensSafetyPage() {
 
                 {/* Tools Grid (2x2 layout) with equal height cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-stretch">
-                  <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                  <Card className="h-96 bg-card/50 backdrop-blur-sm flex flex-col">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Route /> Safe Route Recommendation
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-1">
+                    <CardContent>
                       <SafeRoute />
                     </CardContent>
                   </Card>
@@ -189,7 +189,7 @@ export default function WomensSafetyPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                  <Card className="h-96 bg-card/50 backdrop-blur-sm flex flex-col">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Building /> Action Panel for Authorities
@@ -198,7 +198,7 @@ export default function WomensSafetyPage() {
                         Quick insights for intervention planning.
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1">
+                    <CardContent>
                       <ActionPanel prediction={prediction} />
                     </CardContent>
                   </Card>
