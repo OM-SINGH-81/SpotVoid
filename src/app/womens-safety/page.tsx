@@ -17,30 +17,31 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Map, BarChart2, Siren, Route, MessageSquareWarning, Building, TriangleAlert } from "lucide-react";
 import PlaceholderCard from "@/components/womens-safety/placeholder-card";
 import type { PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction";
+import GeneratingLoader from "@/components/ui/generating-loader";
 
 
 // ✅ Dynamic imports (disable SSR to avoid getRootNode errors)
 const WomensSafetyHeatmap = dynamic(
   () => import("@/components/womens-safety/womens-safety-heatmap"),
-  { ssr: false, loading: () => <PlaceholderCard message="Loading heatmap..." /> }
+  { ssr: false, loading: () => <div className="relative w-full h-full"><GeneratingLoader /></div> }
 );
 const WomensSafetyTrends = dynamic(
   () => import("@/components/womens-safety/womens-safety-trends"),
-  { ssr: false, loading: () => <PlaceholderCard message="Loading trends..." /> }
+  { ssr: false, loading: () => <div className="relative w-full h-full min-h-[250px]"><GeneratingLoader /></div> }
 );
 const SafeRoute = dynamic(
   () => import("@/components/womens-safety/safe-route"),
-  { ssr: false, loading: () => <PlaceholderCard message="Loading route..." /> }
+  { ssr: false, loading: () => <div className="relative w-full h-full"><GeneratingLoader /></div> }
 );
 
 const PredictiveAlerts = dynamic(
   () => import("@/components/womens-safety/predictive-alerts"),
-  { ssr: false, loading: () => <PlaceholderCard message="Loading alerts..." /> }
+  { ssr: false, loading: () => <div className="relative w-full h-full min-h-[200px]"><GeneratingLoader /></div> }
 );
 
 const ActionPanel = dynamic(
     () => import("@/components/womens-safety/action-panel"),
-    { ssr: false, loading: () => <PlaceholderCard message="Loading action panel..." /> }
+    { ssr: false, loading: () => <div className="relative w-full h-full"><GeneratingLoader /></div> }
 );
 
 
@@ -159,23 +160,23 @@ export default function WomensSafetyPage() {
                         <Route /> Safe Route Recommendation
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex-1 relative">
                       <SafeRoute />
                     </CardContent>
                   </Card>
 
-                  <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                  <Card className="h-96 bg-card/50 backdrop-blur-sm flex flex-col">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <Siren /> Predictive Alerts
                       </CardTitle>
                     </CardHeader>
-                    <CardContent className="flex-1">
+                    <CardContent className="flex-1 relative">
                       <PredictiveAlerts />
                     </CardContent>
                   </Card>
 
-                  <Card className="h-full bg-card/50 backdrop-blur-sm flex flex-col">
+                  <Card className="h-96 bg-card/50 backdrop-blur-sm flex flex-col">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <MessageSquareWarning /> Community Feedback
@@ -198,7 +199,7 @@ export default function WomensSafetyPage() {
                         Quick insights for intervention planning.
                       </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex-1 relative">
                       <ActionPanel prediction={prediction} />
                     </CardContent>
                   </Card>

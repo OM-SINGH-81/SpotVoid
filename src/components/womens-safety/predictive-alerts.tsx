@@ -4,7 +4,6 @@
 import React, { useState, useEffect } from 'react';
 import { GenerateWomensSafetyAlertsOutput } from '@/ai/flows/ai-womens-safety-alerts';
 import { AlertTriangle, Info, CheckCircle } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import {
     Tooltip,
@@ -12,6 +11,7 @@ import {
     TooltipProvider,
     TooltipTrigger,
   } from "@/components/ui/tooltip"
+import GeneratingLoader from '../ui/generating-loader';
 
 const severityConfig = {
     High: { icon: <AlertTriangle className="text-destructive" />, color: 'border-destructive/50 bg-destructive/10' },
@@ -47,13 +47,7 @@ export default function PredictiveAlerts() {
     }, []);
 
     if (isLoading) {
-        return (
-            <div className="space-y-3">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-            </div>
-        );
+        return <GeneratingLoader />;
     }
 
     if (error) {

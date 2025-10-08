@@ -10,7 +10,7 @@ import { GeneratePatrolRouteOutput } from '@/ai/flows/ai-patrol-routes';
 import type { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Card, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Skeleton } from '../ui/skeleton';
+import GeneratingLoader from '../ui/generating-loader';
 import { crimeData } from '@/lib/mock-data';
 import type { Position } from '@/lib/types';
 
@@ -89,22 +89,14 @@ export default function ActionPanel({ prediction }: ActionPanelProps) {
 
   useEffect(() => {
     setError(null);
-    if (prediction) {
-        setRoute(generatedRoute);
-    } else {
-        // We might be waiting for the prediction, so don't clear the route,
-        // just let the loading state handle it.
-        // If prediction is explicitly null after loading, then we show no data.
-        if (prediction === null) {
+    if (prediction !== undefined) {
+        setIsLoading(false);
+        if (prediction) {
+            setRoute(generatedRoute);
+        } else {
             setRoute(null);
         }
     }
-    // Only set loading to false after we've processed the prediction.
-    // A null prediction means we are either waiting for it or there is none.
-    // The parent component will tell us when it's loading, but this component
-    // also needs to manage its internal state.
-    setIsLoading(prediction === undefined);
-
   }, [prediction, generatedRoute]);
   
   const sortedHotspots = route?.hotspots.sort((a,b) => a.order - b.order) || [];
@@ -113,7 +105,7 @@ export default function ActionPanel({ prediction }: ActionPanelProps) {
   const showInsufficientDataMessage = !isLoading && !error && route && route.hotspots.length > 0 && routePath.length < 2;
 
   if(isLoading) {
-    return <Skeleton className="w-full h-full" />
+    return <GeneratingLoader />
   }
 
   if (error) {
