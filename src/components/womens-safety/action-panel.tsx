@@ -20,7 +20,7 @@ export default function ActionPanel({ prediction }: ActionPanelProps) {
   const [route, setRoute] = useState<GeneratePatrolRouteOutput | null>(null);
   const [isLoadingRoute, setIsLoadingRoute] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hoveredHotspotId, setHoveredHotspotId]_useState<string | null>(null);
+  const [hoveredHotspotId, setHoveredHotspotId] = useState<string | null>(null);
 
   useEffect(() => {
     const getRoute = async () => {
@@ -35,7 +35,7 @@ export default function ActionPanel({ prediction }: ActionPanelProps) {
         const response = await fetch('/api/generate-route', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ predictedData: prediction })
+            body: JSON.stringify({ predictedData: prediction, policeStation: 'all' })
         });
         if (!response.ok) {
             const errorBody = await response.json();
