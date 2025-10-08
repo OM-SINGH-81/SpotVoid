@@ -10,16 +10,16 @@ import { z } from 'genkit';
 import { crimeData } from '@/lib/mock-data';
 
 const CrimeDataFilterSchema = z.object({
-    crimeType: z.string().optional().describe('The type of crime to filter by (e.g., "Theft", "Accident").'),
-    policeStation: z.string().optional().describe('The police station to filter by (e.g., "Connaught Place").'),
-    startDate: z.string().optional().describe('The start date for the filter range (ISO 8601 format).'),
-    endDate: z.string().optional().describe('The end date for the filter range (ISO 8601 format).'),
+    crimeType: z.string().optional().describe('The type of crime to filter by (e.g., "Theft", "Accident"). If the user asks for all crimes or does not specify a type, do not use this field.'),
+    policeStation: z.string().optional().describe('The police station to filter by (e.g., "Connaught Place"). If the user asks for all stations or does not specify one, do not use this field.'),
+    startDate: z.string().optional().describe('The start date for the filter range in ISO 8601 format (YYYY-MM-DD). Use this for date-based queries like "last month" or "since August".'),
+    endDate: z.string().optional().describe('The end date for the filter range in ISO 8601 format (YYYY-MM-DD). Use this with startDate to define a period.'),
 });
 
 export const getCrimeData = ai.defineTool(
     {
         name: 'getCrimeData',
-        description: 'Retrieves a list of crime incidents based on the provided filters. Use this to answer questions about crime statistics, trends, and specific incidents.',
+        description: 'Retrieves a list of crime incidents based on the provided filters. Use this to answer questions about crime statistics, trends, and specific incidents. The AI should infer the date range and filters from the user\'s natural language query.',
         inputSchema: CrimeDataFilterSchema,
         outputSchema: z.array(z.object({
             id: z.string(),
