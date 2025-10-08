@@ -33,9 +33,10 @@ const prompt = ai.definePrompt({
   input: {schema: AskQuestionInputSchema},
   output: {schema: AskQuestionOutputSchema},
   tools: [getCrimeData],
-  prompt: `You are a helpful assistant that answers questions about crime data. Use the available tools to answer the question as accurately as possible.
-
-Question: {{{question}}}`,
+  system: `You are a helpful assistant that answers questions about crime data. 
+You must use the getCrimeData tool to answer the question as accurately as possible. 
+If the tool does not provide an answer, or if the user asks a question not related to crime data, say that you cannot answer.`,
+  prompt: `Question: {{{question}}}`,
 });
 
 const askQuestionFlow = ai.defineFlow(
