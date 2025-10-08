@@ -29,7 +29,7 @@ export async function askQuestion(input: AskQuestionInput): Promise<AskQuestionO
 
 const prompt = ai.definePrompt({
   name: 'askQuestionPrompt',
-  model: googleAI.model('gemini-1.5-flash-latest'),
+  model: googleAI.model('gemini-2.5-flash'),
   input: {schema: AskQuestionInputSchema},
   output: {schema: AskQuestionOutputSchema},
   tools: [getCrimeData],
