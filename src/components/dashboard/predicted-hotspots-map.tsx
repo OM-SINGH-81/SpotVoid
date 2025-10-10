@@ -13,9 +13,9 @@ type PredictedHotspotsMapProps = {
 };
 
 const riskConfig = {
-  High: { icon: <AlertTriangle className="w-5 h-5 text-destructive" />, color: "hsl(var(--destructive))", fillColor: "hsl(var(--destructive))" },
-  Medium: { icon: <Info className="w-5 h-5 text-yellow-500" />, color: "hsl(var(--chart-4))", fillColor: "hsl(var(--chart-4))" },
-  Low: { icon: <CheckCircle className="w-5 h-5 text-green-500" />, color: "hsl(var(--chart-2))", fillColor: "hsl(var(--chart-2))" },
+  High: { icon: <AlertTriangle className="w-5 h-5 text-destructive" />, color: "#ff0000", fillColor: "#ff0000" },
+  Medium: { icon: <Info className="w-5 h-5 text-yellow-500" />, color: "#ffff00", fillColor: "#ffff00" },
+  Low: { icon: <CheckCircle className="w-5 h-5 text-green-500" />, color: "#00ff00", fillColor: "#00ff00" },
 };
 
 const crimeIconMap = {
@@ -136,3 +136,4 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
     </div>
   );
 }
+
