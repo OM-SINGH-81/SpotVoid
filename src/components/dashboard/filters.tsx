@@ -2,7 +2,7 @@
 "use client"
 
 import * as React from "react"
-import { format } from "date-fns"
+import { format, subDays, startOfMonth, endOfMonth } from "date-fns"
 import { Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { DateRange } from "react-day-picker"
 
@@ -48,19 +48,47 @@ export default function Filters({
         : selectedCrimeTypes.filter(ct => ct !== crimeType)
     )
   }
+  
+  const setPresetDateRange = (preset: '7' | '30' | 'thisMonth') => {
+    const today = new Date();
+    let fromDate: Date;
+    let toDate: Date = today;
+
+    switch(preset) {
+        case '7':
+            fromDate = subDays(today, 6);
+            break;
+        case '30':
+            fromDate = subDays(today, 29);
+            break;
+        case 'thisMonth':
+            fromDate = startOfMonth(today);
+            toDate = endOfMonth(today);
+            break;
+    }
+    setDateRange({ from: fromDate, to: toDate });
+  }
+
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <Label>Date range</Label>
+          <div className="flex justify-between items-center mb-1">
+             <Label>Date range</Label>
+             <div className="flex items-center gap-1">
+                <Button variant="ghost" size="sm" className="h-7" onClick={() => setPresetDateRange('7')}>Last 7 Days</Button>
+                <Button variant="ghost" size="sm" className="h-7" onClick={() => setPresetDateRange('30')}>Last 30 Days</Button>
+                <Button variant="ghost" size="sm" className="h-7" onClick={() => setPresetDateRange('thisMonth')}>This Month</Button>
+             </div>
+          </div>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 id="date"
                 variant={"outline"}
                 className={cn(
-                  "w-full justify-start text-left font-normal mt-1",
+                  "w-full justify-start text-left font-normal",
                   !dateRange && "text-muted-foreground"
                 )}
               >
