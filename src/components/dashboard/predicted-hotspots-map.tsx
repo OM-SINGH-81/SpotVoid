@@ -1,8 +1,8 @@
 
 "use client"
 
-import React, { useState } from 'react';
-import { Map, AdvancedMarker, InfoWindow, Pin } from '@vis.gl/react-google-maps';
+import React, { useState, useEffect } from 'react';
+import { useMap, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-maps';
 import { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, Info, CheckCircle } from 'lucide-react';
@@ -13,9 +13,9 @@ type PredictedHotspotsMapProps = {
 };
 
 const riskConfig = {
-  High: { icon: <AlertTriangle className="w-5 h-5 text-destructive" />, color: "hsl(var(--destructive))" },
-  Medium: { icon: <Info className="w-5 h-5 text-yellow-500" />, color: "hsl(var(--chart-4))" },
-  Low: { icon: <CheckCircle className="w-5 h-5 text-green-500" />, color: "hsl(var(--chart-2))" },
+  High: { icon: <AlertTriangle className="w-5 h-5 text-destructive" />, color: "hsl(var(--destructive))", fillColor: "hsla(var(--destructive), 0.3)" },
+  Medium: { icon: <Info className="w-5 h-5 text-yellow-500" />, color: "hsl(var(--chart-4))", fillColor: "hsla(35, 92%, 55%, 0.3)" },
+  Low: { icon: <CheckCircle className="w-5 h-5 text-green-500" />, color: "hsl(var(--chart-2))", fillColor: "hsla(210, 80%, 50%, 0.3)" },
 };
 
 const crimeIconMap = {
@@ -24,6 +24,51 @@ const crimeIconMap = {
   Harassment: { icon: <HarassmentIcon className="w-5 h-5" /> },
   default: { icon: <Info className="w-5 h-5" /> },
 };
+
+type CircleProps = google.maps.CircleOptions & {
+    center: google.maps.LatLngLiteral;
+    radius: number;
+    onMouseOver?: (e: google.maps.MapMouseEvent) => void;
+    onMouseOut?: (e: google.maps.MapMouseEvent) => void;
+    onClick?: (e: google.maps.MapMouseEvent) => void;
+};
+
+const CircleComponent = (props: CircleProps) => {
+    const [circle, setCircle] = useState<google.maps.Circle | null>(null);
+    const map = useMap();
+
+    useEffect(() => {
+        if (!map) return;
+        if (!circle) {
+            const newCircle = new google.maps.Circle({ ...props, map });
+            setCircle(newCircle);
+        } else {
+            circle.setOptions(props);
+        }
+
+        return () => {
+            if (circle) {
+                circle.setMap(null);
+            }
+        };
+    }, [map, circle, props]);
+    
+    useEffect(() => {
+        if (!circle) return;
+        const listeners = [
+            google.maps.event.addListener(circle, 'mouseover', (e:any) => props.onMouseOver?.(e)),
+            google.maps.event.addListener(circle, 'mouseout', (e:any) => props.onMouseOut?.(e)),
+            google.maps.event.addListener(circle, 'click', (e:any) => props.onClick?.(e))
+        ];
+
+        return () => {
+            listeners.forEach(listener => google.maps.event.removeListener(listener));
+        }
+
+    }, [circle, props.onMouseOver, props.onMouseOut, props.onClick]);
+
+    return null;
+}
 
 
 export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapProps) {
@@ -50,24 +95,21 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
       >
         {hotspots.map(hotspot => {
             const currentRisk = riskConfig[hotspot.riskLevel];
-            const currentCrimeIcon = crimeIconMap[hotspot.predictedCrimeType as keyof typeof crimeIconMap] || crimeIconMap.default;
-
+            
             return (
-                <AdvancedMarker
+                <CircleComponent
                     key={hotspot.id}
-                    position={hotspot.position}
+                    center={hotspot.position}
+                    radius={500} // radius in meters
+                    strokeColor={currentRisk.color}
+                    strokeOpacity={0.8}
+                    strokeWeight={2}
+                    fillColor={currentRisk.fillColor}
+                    fillOpacity={0.5}
+                    onMouseOver={() => setSelectedHotspotId(hotspot.id)}
+                    onMouseOut={() => setSelectedHotspotId(null)}
                     onClick={() => setSelectedHotspotId(hotspot.id)}
-                    onPointerEnter={() => setSelectedHotspotId(hotspot.id)}
-                    onPointerLeave={() => setSelectedHotspotId(null)}
-                >
-                    <Pin
-                    background={currentRisk.color}
-                    glyphColor={"#fff"}
-                    borderColor={currentRisk.color}
-                    >
-                    {currentRisk.icon}
-                    </Pin>
-                </AdvancedMarker>
+                />
             )
         })}
 
@@ -75,7 +117,7 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
           <InfoWindow
             position={selectedHotspot.position}
             onCloseClick={() => setSelectedHotspotId(null)}
-            pixelOffset={[0, -40]}
+            pixelOffset={[0, -20]}
           >
             <Card className="border-none shadow-none max-w-xs">
               <CardHeader className="p-2">
@@ -94,5 +136,3 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
     </div>
   );
 }
-
-    
