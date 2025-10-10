@@ -13,9 +13,9 @@ type PredictedHotspotsMapProps = {
 };
 
 const riskConfig = {
-  High: { icon: <AlertTriangle className="w-5 h-5 text-destructive" />, color: "hsl(var(--destructive))", fillColor: "hsla(var(--destructive), 0.3)" },
-  Medium: { icon: <Info className="w-5 h-5 text-yellow-500" />, color: "hsl(var(--chart-4))", fillColor: "hsla(35, 92%, 55%, 0.3)" },
-  Low: { icon: <CheckCircle className="w-5 h-5 text-green-500" />, color: "hsl(var(--chart-2))", fillColor: "hsla(210, 80%, 50%, 0.3)" },
+  High: { icon: <AlertTriangle className="w-5 h-5 text-destructive" />, color: "hsl(var(--destructive))", fillColor: "hsl(var(--destructive))" },
+  Medium: { icon: <Info className="w-5 h-5 text-yellow-500" />, color: "hsl(var(--chart-4))", fillColor: "hsl(var(--chart-4))" },
+  Low: { icon: <CheckCircle className="w-5 h-5 text-green-500" />, color: "hsl(var(--chart-2))", fillColor: "hsl(var(--chart-2))" },
 };
 
 const crimeIconMap = {
@@ -100,12 +100,12 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
                 <CircleComponent
                     key={hotspot.id}
                     center={hotspot.position}
-                    radius={500} // radius in meters
+                    radius={1000} // Increased radius in meters for better visibility
                     strokeColor={currentRisk.color}
-                    strokeOpacity={0.8}
+                    strokeOpacity={0.9}
                     strokeWeight={2}
                     fillColor={currentRisk.fillColor}
-                    fillOpacity={0.5}
+                    fillOpacity={0.4} // Increased fill opacity for better visibility
                     onMouseOver={() => setSelectedHotspotId(hotspot.id)}
                     onMouseOut={() => setSelectedHotspotId(null)}
                     onClick={() => setSelectedHotspotId(hotspot.id)}
