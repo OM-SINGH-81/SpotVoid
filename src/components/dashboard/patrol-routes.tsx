@@ -32,7 +32,7 @@ function getDistanceFromLatLonInKm(pos1: Position, pos2: Position) {
 }
 
 type GeneratedRoute = {
-    hotspots: PredictCrimeOutput['predictedHotspots'];
+    hotspots: (PredictCrimeOutput['predictedHotspots'][0] & { order: number })[];
     totalDistance: string;
     estimatedTime: string;
 }
@@ -43,8 +43,8 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction }: Patrol
   const [hoveredHotspotId, setHoveredHotspotId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (prediction && prediction.predictedHotspots.length > 0) {
-        // Order hotspots
+    if (prediction && prediction.predictedHotspots && prediction.predictedHotspots.length > 0) {
+        // Order hotspots by latitude to create a somewhat logical path
         const orderedHotspots = [...prediction.predictedHotspots].sort((a, b) => a.position.lat - b.position.lat);
         
         // Add an 'order' property for display
@@ -52,8 +52,8 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction }: Patrol
 
         // Calculate distance and time
         let totalDistance = 0;
-        for (let i = 0; i < orderedHotspots.length - 1; i++) {
-            totalDistance += getDistanceFromLatLonInKm(orderedHotspots[i].position, orderedHotspots[i+1].position);
+        for (let i = 0; i < hotspotsWithOrder.length - 1; i++) {
+            totalDistance += getDistanceFromLatLonInKm(hotspotsWithOrder[i].position, hotspotsWithOrder[i+1].position);
         }
         
         // Average patrol speed: 20 km/h

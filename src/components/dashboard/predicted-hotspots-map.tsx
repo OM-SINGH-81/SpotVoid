@@ -28,8 +28,6 @@ const crimeIconMap = {
 type CircleProps = google.maps.CircleOptions & {
     center: google.maps.LatLngLiteral;
     radius: number;
-    onMouseOver?: (e: google.maps.MapMouseEvent) => void;
-    onMouseOut?: (e: google.maps.MapMouseEvent) => void;
     onClick?: (e: google.maps.MapMouseEvent) => void;
 };
 
@@ -55,17 +53,13 @@ const CircleComponent = (props: CircleProps) => {
     
     useEffect(() => {
         if (!circle) return;
-        const listeners = [
-            google.maps.event.addListener(circle, 'mouseover', (e:any) => props.onMouseOver?.(e)),
-            google.maps.event.addListener(circle, 'mouseout', (e:any) => props.onMouseOut?.(e)),
-            google.maps.event.addListener(circle, 'click', (e:any) => props.onClick?.(e))
-        ];
+        const listener = google.maps.event.addListener(circle, 'click', (e:any) => props.onClick?.(e));
 
         return () => {
-            listeners.forEach(listener => google.maps.event.removeListener(listener));
+            google.maps.event.removeListener(listener);
         }
 
-    }, [circle, props.onMouseOver, props.onMouseOut, props.onClick]);
+    }, [circle, props.onClick]);
 
     return null;
 }
@@ -92,6 +86,7 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
         mapId="PREDICTED_HOTSPOTS_MAP"
         gestureHandling={'greedy'}
         disableDefaultUI={true}
+        onClick={() => setSelectedHotspotId(null)}
       >
         {hotspots.map(hotspot => {
             const currentRisk = riskConfig[hotspot.riskLevel];
@@ -106,8 +101,6 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
                     strokeWeight={2}
                     fillColor={currentRisk.fillColor}
                     fillOpacity={0.4} // Increased fill opacity for better visibility
-                    onMouseOver={() => setSelectedHotspotId(hotspot.id)}
-                    onMouseOut={() => setSelectedHotspotId(null)}
                     onClick={() => setSelectedHotspotId(hotspot.id)}
                 />
             )
@@ -117,7 +110,6 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
           <InfoWindow
             position={selectedHotspot.position}
             onCloseClick={() => setSelectedHotspotId(null)}
-            pixelOffset={[0, -20]}
           >
             <Card className="border-none shadow-none max-w-xs">
               <CardHeader className="p-2">
