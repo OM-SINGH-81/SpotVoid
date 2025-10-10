@@ -112,6 +112,10 @@ export default function DashboardPage() {
     () => {
         if (!dateRange?.from || !dateRange?.to) return null;
         return {
+            dateRange: {
+                startDate: dateRange.from.toISOString(),
+                endDate: dateRange.to.toISOString(),
+            },
             policeStation: selectedStation,
             crimeTypes: selectedCrimeTypes,
         }
@@ -252,7 +256,6 @@ export default function DashboardPage() {
                   <PatrolRoutes
                     prediction={prediction}
                     isLoadingPrediction={isLoadingPrediction}
-                    filters={filtersForAI ? { policeStation: filtersForAI.policeStation } : { policeStation: 'all'}}
                   />
                 </CardContent>
               </Card>
