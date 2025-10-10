@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Label } from "@/components/ui/label"
 import { NeonCheckbox } from "@/components/ui/neon-checkbox"
-import { Popover, PopoverContent, PopoverTrigger } from "./popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 
 type FiltersProps = {
   dateRange?: DateRange
