@@ -45,6 +45,7 @@ const PredictedHotspotSchema = z.object({
     riskLevel: z.enum(['High', 'Medium', 'Low']).describe('The predicted risk level for this hotspot.'),
     reason: z.string().describe('A brief explanation for why this area is considered a hotspot.'),
     predictedCrimeType: z.string().describe('The most likely type of crime to occur at this hotspot.'),
+    locationName: z.string().describe('A recognizable name for the location of the hotspot (e.g., a neighborhood, market, or landmark).'),
 });
 
 const PredictCrimeOutputSchema = z.object({
@@ -93,7 +94,7 @@ const prompt = ai.definePrompt({
   Instructions:
   1.  Create a 'dailyData' array for the future dates listed above, providing a 'predictedCount' for each.
   2.  Provide a 'crimeTypeBreakdown' of the total *predicted* crimes for the future period.
-  3.  Crucially, identify 3-5 potential 'predictedHotspots'. For each hotspot, provide its coordinates, a risk level, a reason for the prediction, and the most likely crime type. These hotspots should be plausible based on the historical location data.
+  3.  Crucially, identify 3-5 potential 'predictedHotspots'. For each hotspot, provide its coordinates, a risk level, a reason for the prediction, the most likely crime type, and a recognizable 'locationName' (e.g., "Karol Bagh Market", "Connaught Place Inner Circle"). These hotspots should be plausible based on the historical location data.
   
   Your entire output must be a valid JSON object matching the requested output schema. Do not include past dates in your 'dailyData' output.`,
 });

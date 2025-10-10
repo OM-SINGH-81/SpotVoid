@@ -80,7 +80,7 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
             <Card className="border-none shadow-none max-w-xs">
               <CardHeader className="p-2">
                 <CardTitle className="text-base flex items-center gap-2">
-                   {riskConfig[selectedHotspot.riskLevel].icon} {selectedHotspot.riskLevel} Risk Hotspot
+                   {riskConfig[selectedHotspot.riskLevel].icon} {selectedHotspot.riskLevel} Risk: {selectedHotspot.locationName}
                 </CardTitle>
                 <CardDescription>Predicted Crime: {selectedHotspot.predictedCrimeType}</CardDescription>
               </CardHeader>
