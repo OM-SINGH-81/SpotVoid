@@ -6,7 +6,6 @@ import { useMap, Map, AdvancedMarker, InfoWindow } from '@vis.gl/react-google-ma
 import { PredictCrimeOutput } from '@/ai/flows/ai-crime-prediction';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertTriangle, Info, CheckCircle } from 'lucide-react';
-import { TheftIcon, AccidentIcon, HarassmentIcon } from '@/components/icons';
 
 type PredictedHotspotsMapProps = {
   hotspots: PredictCrimeOutput['predictedHotspots'];
@@ -18,19 +17,9 @@ const riskConfig = {
   Low: { icon: <CheckCircle className="w-5 h-5 text-green-500" />, color: "#00ff00", fillColor: "#00ff00" },
 };
 
-const crimeIconMap = {
-  Theft: { icon: <TheftIcon className="w-5 h-5" /> },
-  Accident: { icon: <AccidentIcon className="w-5 h-5" /> },
-  Harassment: { icon: <HarassmentIcon className="w-5 h-5" /> },
-  default: { icon: <Info className="w-5 h-5" /> },
-};
-
 type CircleProps = google.maps.CircleOptions & {
     center: google.maps.LatLngLiteral;
     radius: number;
-    onClick?: () => void;
-    onMouseOver?: () => void;
-    onMouseOut?: () => void;
 };
 
 const CircleComponent = (props: CircleProps) => {
@@ -53,21 +42,6 @@ const CircleComponent = (props: CircleProps) => {
         };
     }, [map, circle, props]);
 
-    useEffect(() => {
-        if (circle) {
-            const clickListener = circle.addListener('click', props.onClick);
-            const mouseOverListener = circle.addListener('mouseover', props.onMouseOver);
-            const mouseOutListener = circle.addListener('mouseout', props.onMouseOut);
-            
-            return () => {
-                clickListener.remove();
-                mouseOverListener.remove();
-                mouseOutListener.remove();
-            };
-        }
-    }, [circle, props.onClick, props.onMouseOver, props.onMouseOut]);
-
-
     return null;
 }
 
@@ -76,6 +50,14 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
 
   const selectedHotspot = hotspots.find(hotspot => hotspot.id === selectedHotspotId);
+
+  const handleMarkerClick = (hotspotId: string) => {
+    setSelectedHotspotId(hotspotId);
+  };
+
+  const handleMapClick = () => {
+    setSelectedHotspotId(null);
+  };
 
   if (!hotspots || hotspots.length === 0) {
       return (
@@ -93,7 +75,7 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
         mapId="PREDICTED_HOTSPOTS_MAP"
         gestureHandling={'greedy'}
         disableDefaultUI={true}
-        onClick={() => setSelectedHotspotId(null)}
+        onClick={handleMapClick}
       >
         {hotspots.map(hotspot => {
             const currentRisk = riskConfig[hotspot.riskLevel];
@@ -108,8 +90,17 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
                         strokeWeight={2}
                         fillColor={currentRisk.fillColor}
                         fillOpacity={0.4}
-                        onMouseOver={() => setSelectedHotspotId(hotspot.id)}
                     />
+                    <AdvancedMarker
+                        position={hotspot.position}
+                        onClick={(e) => {
+                           e.domEvent.stopPropagation(); // Prevents map click from firing
+                           handleMarkerClick(hotspot.id);
+                        }}
+                    >
+                      {/* Using an invisible div as a click target */}
+                      <div style={{ width: '50px', height: '50px', cursor: 'pointer' }} />
+                    </AdvancedMarker>
                 </React.Fragment>
             )
         })}
@@ -136,4 +127,3 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
     </div>
   );
 }
-
