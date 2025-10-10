@@ -100,7 +100,7 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
                 <CircleComponent
                     key={hotspot.id}
                     center={hotspot.position}
-                    radius={1000} // Increased radius in meters for better visibility
+                    radius={2000} // Increased radius in meters for better visibility
                     strokeColor={currentRisk.color}
                     strokeOpacity={0.9}
                     strokeWeight={2}
@@ -136,4 +136,3 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
     </div>
   );
 }
-
