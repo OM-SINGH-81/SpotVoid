@@ -77,8 +77,8 @@ export default function DashboardPage() {
     }
     const timer = setTimeout(() => {
       setDateRange({
-        from: addDays(new Date(), -30),
-        to: new Date(),
+        from: addDays(new Date(), -15),
+        to: addDays(new Date(), 15),
       });
       setShowBg(true);
     }, 150);
@@ -109,11 +109,18 @@ export default function DashboardPage() {
   }, [dateRange, selectedStation, selectedCrimeTypes]);
 
   const filtersForAI = useMemo(
-    () => ({
-      policeStation: selectedStation,
-      crimeTypes: selectedCrimeTypes,
-    }),
-    [selectedStation, selectedCrimeTypes]
+    () => {
+        if (!dateRange?.from || !dateRange?.to) return null;
+        return {
+            policeStation: selectedStation,
+            crimeTypes: selectedCrimeTypes,
+            dateRange: {
+                startDate: dateRange.from.toISOString(),
+                endDate: dateRange.to.toISOString(),
+            },
+        }
+    },
+    [selectedStation, selectedCrimeTypes, dateRange]
   );
 
   return (
@@ -249,7 +256,7 @@ export default function DashboardPage() {
                   <PatrolRoutes
                     prediction={prediction}
                     isLoadingPrediction={isLoadingPrediction}
-                    filters={filtersForAI}
+                    filters={filtersForAI ? { policeStation: filtersForAI.policeStation } : { policeStation: 'all'}}
                   />
                 </CardContent>
               </Card>

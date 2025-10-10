@@ -3,23 +3,15 @@
 
 import React, { useState, useEffect, useMemo } from "react"
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { addDays, format } from "date-fns"
-import { DateRange } from "react-day-picker"
 
 import { PredictCrimeInput, PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction"
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
-import { Skeleton } from "@/components/ui/skeleton"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Calendar as CalendarIcon, TriangleAlert } from "lucide-react"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
-import { Label } from "../ui/label"
+import { TriangleAlert } from "lucide-react"
 import GeneratingLoader from "../ui/generating-loader"
 
 type CrimePredictionProps = {
-  filters: Omit<PredictCrimeInput, 'dateRange'>;
+  filters: PredictCrimeInput | null;
   onPredictionChange: (prediction: PredictCrimeOutput | null) => void;
   isLoading: boolean;
   onIsLoadingChange: (isLoading: boolean) => void;
@@ -39,32 +31,10 @@ const chartConfig = {
 export default function CrimePrediction({ filters, onPredictionChange, isLoading, onIsLoadingChange }: CrimePredictionProps) {
   const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
-
-  useEffect(() => {
-    setDateRange({
-      from: addDays(new Date(), -15),
-      to: addDays(new Date(), 15),
-    });
-  }, []);
-
-  const predictionFilters = useMemo((): PredictCrimeInput | null => {
-    if (dateRange?.from && dateRange?.to) {
-      return {
-        ...filters,
-        dateRange: {
-          startDate: dateRange.from.toISOString(),
-          endDate: dateRange.to.toISOString(),
-        }
-      }
-    }
-    return null;
-  }, [filters, dateRange]);
-
-
+  
   useEffect(() => {
     const getPrediction = async () => {
-      if (!predictionFilters) {
+      if (!filters) {
         setPrediction(null);
         onPredictionChange(null);
         onIsLoadingChange(false);
@@ -76,7 +46,7 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
         const response = await fetch('/api/predict-crime', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(predictionFilters)
+            body: JSON.stringify(filters)
         });
         if (!response.ok) {
             const errorBody = await response.json();
@@ -94,7 +64,7 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
       }
     }
     
-    if (predictionFilters && filters.crimeTypes.length > 0) {
+    if (filters && filters.crimeTypes.length > 0) {
       getPrediction()
     } else {
       onIsLoadingChange(false);
@@ -102,7 +72,7 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
       onPredictionChange(null);
     }
 
-  }, [predictionFilters, onPredictionChange, onIsLoadingChange])
+  }, [filters, onPredictionChange, onIsLoadingChange])
 
   const combinedBreakdown = useMemo(() => {
     if (!prediction) return [];
@@ -135,46 +105,6 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
 
   return (
     <div className="space-y-6">
-       <div>
-        <Label>Prediction Date Range</Label>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              id="date"
-              variant={"outline"}
-              className={cn(
-                "w-full justify-start text-left font-normal mt-1",
-                !dateRange && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {dateRange?.from ? (
-                dateRange.to ? (
-                  <>
-                    {format(dateRange.from, "LLL dd, y")} -{" "}
-                    {format(dateRange.to, "LLL dd, y")}
-                  </>
-                ) : (
-                  format(dateRange.from, "LLL dd, y")
-                )
-              ) : (
-                <span>Pick a date range</span>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={dateRange?.from}
-              selected={dateRange}
-              onSelect={setDateRange}
-              numberOfMonths={2}
-            />
-          </PopoverContent>
-        </Popover>
-      </div>
-      
       {isLoading && (
         <div className="relative h-96 flex items-center justify-center">
             <GeneratingLoader />
