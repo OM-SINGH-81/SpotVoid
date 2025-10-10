@@ -36,10 +36,22 @@ const CrimeTypeBreakdownSchema = z.array(
   })
 );
 
+const PredictedHotspotSchema = z.object({
+    id: z.string().describe("A unique identifier for the hotspot (e.g., 'hotspot-1')."),
+    position: z.object({
+        lat: z.number().describe('The latitude of the hotspot.'),
+        lng: z.number().describe('The longitude of the hotspot.'),
+    }).describe('The geographic coordinates of the predicted hotspot.'),
+    riskLevel: z.enum(['High', 'Medium', 'Low']).describe('The predicted risk level for this hotspot.'),
+    reason: z.string().describe('A brief explanation for why this area is considered a hotspot.'),
+    predictedCrimeType: z.string().describe('The most likely type of crime to occur at this hotspot.'),
+});
+
 const PredictCrimeOutputSchema = z.object({
   dailyData: z.array(DailyPredictionSchema).describe('Historical and predicted crime counts per day for the specified date range.'),
   predictedCrimeTypeBreakdown: CrimeTypeBreakdownSchema.describe('Predicted breakdown of crime types for the future dates in the specified police station.'),
   historicalCrimeTypeBreakdown: CrimeTypeBreakdownSchema.describe('Historical breakdown of crime types for the past dates in the specified police station.'),
+  predictedHotspots: z.array(PredictedHotspotSchema).describe('A list of predicted geographical crime hotspots for the future period.'),
 });
 export type PredictCrimeOutput = z.infer<typeof PredictCrimeOutputSchema>;
 
@@ -55,6 +67,7 @@ const prompt = ai.definePrompt({
     analysisPrompt: z.string(),
     futureDates: z.array(z.string()),
     input: PredictCrimeInputSchema,
+    historicalCrimeLocations: z.string().describe('A JSON string of historical crime locations for context.'),
   })},
   output: {schema: z.object({
     dailyData: z.array(z.object({
@@ -62,14 +75,15 @@ const prompt = ai.definePrompt({
         predictedCount: z.number().nullable(),
     })).describe('Predicted crime counts for future dates.'),
     crimeTypeBreakdown: CrimeTypeBreakdownSchema.describe('Predicted breakdown of crime types for the future period.'),
+    predictedHotspots: z.array(PredictedHotspotSchema).describe('A list of 3-5 predicted geographical crime hotspots for the future period. Base these on historical location clusters.'),
   })},
-  prompt: `You are an AI assistant that analyzes historical crime data and predicts future crime rates.
+  prompt: `You are an AI assistant that analyzes historical crime data and predicts future crime rates and locations.
 
   Historical Data Analysis:
-  I have analyzed the historical data for the requested filters. Here is a summary of daily crime counts:
-  {{{analysisPrompt}}}
+  - Daily Counts: {{{analysisPrompt}}}
+  - Incident Locations: {{{historicalCrimeLocations}}}
   
-  Based on this historical data and any underlying trends you can identify (like weekly patterns, or recent increases/decreases), provide a realistic future crime prediction for the upcoming dates.
+  Based on this historical data, identify temporal trends (like weekly patterns, increases/decreases) and spatial clusters (geographic concentrations of crime). Use this analysis to provide a realistic future crime prediction.
   
   User's Request:
   - Prediction for Dates: {{#each futureDates}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
@@ -77,10 +91,11 @@ const prompt = ai.definePrompt({
   - Crime Types: {{#each input.crimeTypes}}{{{this}}}{{#unless @last}}, {{/unless}}{{/each}}
   
   Instructions:
-  1.  Create a 'dailyData' array containing entries ONLY for the future dates listed above. For each entry, provide a 'predictedCount'.
-  2.  Provide a 'crimeTypeBreakdown' of the total *predicted* crimes for the future period. This breakdown should be based on the user's selected crime types and seem plausible given the historical data.
+  1.  Create a 'dailyData' array for the future dates listed above, providing a 'predictedCount' for each.
+  2.  Provide a 'crimeTypeBreakdown' of the total *predicted* crimes for the future period.
+  3.  Crucially, identify 3-5 potential 'predictedHotspots'. For each hotspot, provide its coordinates, a risk level, a reason for the prediction, and the most likely crime type. These hotspots should be plausible based on the historical location data.
   
-  Your entire output must be a valid JSON object matching the requested output schema. Do not include past dates in your output.`,
+  Your entire output must be a valid JSON object matching the requested output schema. Do not include past dates in your 'dailyData' output.`,
 });
 
 
@@ -140,6 +155,7 @@ const predictCrimeFlow = ai.defineFlow(
 
 
     const analysisPrompt = JSON.stringify(historicalDataForPrompt);
+    const historicalCrimeLocations = JSON.stringify(historicalCrimes.map(c => ({ lat: c.position.lat, lng: c.position.lng, crimeType: c.crimeType })));
 
     // 4. Identify future dates that need prediction
     const futureDates = allDatesInRange
@@ -152,11 +168,12 @@ const predictCrimeFlow = ai.defineFlow(
             dailyData: historicalDataForPrompt.map(d => ({ date: d.date, historicalCount: d.count, predictedCount: null })),
             predictedCrimeTypeBreakdown: [],
             historicalCrimeTypeBreakdown: historicalBreakdown,
+            predictedHotspots: [],
         };
     }
 
     // 5. Call the AI for predictions on future dates
-    const { output: predictionOutput } = await prompt({ analysisPrompt, input, futureDates });
+    const { output: predictionOutput } = await prompt({ analysisPrompt, input, futureDates, historicalCrimeLocations });
 
     if (!predictionOutput) {
         throw new Error("AI model did not return an output.");
@@ -198,7 +215,10 @@ const predictCrimeFlow = ai.defineFlow(
     return {
         dailyData: combinedDailyData,
         predictedCrimeTypeBreakdown: predictionOutput.crimeTypeBreakdown,
-        historicalCrimeTypeBreakdown: historicalBreakdown
+        historicalCrimeTypeBreakdown: historicalBreakdown,
+        predictedHotspots: predictionOutput.predictedHotspots || [],
     };
   }
 );
+
+    

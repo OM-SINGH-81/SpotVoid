@@ -5,6 +5,7 @@ import React, { useState, useEffect, useMemo } from "react"
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { DateRange } from "react-day-picker"
 import { addDays, format, parseISO } from "date-fns"
+import dynamic from "next/dynamic"
 
 import { PredictCrimeInput, PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction"
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
@@ -13,6 +14,14 @@ import { TriangleAlert } from "lucide-react"
 import GeneratingLoader from "../ui/generating-loader"
 import { Label } from "../ui/label"
 import { Input } from "../ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs"
+import { Skeleton } from "../ui/skeleton"
+
+const PredictedHotspotsMap = dynamic(() => import("./predicted-hotspots-map"), {
+  ssr: false,
+  loading: () => <Skeleton className="w-full h-full" />,
+});
+
 
 type CrimePredictionProps = {
   filters: Omit<PredictCrimeInput, 'dateRange'> | null;
@@ -189,45 +198,58 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
       )}
       
       {!isLoading && !error && prediction && (
-        <div className="space-y-8">
-          <div>
-            <h3 className="text-lg font-medium mb-4">Daily Crime Trend</h3>
-            <div className="h-60 w-full">
-              <ChartContainer config={chartConfig} className="h-full w-full">
-                <ResponsiveContainer>
-                  <LineChart data={prediction.dailyData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="date" tickFormatter={(val) => new Date(val).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} fontSize={12} />
-                    <YAxis fontSize={12} allowDecimals={false} />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Legend />
-                    <Line type="monotone" dataKey="historicalCount" name="Historical" stroke={chartConfig.historicalCount.color} strokeWidth={2} dot={false} />
-                    <Line type="monotone" dataKey="predictedCount" name="Predicted" stroke={chartConfig.predictedCount.color} strokeWidth={2} strokeDasharray="5 5" dot={false}/>
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+        <Tabs defaultValue="charts">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="charts">Charts & Trends</TabsTrigger>
+            <TabsTrigger value="map">Predicted Hotspots</TabsTrigger>
+          </TabsList>
+          <TabsContent value="charts" className="space-y-8 mt-4">
+            <div>
+              <h3 className="text-lg font-medium mb-4">Daily Crime Trend</h3>
+              <div className="h-60 w-full">
+                <ChartContainer config={chartConfig} className="h-full w-full">
+                  <ResponsiveContainer>
+                    <LineChart data={prediction.dailyData} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="date" tickFormatter={(val) => new Date(val).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} fontSize={12} />
+                      <YAxis fontSize={12} allowDecimals={false} />
+                      <Tooltip content={<ChartTooltipContent />} />
+                      <Legend />
+                      <Line type="monotone" dataKey="historicalCount" name="Historical" stroke={chartConfig.historicalCount.color} strokeWidth={2} dot={false} />
+                      <Line type="monotone" dataKey="predictedCount" name="Predicted" stroke={chartConfig.predictedCount.color} strokeWidth={2} strokeDasharray="5 5" dot={false}/>
+                    </LineChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
             </div>
-          </div>
-          <div>
-            <h3 className="text-lg font-medium mb-4">Crime Type Breakdown</h3>
-            <div className="h-60 w-full">
-              <ChartContainer config={chartConfig} className="h-full w-full">
-                <ResponsiveContainer>
-                  <BarChart data={combinedBreakdown} layout="vertical" margin={{ top: 5, right: 20, left: 40, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <YAxis dataKey="crimeType" type="category" fontSize={12} width={80} />
-                    <XAxis type="number" fontSize={12} allowDecimals={false} />
-                    <Tooltip content={<ChartTooltipContent />} cursor={{fill: 'hsl(var(--muted))'}} />
-                    <Legend />
-                    <Bar dataKey="historicalCount" name="Historical" fill={chartConfig.historicalCount.color} radius={[4, 0, 0, 4]} />
-                    <Bar dataKey="predictedCount" name="Predicted" fill={chartConfig.predictedCount.color} radius={[0, 4, 4, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+            <div>
+              <h3 className="text-lg font-medium mb-4">Crime Type Breakdown</h3>
+              <div className="h-60 w-full">
+                <ChartContainer config={chartConfig} className="h-full w-full">
+                  <ResponsiveContainer>
+                    <BarChart data={combinedBreakdown} layout="vertical" margin={{ top: 5, right: 20, left: 40, bottom: 5 }}>
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                      <YAxis dataKey="crimeType" type="category" fontSize={12} width={80} />
+                      <XAxis type="number" fontSize={12} allowDecimals={false} />
+                      <Tooltip content={<ChartTooltipContent />} cursor={{fill: 'hsl(var(--muted))'}} />
+                      <Legend />
+                      <Bar dataKey="historicalCount" name="Historical" fill={chartConfig.historicalCount.color} radius={[4, 0, 0, 4]} />
+                      <Bar dataKey="predictedCount" name="Predicted" fill={chartConfig.predictedCount.color} radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
             </div>
-          </div>
-        </div>
+          </TabsContent>
+          <TabsContent value="map" className="mt-4">
+            <div className="h-[500px] w-full">
+                <PredictedHotspotsMap hotspots={prediction.predictedHotspots} />
+            </div>
+          </TabsContent>
+        </Tabs>
       )}
     </div>
   )
 }
+
+    
