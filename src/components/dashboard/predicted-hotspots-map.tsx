@@ -28,6 +28,9 @@ const crimeIconMap = {
 type CircleProps = google.maps.CircleOptions & {
     center: google.maps.LatLngLiteral;
     radius: number;
+    onClick?: () => void;
+    onMouseOver?: () => void;
+    onMouseOut?: () => void;
 };
 
 const CircleComponent = (props: CircleProps) => {
@@ -49,6 +52,21 @@ const CircleComponent = (props: CircleProps) => {
             }
         };
     }, [map, circle, props]);
+
+    useEffect(() => {
+        if (circle) {
+            const clickListener = circle.addListener('click', props.onClick);
+            const mouseOverListener = circle.addListener('mouseover', props.onMouseOver);
+            const mouseOutListener = circle.addListener('mouseout', props.onMouseOut);
+            
+            return () => {
+                clickListener.remove();
+                mouseOverListener.remove();
+                mouseOutListener.remove();
+            };
+        }
+    }, [circle, props.onClick, props.onMouseOver, props.onMouseOut]);
+
 
     return null;
 }
@@ -90,17 +108,8 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
                         strokeWeight={2}
                         fillColor={currentRisk.fillColor}
                         fillOpacity={0.4}
+                        onMouseOver={() => setSelectedHotspotId(hotspot.id)}
                     />
-                    {/* Use an invisible marker to handle events */}
-                    <div 
-                        onMouseEnter={() => setSelectedHotspotId(hotspot.id)}
-                        onMouseLeave={() => setSelectedHotspotId(null)}
-                    >
-                        <AdvancedMarker position={hotspot.position}>
-                            {/* This is an empty div, making the marker invisible but interactive */}
-                            <div style={{ width: '50px', height: '50px', borderRadius: '50%' }} /> 
-                        </AdvancedMarker>
-                    </div>
                 </React.Fragment>
             )
         })}
@@ -127,3 +136,4 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
     </div>
   );
 }
+
