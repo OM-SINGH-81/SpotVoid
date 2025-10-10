@@ -91,8 +91,13 @@ export default function ChatAssistant() {
               </div>
             )}
             {!isLoading && !answer && (
-                <div className="flex items-center justify-center h-full text-muted-foreground">
-                    <p>Ask a question like, "Show theft hotspots in August."</p>
+                <div className="text-center text-sm text-muted-foreground space-y-2">
+                    <p className="font-semibold">Here are some ideas:</p>
+                    <ul className="list-disc list-inside text-left text-xs">
+                        <li>How many thefts happened in Connaught Place last month?</li>
+                        <li>What were the crime trends in Vasant Kunj during September?</li>
+                        <li>Show all accidents in Karol Bagh.</li>
+                    </ul>
                 </div>
             )}
           </div>
@@ -107,7 +112,7 @@ export default function ChatAssistant() {
               render={({ field }) => (
                 <FormItem className="flex-1">
                   <FormControl>
-                    <Input placeholder="Ask the AI assistant..." {...field} />
+                    <Input placeholder="e.g., How many thefts in Karol Bagh last month?" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
