@@ -47,6 +47,11 @@ const askQuestionFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await prompt(input);
-    return output!;
+    
+    if (!output) {
+      return { answer: "I'm sorry, I couldn't find an answer to that question." };
+    }
+
+    return output;
   }
 );
