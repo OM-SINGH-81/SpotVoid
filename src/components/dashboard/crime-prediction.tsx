@@ -3,15 +3,19 @@
 
 import React, { useState, useEffect, useMemo } from "react"
 import { Bar, BarChart, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { DateRange } from "react-day-picker"
+import { addDays, format, parseISO } from "date-fns"
 
 import { PredictCrimeInput, PredictCrimeOutput } from "@/ai/flows/ai-crime-prediction"
 import { ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { TriangleAlert } from "lucide-react"
 import GeneratingLoader from "../ui/generating-loader"
+import { Label } from "../ui/label"
+import { Input } from "../ui/input"
 
 type CrimePredictionProps = {
-  filters: PredictCrimeInput | null;
+  filters: Omit<PredictCrimeInput, 'dateRange'> | null;
   onPredictionChange: (prediction: PredictCrimeOutput | null) => void;
   isLoading: boolean;
   onIsLoadingChange: (isLoading: boolean) => void;
@@ -31,10 +35,46 @@ const chartConfig = {
 export default function CrimePrediction({ filters, onPredictionChange, isLoading, onIsLoadingChange }: CrimePredictionProps) {
   const [prediction, setPrediction] = useState<PredictCrimeOutput | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: addDays(new Date(), -15),
+    to: addDays(new Date(), 15),
+  });
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'from' | 'to') => {
+    const value = e.target.value;
+    if (!value) {
+      setDateRange({
+        ...dateRange,
+        [field]: undefined
+      });
+      return;
+    }
+
+    try {
+      const newDate = parseISO(value);
+      setDateRange({
+        ...dateRange,
+        [field]: newDate,
+      });
+    } catch (error) {
+      console.error("Invalid date format", error);
+    }
+  };
+
+  const predictionFilters = useMemo(() => {
+    if (!filters || !dateRange?.from || !dateRange?.to) return null;
+    return {
+      ...filters,
+      dateRange: {
+        startDate: dateRange.from.toISOString(),
+        endDate: dateRange.to.toISOString(),
+      },
+    };
+  }, [filters, dateRange]);
   
   useEffect(() => {
     const getPrediction = async () => {
-      if (!filters) {
+      if (!predictionFilters) {
         setPrediction(null);
         onPredictionChange(null);
         onIsLoadingChange(false);
@@ -46,7 +86,7 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
         const response = await fetch('/api/predict-crime', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(filters)
+            body: JSON.stringify(predictionFilters)
         });
         if (!response.ok) {
             const errorBody = await response.json();
@@ -64,7 +104,7 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
       }
     }
     
-    if (filters && filters.crimeTypes.length > 0) {
+    if (predictionFilters && predictionFilters.crimeTypes.length > 0) {
       getPrediction()
     } else {
       onIsLoadingChange(false);
@@ -72,7 +112,7 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
       onPredictionChange(null);
     }
 
-  }, [filters, onPredictionChange, onIsLoadingChange])
+  }, [predictionFilters, onPredictionChange, onIsLoadingChange])
 
   const combinedBreakdown = useMemo(() => {
     if (!prediction) return [];
@@ -105,6 +145,31 @@ export default function CrimePrediction({ filters, onPredictionChange, isLoading
 
   return (
     <div className="space-y-6">
+       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-2">
+            <div>
+                <Label htmlFor="predict-start-date">Start Date</Label>
+                <Input
+                    id="predict-start-date"
+                    type="date"
+                    value={dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : ''}
+                    onChange={(e) => handleDateChange(e, 'from')}
+                    className="mt-1"
+                />
+            </div>
+             <div>
+                <Label htmlFor="predict-end-date">End Date</Label>
+                <Input
+                    id="predict-end-date"
+                    type="date"
+                    value={dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : ''}
+                    onChange={(e) => handleDateChange(e, 'to')}
+                    className="mt-1"
+                />
+            </div>
+        </div>
+      </div>
+
       {isLoading && (
         <div className="relative h-96 flex items-center justify-center">
             <GeneratingLoader />

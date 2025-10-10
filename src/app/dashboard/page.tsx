@@ -78,7 +78,7 @@ export default function DashboardPage() {
     const timer = setTimeout(() => {
       setDateRange({
         from: addDays(new Date(), -15),
-        to: addDays(new Date(), 15),
+        to: new Date(),
       });
       setShowBg(true);
     }, 150);
@@ -114,10 +114,6 @@ export default function DashboardPage() {
         return {
             policeStation: selectedStation,
             crimeTypes: selectedCrimeTypes,
-            dateRange: {
-                startDate: dateRange.from.toISOString(),
-                endDate: dateRange.to.toISOString(),
-            },
         }
     },
     [selectedStation, selectedCrimeTypes, dateRange]
