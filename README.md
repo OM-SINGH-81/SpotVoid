@@ -24,6 +24,39 @@ The platform includes a dedicated module for **Women's Safety**, offering specia
 -   **Data Visualization**: [Recharts](https://recharts.org/)
 -   **Background Effects**: [Three.js](https://threejs.org/) & [Postprocessing](https://github.com/pmndrs/postprocessing)
 
+## How the AI Prediction Works
+
+The predictive model in this application is a powerful example of how a Large Language Model (LLM) can be used for data analysis and forecasting without traditional machine learning model training.
+
+### 1. The Data Source: Mock Crime Data
+
+It's important to know that this application currently uses a **mock data source** for demonstration purposes. The data is not from a live police feed.
+
+-   **File Location**: All the crime data is stored in the file `src/lib/mock-data.ts`.
+-   **What's Inside**: This file contains a large array of simulated crime incidents. Each incident has an ID, a random location in Delhi, a date from the last 90 days, a crime type (`Theft`, `Accident`, `Harassment`), and an associated police station.
+
+### 2. The AI Model: Google's Gemini
+
+The "brain" of the operation is a powerful generative AI model from Google called **Gemini 2.5 Flash**. We access this model using **Genkit**, which is Google's framework for building AI-powered features.
+
+-   **File Location**: The logic is defined in `src/ai/flows/ai-crime-prediction.ts`.
+-   **How it Works**: Instead of training a custom model, we use a clever prompting technique. We tell the Gemini model: *"You are an AI crime analyst. Here is a summary of historical crime data (counts, locations, types). Based on these trends, predict the crime counts for the next few days and identify 3-5 likely hotspots."*
+
+### 3. The End-to-End Workflow
+
+When you adjust the filters on the dashboard, here’s what happens:
+
+1.  **Data Filtering**: The application first filters the mock crime data from `src/lib/mock-data.ts` based on your selected date range, police station, and crime types.
+2.  **Prompting the AI**: It summarizes the filtered historical data and sends it to the Gemini model as part of a detailed prompt, asking for predictions.
+3.  **Generating Predictions**: The Gemini model analyzes the patterns in the data it was given and generates a JSON response containing:
+    -   Predicted daily crime counts.
+    -   A breakdown of predicted crime types.
+    -   A list of `predictedHotspots`, complete with coordinates, risk levels, and a reason for the prediction.
+4.  **Displaying Results**: The application receives this JSON response and uses it to draw the charts and the "Predicted Hotspots" map on your screen.
+
+In short, the application **simulates a real-world predictive system by using a powerful LLM to analyze historical data and make intelligent forecasts.** To make this a production-ready application, you would simply replace the mock data source with a live connection to a real police database.
+
+
 ## Getting Started (Local Development)
 
 To run this project on your local machine, follow these steps.
