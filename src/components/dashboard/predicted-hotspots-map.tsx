@@ -54,12 +54,13 @@ const CircleComponent = (props: CircleProps) => {
     
     useEffect(() => {
         if (!circle) return;
-        const overListener = google.maps.event.addListener(circle, 'mouseover', (e:any) => props.onMouseOver?.(e));
-        const outListener = google.maps.event.addListener(circle, 'mouseout', (e:any) => props.onMouseOut?.(e));
+
+        const overListener = circle.addListener('mouseover', (e: google.maps.MapMouseEvent) => props.onMouseOver?.(e));
+        const outListener = circle.addListener('mouseout', (e: google.maps.MapMouseEvent) => props.onMouseOut?.(e));
 
         return () => {
-            google.maps.event.removeListener(overListener);
-            google.maps.event.removeListener(outListener);
+            overListener.remove();
+            outListener.remove();
         }
 
     }, [circle, props.onMouseOver, props.onMouseOut]);
@@ -99,10 +100,10 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
                     center={hotspot.position}
                     radius={3000}
                     strokeColor={currentRisk.color}
-                    strokeOpacity={0.9}
+                    strokeOpacity={0.8}
                     strokeWeight={2}
                     fillColor={currentRisk.fillColor}
-                    fillOpacity={0.45}
+                    fillOpacity={0.4}
                     onMouseOver={() => setSelectedHotspotId(hotspot.id)}
                     onMouseOut={() => setSelectedHotspotId(null)}
                 />
