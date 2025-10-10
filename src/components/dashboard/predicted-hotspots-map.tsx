@@ -28,7 +28,8 @@ const crimeIconMap = {
 type CircleProps = google.maps.CircleOptions & {
     center: google.maps.LatLngLiteral;
     radius: number;
-    onClick?: (e: google.maps.MapMouseEvent) => void;
+    onMouseOver?: (e: google.maps.MapMouseEvent) => void;
+    onMouseOut?: (e: google.maps.MapMouseEvent) => void;
 };
 
 const CircleComponent = (props: CircleProps) => {
@@ -53,13 +54,15 @@ const CircleComponent = (props: CircleProps) => {
     
     useEffect(() => {
         if (!circle) return;
-        const listener = google.maps.event.addListener(circle, 'click', (e:any) => props.onClick?.(e));
+        const overListener = google.maps.event.addListener(circle, 'mouseover', (e:any) => props.onMouseOver?.(e));
+        const outListener = google.maps.event.addListener(circle, 'mouseout', (e:any) => props.onMouseOut?.(e));
 
         return () => {
-            google.maps.event.removeListener(listener);
+            google.maps.event.removeListener(overListener);
+            google.maps.event.removeListener(outListener);
         }
 
-    }, [circle, props.onClick]);
+    }, [circle, props.onMouseOver, props.onMouseOut]);
 
     return null;
 }
@@ -86,7 +89,6 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
         mapId="PREDICTED_HOTSPOTS_MAP"
         gestureHandling={'greedy'}
         disableDefaultUI={true}
-        onClick={() => setSelectedHotspotId(null)}
       >
         {hotspots.map(hotspot => {
             const currentRisk = riskConfig[hotspot.riskLevel];
@@ -95,13 +97,14 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
                 <CircleComponent
                     key={hotspot.id}
                     center={hotspot.position}
-                    radius={2000} // Increased radius in meters for better visibility
+                    radius={3000}
                     strokeColor={currentRisk.color}
                     strokeOpacity={0.9}
                     strokeWeight={2}
                     fillColor={currentRisk.fillColor}
-                    fillOpacity={0.4} // Increased fill opacity for better visibility
-                    onClick={() => setSelectedHotspotId(hotspot.id)}
+                    fillOpacity={0.45}
+                    onMouseOver={() => setSelectedHotspotId(hotspot.id)}
+                    onMouseOut={() => setSelectedHotspotId(null)}
                 />
             )
         })}

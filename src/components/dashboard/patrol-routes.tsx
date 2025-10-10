@@ -52,8 +52,10 @@ export default function PatrolRoutes({ prediction, isLoadingPrediction }: Patrol
 
         // Calculate distance and time
         let totalDistance = 0;
-        for (let i = 0; i < hotspotsWithOrder.length - 1; i++) {
-            totalDistance += getDistanceFromLatLonInKm(hotspotsWithOrder[i].position, hotspotsWithOrder[i+1].position);
+        if (hotspotsWithOrder.length > 1) {
+            for (let i = 0; i < hotspotsWithOrder.length - 1; i++) {
+                totalDistance += getDistanceFromLatLonInKm(hotspotsWithOrder[i].position, hotspotsWithOrder[i+1].position);
+            }
         }
         
         // Average patrol speed: 20 km/h
