@@ -2,18 +2,18 @@
 "use client"
 
 import * as React from "react"
-import { format, subDays, startOfMonth, endOfMonth } from "date-fns"
+import { format, parseISO } from "date-fns"
 import { Calendar as CalendarIcon, Check, ChevronsUpDown } from "lucide-react"
 import { DateRange } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { policeStations, crimeTypes } from "@/lib/mock-data"
 import { Button } from "@/components/ui/button"
-import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Input } from "@/components/ui/input"
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { Label } from "@/components/ui/label"
 import { NeonCheckbox } from "@/components/ui/neon-checkbox"
+import { Popover, PopoverContent, PopoverTrigger } from "./popover"
 
 type FiltersProps = {
   dateRange?: DateRange
@@ -49,75 +49,52 @@ export default function Filters({
     )
   }
   
-  const setPresetDateRange = (preset: '7' | '30' | 'thisMonth') => {
-    const today = new Date();
-    let fromDate: Date;
-    let toDate: Date = today;
-
-    switch(preset) {
-        case '7':
-            fromDate = subDays(today, 6);
-            break;
-        case '30':
-            fromDate = subDays(today, 29);
-            break;
-        case 'thisMonth':
-            fromDate = startOfMonth(today);
-            toDate = endOfMonth(today);
-            break;
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>, field: 'from' | 'to') => {
+    const value = e.target.value;
+    if (!value) {
+      setDateRange({
+        ...dateRange,
+        [field]: undefined
+      });
+      return;
     }
-    setDateRange({ from: fromDate, to: toDate });
-  }
+
+    try {
+      const newDate = parseISO(value);
+      setDateRange({
+        ...dateRange,
+        [field]: newDate,
+      });
+    } catch (error) {
+      console.error("Invalid date format", error);
+    }
+  };
 
 
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <div className="flex justify-between items-center mb-1">
-             <Label>Date range</Label>
-             <div className="flex items-center gap-1">
-                <Button variant="ghost" size="sm" className="h-7" onClick={() => setPresetDateRange('7')}>Last 7 Days</Button>
-                <Button variant="ghost" size="sm" className="h-7" onClick={() => setPresetDateRange('30')}>Last 30 Days</Button>
-                <Button variant="ghost" size="sm" className="h-7" onClick={() => setPresetDateRange('thisMonth')}>This Month</Button>
-             </div>
-          </div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                id="date"
-                variant={"outline"}
-                className={cn(
-                  "w-full justify-start text-left font-normal",
-                  !dateRange && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {dateRange?.from ? (
-                  dateRange.to ? (
-                    <>
-                      {format(dateRange.from, "LLL dd, y")} -{" "}
-                      {format(dateRange.to, "LLL dd, y")}
-                    </>
-                  ) : (
-                    format(dateRange.from, "LLL dd, y")
-                  )
-                ) : (
-                  <span>Pick a date</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                initialFocus
-                mode="range"
-                defaultMonth={dateRange?.from}
-                selected={dateRange}
-                onSelect={setDateRange}
-                numberOfMonths={2}
-              />
-            </PopoverContent>
-          </Popover>
+        <div className="grid grid-cols-2 gap-2">
+            <div>
+                <Label htmlFor="start-date">Start Date</Label>
+                <Input
+                    id="start-date"
+                    type="date"
+                    value={dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : ''}
+                    onChange={(e) => handleDateChange(e, 'from')}
+                    className="mt-1"
+                />
+            </div>
+             <div>
+                <Label htmlFor="end-date">End Date</Label>
+                <Input
+                    id="end-date"
+                    type="date"
+                    value={dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : ''}
+                    onChange={(e) => handleDateChange(e, 'to')}
+                    className="mt-1"
+                />
+            </div>
         </div>
 
         <div>
