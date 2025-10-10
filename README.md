@@ -34,6 +34,7 @@ It's important to know that this application currently uses a **mock data source
 
 -   **File Location**: All the crime data is stored in the file `src/lib/mock-data.ts`.
 -   **What's Inside**: This file contains a large array of simulated crime incidents. Each incident has an ID, a random location in Delhi, a date from the last 90 days, a crime type (`Theft`, `Accident`, `Harassment`), and an associated police station.
+-   **Data Storage**: The data is not stored in a separate database. It is held directly in the application's memory as a TypeScript array, making it very fast to access for analysis.
 
 ### 2. The AI Model: Google's Gemini
 
@@ -46,7 +47,7 @@ The "brain" of the operation is a powerful generative AI model from Google calle
 
 When you adjust the filters on the dashboard, here’s what happens:
 
-1.  **Data Filtering**: The application first filters the mock crime data from `src/lib/mock-data.ts` based on your selected date range, police station, and crime types.
+1.  **In-Memory Filtering**: The application imports the `crimeData` array directly from `src/lib/mock-data.ts`. It then filters this array **in memory** based on the date range, police station, and crime types you selected.
 2.  **Prompting the AI**: It summarizes the filtered historical data and sends it to the Gemini model as part of a detailed prompt, asking for predictions.
 3.  **Generating Predictions**: The Gemini model analyzes the patterns in the data it was given and generates a JSON response containing:
     -   Predicted daily crime counts.
@@ -123,3 +124,4 @@ You can deploy this application for free using platforms like Vercel or Netlify.
 2.  **Import Project**: From your Vercel dashboard, click "Add New... > Project" and select your repository.
 3.  **Configure Environment Variables**: In the project settings under "Environment Variables," add `GEMINI_API_KEY` and `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` with their respective values.
 4.  **Deploy**: Click "Deploy". Vercel will automatically build and deploy your application.
+
