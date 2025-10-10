@@ -28,8 +28,6 @@ const crimeIconMap = {
 type CircleProps = google.maps.CircleOptions & {
     center: google.maps.LatLngLiteral;
     radius: number;
-    onMouseOver?: (e: google.maps.MapMouseEvent) => void;
-    onMouseOut?: (e: google.maps.MapMouseEvent) => void;
 };
 
 const CircleComponent = (props: CircleProps) => {
@@ -51,19 +49,6 @@ const CircleComponent = (props: CircleProps) => {
             }
         };
     }, [map, circle, props]);
-    
-    useEffect(() => {
-        if (!circle) return;
-
-        const overListener = circle.addListener('mouseover', (e: google.maps.MapMouseEvent) => props.onMouseOver?.(e));
-        const outListener = circle.addListener('mouseout', (e: google.maps.MapMouseEvent) => props.onMouseOut?.(e));
-
-        return () => {
-            overListener.remove();
-            outListener.remove();
-        }
-
-    }, [circle, props.onMouseOver, props.onMouseOut]);
 
     return null;
 }
@@ -90,23 +75,33 @@ export default function PredictedHotspotsMap({ hotspots }: PredictedHotspotsMapP
         mapId="PREDICTED_HOTSPOTS_MAP"
         gestureHandling={'greedy'}
         disableDefaultUI={true}
+        onClick={() => setSelectedHotspotId(null)}
       >
         {hotspots.map(hotspot => {
             const currentRisk = riskConfig[hotspot.riskLevel];
             
             return (
-                <CircleComponent
-                    key={hotspot.id}
-                    center={hotspot.position}
-                    radius={3000}
-                    strokeColor={currentRisk.color}
-                    strokeOpacity={0.8}
-                    strokeWeight={2}
-                    fillColor={currentRisk.fillColor}
-                    fillOpacity={0.4}
-                    onMouseOver={() => setSelectedHotspotId(hotspot.id)}
-                    onMouseOut={() => setSelectedHotspotId(null)}
-                />
+                <React.Fragment key={hotspot.id}>
+                    <CircleComponent
+                        center={hotspot.position}
+                        radius={3000} 
+                        strokeColor={currentRisk.color}
+                        strokeOpacity={0.8}
+                        strokeWeight={2}
+                        fillColor={currentRisk.fillColor}
+                        fillOpacity={0.4}
+                    />
+                    {/* Use an invisible marker to handle events */}
+                    <div 
+                        onMouseEnter={() => setSelectedHotspotId(hotspot.id)}
+                        onMouseLeave={() => setSelectedHotspotId(null)}
+                    >
+                        <AdvancedMarker position={hotspot.position}>
+                            {/* This is an empty div, making the marker invisible but interactive */}
+                            <div style={{ width: '50px', height: '50px', borderRadius: '50%' }} /> 
+                        </AdvancedMarker>
+                    </div>
+                </React.Fragment>
             )
         })}
 
